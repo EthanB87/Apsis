@@ -1,0 +1,13 @@
+{
+  "name": "apsis",
+  "version": "0.0.1",
+  "private": true,
+  "packageManager": "pnpm@9.15.9",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "typecheck": "tsc --build tsconfig.json --noEmit"
+  }
+}
