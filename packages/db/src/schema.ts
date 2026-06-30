@@ -1,0 +1,132 @@
+/**
+ * @apsis/db — six-table SQLite schema via drizzle-orm
+ *
+ * Tables:
+ *   user_profile, exercise, workout, strength_set, endurance_segment, load_daily
+ *
+ * Security: drizzle table definitions enforce column constraints at the ORM layer.
+ * All queries use parameterized query builders — never raw sql template literals
+ * with user-supplied values (T-1-01).
+ *
+ * Note: The load_daily_date_idx index is present even though load_daily.localDate
+ * is the primary key; the explicit named index is referenced by the engine's
+ * date-range queries and makes the intent clear.
+ */
+
+import { sqliteTable, text, integer, real, index } from 'drizzle-orm/sqlite-core';
+import { sql } from 'drizzle-orm';
+
+// ---------------------------------------------------------------------------
+// user_profile
+// ---------------------------------------------------------------------------
+
+export const userProfile = sqliteTable('user_profile', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  sex: text('sex', { enum: ['male', 'female', 'other'] }),
+  bodyweightKg: real('bodyweight_kg'),
+  thresholdHr: integer('threshold_hr'),
+  thresholdPaceSecPerKm: integer('threshold_pace_sec_per_km'),
+  units: text('units', { enum: ['metric', 'imperial'] }).default('metric'),
+  createdAt: integer('created_at', { mode: 'timestamp' }).default(sql`(unixepoch())`),
+  updatedAt: integer('updated_at', { mode: 'timestamp' }).default(sql`(unixepoch())`),
+});
+
+// ---------------------------------------------------------------------------
+// exercise
+// ---------------------------------------------------------------------------
+
+export const exercise = sqliteTable('exercise', {
+  /** Kebab-case stable identifier, e.g. 'squat', 'sled-push' */
+  id: text('id').primaryKey(),
+  name: text('name').notNull(),
+  type: text('type', { enum: ['strength', 'endurance', 'hybrid'] }).notNull(),
+  bodyPart: text('body_part'),
+  isSeeded: integer('is_seeded', { mode: 'boolean' }).default(true),
+});
+
+// ---------------------------------------------------------------------------
+// workout
+// ---------------------------------------------------------------------------
+
+export const workout = sqliteTable('workout', {
+  /** UUID v4 */
+  id: text('id').primaryKey(),
+  localDate: text('local_date').notNull(),
+  type: text('type', { enum: ['strength', 'endurance', 'hybrid'] }).notNull(),
+  title: text('title'),
+  /** Session HSS written by the engine after all sets/segments logged */
+  hss: real('hss').default(0),
+  createdAt: integer('created_at', { mode: 'timestamp' }).default(sql`(unixepoch())`),
+});
+
+// ---------------------------------------------------------------------------
+// strength_set
+// ---------------------------------------------------------------------------
+
+export const strengthSet = sqliteTable('strength_set', {
+  id: text('id').primaryKey(),
+  workoutId: text('workout_id')
+    .notNull()
+    .references(() => workout.id, { onDelete: 'cascade' }),
+  exerciseId: text('exercise_id')
+    .notNull()
+    .references(() => exercise.id),
+  setNumber: integer('set_number').notNull(),
+  loadKg: real('load_kg').notNull(),
+  reps: integer('reps').notNull(),
+  /** RPE on the 6–10 Borg/RPE scale */
+  rpe: real('rpe'),
+  isWarmup: integer('is_warmup', { mode: 'boolean' }).default(false),
+  /** Epley e1RM estimate cached at insert; recomputed by engine in Phase 2 */
+  e1rmKg: real('e1rm_kg'),
+  /** Raw strength stress component — written by engine */
+  stressScore: real('stress_score'),
+});
+
+// ---------------------------------------------------------------------------
+// endurance_segment
+// ---------------------------------------------------------------------------
+
+export const enduranceSegment = sqliteTable('endurance_segment', {
+  id: text('id').primaryKey(),
+  workoutId: text('workout_id')
+    .notNull()
+    .references(() => workout.id, { onDelete: 'cascade' }),
+  activityType: text('activity_type', {
+    enum: ['run', 'erg', 'conditioning', 'sled', 'other'],
+  }).notNull(),
+  distanceM: real('distance_m'),
+  durationS: integer('duration_s').notNull(),
+  avgHr: integer('avg_hr'),
+  /** Intensity factor resolved from HR or pace; used by HSS engine */
+  intensityFactor: real('intensity_factor'),
+  /** Raw endurance stress component — written by engine */
+  stressScore: real('stress_score'),
+});
+
+// ---------------------------------------------------------------------------
+// load_daily
+// ---------------------------------------------------------------------------
+
+export const loadDaily = sqliteTable(
+  'load_daily',
+  {
+    /** YYYY-MM-DD primary key */
+    localDate: text('local_date').primaryKey(),
+    dayHss: real('day_hss').default(0),
+    atl: real('atl').default(0),
+    ctl: real('ctl').default(0),
+    tsb: real('tsb').default(0),
+    readinessBand: text('readiness_band', {
+      enum: ['green', 'amber', 'red', 'calibrating'],
+    }),
+    updatedAt: integer('updated_at', { mode: 'timestamp' }).default(sql`(unixepoch())`),
+  },
+  (table) => ({
+    /**
+     * Explicit named index for the engine's date-range queries.
+     * Required even though localDate is the PK — see RESEARCH Pitfall 6.
+     */
+    dateIdx: index('load_daily_date_idx').on(table.localDate),
+  }),
+);
