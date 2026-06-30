@@ -19,5 +19,5 @@ export { db, type DB } from './client';
 // Idempotent exercise seed
 export { STARTER_EXERCISES, seedExercises } from './seed';
 
-// Generated drizzle migrations — exported after drizzle-kit generate (Task 3)
-// export { migrations } from './migrations';
+// Generated drizzle migrations for useMigrations() hook in _layout.tsx
+export { migrations } from './migrations';
