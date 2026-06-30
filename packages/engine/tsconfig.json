@@ -1,0 +1,16 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "rootDir": "src",
+    "exactOptionalPropertyTypes": true,
+    "noUncheckedIndexedAccess": true,
+    "paths": {
+      "@apsis/shared": ["../shared/src/index.ts"]
+    }
+  },
+  "references": [
+    { "path": "../shared" }
+  ],
+  "include": ["src"]
+}

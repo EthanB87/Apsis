@@ -1,0 +1,12 @@
+.planning/
+
+# Dependencies
+node_modules/
+
+# TypeScript build artifacts (composite project emit)
+dist/
+*.tsbuildinfo
+
+# OS
+.DS_Store
+Thumbs.db

@@ -8,6 +8,9 @@
     "packages/*"
   ],
   "scripts": {
-    "typecheck": "tsc --build tsconfig.json --noEmit"
+    "typecheck": "tsc --build tsconfig.json"
+  },
+  "devDependencies": {
+    "typescript": "6.0.3"
   }
 }
