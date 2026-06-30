@@ -1,4 +1,6 @@
-.planning/
+# GSD planning artifacts ARE tracked (roadmap, state, phase context/plans).
+# Only the research web-fetch cache is transient.
+.planning/research/.cache/
 
 # Dependencies
 node_modules/
