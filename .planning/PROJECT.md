@@ -67,19 +67,20 @@ and a readiness band — fully offline. If everything else fails, this must work
 
 ## Key Decisions
 
-| Decision | Rationale | Outcome |
-|----------|-----------|---------|
-| Build the pure-TS engine first (Phase 0) before any UI | De-risks the entire thesis; the HSS model is the moat | — Pending |
-| BUILD.md wins over the docx for all build decisions | One authoritative executable plan prevents scope drift | — Pending |
-| iOS-first, HealthKit-only for v1.0 | Apple integration is straightforward; Garmin/Android deferred | — Pending |
-| Cut nutrition entirely from v1.0 | Largest scope item; protects the ~4-week App Store window | — Pending |
-| Monorepo: apps/mobile + packages/engine, db, shared | Isolates the testable IP; keeps build tooling simple | — Pending |
+| Decision                                               | Rationale                                                     | Outcome   |
+| ------------------------------------------------------ | ------------------------------------------------------------- | --------- |
+| Build the pure-TS engine first (Phase 0) before any UI | De-risks the entire thesis; the HSS model is the moat         | — Pending |
+| BUILD.md wins over the docx for all build decisions    | One authoritative executable plan prevents scope drift        | — Pending |
+| iOS-first, HealthKit-only for v1.0                     | Apple integration is straightforward; Garmin/Android deferred | — Pending |
+| Cut nutrition entirely from v1.0                       | Largest scope item; protects the ~4-week App Store window     | — Pending |
+| Monorepo: apps/mobile + packages/engine, db, shared    | Isolates the testable IP; keeps build tooling simple          | — Pending |
 
 ## Evolution
 
 This document evolves at phase transitions and milestone boundaries.
 
 **After each phase transition** (via `/gsd-transition`):
+
 1. Requirements invalidated? → Move to Out of Scope with reason
 2. Requirements validated? → Move to Validated with phase reference
 3. New requirements emerged? → Add to Active
@@ -87,10 +88,12 @@ This document evolves at phase transitions and milestone boundaries.
 5. "What This Is" still accurate? → Update if drifted
 
 **After each milestone** (via `/gsd-complete-milestone`):
+
 1. Full review of all sections
 2. Core Value check — still the right priority?
 3. Audit Out of Scope — reasons still valid?
 4. Update Context with current state
 
 ---
-*Last updated: 2026-06-29 after initialization*
+
+_Last updated: 2026-06-29 after initialization_
