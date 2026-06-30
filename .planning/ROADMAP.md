@@ -58,10 +58,14 @@ Plans:
   3. Calibration test asserts a 60-min threshold run HSS ≈ a hard 5×5 squat session HSS within a chosen ratio
   4. Cold-start test asserts a single moderate session does NOT produce a red band (calibrating state)
   5. Zero runtime deps in `packages/engine`; `tsc --noEmit` and `vitest` both green; `packages/engine/README.md` documents each formula + constant
-**Plans**: TBD (estimate 2–3)
+**Plans**: 5 plans
 
 Plans:
-- [ ] 02-01: TBD at plan time
+- [ ] 02-01-PLAN.md — Shared engine types + DEFAULT_CONFIG/CONFIG_VERSION + epley1RM helper (Wave 1)
+- [ ] 02-02-PLAN.md — Add load_daily.config_version column + generate append-only migration (Wave 1)
+- [ ] 02-03-PLAN.md — strengthStress/enduranceStress/sessionHSS/dailyHSS + calibration tuning (Wave 2)
+- [ ] 02-04-PLAN.md — computeLoadTrend + readinessBand/computeReadiness + cold-start (Wave 2)
+- [ ] 02-05-PLAN.md — Engine barrel + README + acceptance gate (Wave 3)
 
 ### Phase 3: Core Logger UI — Lifting + Run + Home Screen
 **Goal**: The minimum lovable product — log a lift and a run fully offline at Strong/Hevy entry speed, see session HSS on save, and watch the home-screen readiness band + load trend update via the write→recompute→useLiveQuery chain.
@@ -115,7 +119,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation — Monorepo + Expo + DB | 4/4 | Complete | 2026-06-30 |
-| 2. HSS Engine | 0/TBD | Not started | - |
+| 2. HSS Engine | 0/5 | Not started | - |
 | 3. Core Logger UI | 0/TBD | Not started | - |
 | 4. HealthKit Integration | 0/TBD | Not started | - |
 | 5. Polish + App Store Submission | 0/TBD | Not started | - |
