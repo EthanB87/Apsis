@@ -63,7 +63,15 @@ Plans:
   3. Given multiple sessions logged on the same day, the engine returns a per-day HSS that applies a double-session penalty when sessionCount > 1.
   4. Given a rolling window of daily HSS values, the engine returns ATL/CTL/TSB over a 28-day window and derives a green/amber/red readiness band from TSB and CTL — and a single cold-start session (< 14 days of history or low CTL) never produces a red band.
   5. `packages/engine` has zero runtime dependencies, never calls `Date.now()` internally (time is always passed in), and its ≥20 vitest unit tests pass via `pnpm --filter @apsis/engine test`.
-**Plans**: TBD
+**Plans**: 6 plans
+
+Plans:
+- [ ] 02-01-PLAN.md — Foundation: shared engine types + EngineConfig, DEFAULT_CONFIG constants, clamp-and-warn helper, @apsis/shared wiring (Wave 1)
+- [ ] 02-02-PLAN.md — Strength HSS: strengthStress/strengthStressDetailed + Epley estimateE1RM, warmup exclusion, leg multiplier (Wave 2)
+- [ ] 02-03-PLAN.md — Endurance HSS: enduranceStress + IF helpers (ifFromPace/ifFromHR/resolveIF), 60-min/IF-1.0 ≈100 anchor (Wave 2)
+- [ ] 02-04-PLAN.md — Session + daily rollup: sessionHSS (version-stamped) + dailyHSS with double-session penalty (Wave 3)
+- [ ] 02-05-PLAN.md — Trend + readiness: computeLoadTrend/Series (EWMA ATL/CTL/TSB) + readinessBand with cold-start 'calibrating' (Wave 2)
+- [ ] 02-06-PLAN.md — Barrel + calibration golden (kStrength tuning) + README + ≥20-test/purity verification (Wave 4)
 **UI hint**: no (pure TS, no screens)
 
 ---
@@ -132,7 +140,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 01. Foundation | 4/4 | Complete | 2026-07-02 |
-| 02. HSS Engine | 0/TBD | Not started | - |
+| 02. HSS Engine | 0/6 | Not started | - |
 | 03. Onboarding & Lifting Logger | 0/TBD | Not started | - |
 | 04. Run Logger & Home Dashboard | 0/TBD | Not started | - |
 | 05. HealthKit Integration | 0/TBD | Not started | - |
