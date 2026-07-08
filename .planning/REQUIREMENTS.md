@@ -21,7 +21,7 @@ Requirements for the v1.0 release. Each maps to exactly one roadmap phase.
 ### HSS Engine (the moat)
 
 - [x] **ENG-01**: Engine computes per-session strength HSS from sets (load, reps, RPE; warmups excluded)
-- [ ] **ENG-02**: Engine computes per-session endurance HSS from segments (distance/duration/pace, optional HR)
+- [x] **ENG-02**: Engine computes per-session endurance HSS from segments (distance/duration/pace, optional HR)
 - [ ] **ENG-03**: Engine computes per-day HSS including the double-session penalty
 - [ ] **ENG-04**: Engine computes a rolling load trend (ATL / CTL / TSB) over a 28-day window
 - [ ] **ENG-05**: Engine derives a readiness band (green / amber / red) from TSB and CTL
@@ -117,7 +117,7 @@ Which phase covers which requirement. Populated during roadmap creation.
 | DATA-02 | Phase 01 | Complete |
 | DATA-03 | Phase 01 | Complete |
 | ENG-01 | Phase 02 | Complete |
-| ENG-02 | Phase 02 | Pending |
+| ENG-02 | Phase 02 | Complete |
 | ENG-03 | Phase 02 | Pending |
 | ENG-04 | Phase 02 | Pending |
 | ENG-05 | Phase 02 | Pending |
