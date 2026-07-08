@@ -70,6 +70,17 @@ describe('strengthStress — clamp/skip robustness (D-15)', () => {
     expect(strengthStress(sets)).toBe(0);
   });
 
+  it('skips a set with e1rmKg: NaN, records a warning, and returns a finite (non-NaN) result (CR-02)', () => {
+    const sets = [
+      { loadKg: 100, e1rmKg: NaN, reps: 5, rpe: 10, isLowerBody: false, isWarmup: false },
+    ];
+    const detail = strengthStressDetailed(sets);
+    expect(detail.warnings.some((w) => w.includes('e1rmKg'))).toBe(true);
+    expect(Number.isFinite(detail.ss)).toBe(true);
+    expect(Number.isNaN(detail.ss)).toBe(false);
+    expect(strengthStress(sets)).toBe(0);
+  });
+
   it('never throws on a mixed batch of valid, warmup, clamped, and skip-worthy sets', () => {
     const sets = [
       { loadKg: 100, e1rmKg: 200, reps: 5, rpe: 10, isLowerBody: false, isWarmup: false },

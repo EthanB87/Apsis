@@ -49,7 +49,10 @@ export function strengthStressDetailed(
     const loadClamp = clampRange(set.loadKg, 0, Number.POSITIVE_INFINITY, 'loadKg');
     if (loadClamp.warning) warnings.push(loadClamp.warning);
 
-    if (set.e1rmKg <= 0) {
+    // `!(set.e1rmKg > 0)` (not `set.e1rmKg <= 0`) is deliberate: `NaN <= 0` is `false` in
+    // JavaScript, so a raw `<= 0` check lets a NaN e1RM silently fall through to the
+    // division below and poison `ss` with no warning. `!(x > 0)` is `true` for NaN.
+    if (!(set.e1rmKg > 0)) {
       warnings.push(`e1rmKg ${set.e1rmKg} <= 0, skipping set`);
       continue;
     }
