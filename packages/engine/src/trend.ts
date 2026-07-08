@@ -30,7 +30,11 @@ function ewmaFold(dailyHSSByDay: number[], days: number): number {
   const lambda = 1 - Math.exp(-1 / days);
   let value = 0;
   for (const todayHSS of dailyHSSByDay) {
-    value = value + lambda * (todayHSS - value);
+    // Non-finite daily input (NaN/Infinity, e.g. from a bad persisted row) is treated as 0
+    // rather than corrupting `value` — without this, a single bad day would NaN every
+    // subsequent fold step for the rest of the array (CR-03).
+    const safeToday = Number.isFinite(todayHSS) ? todayHSS : 0;
+    value = value + lambda * (safeToday - value);
   }
   return value;
 }
@@ -66,7 +70,16 @@ export function readinessBand(
 ): ReadinessBand {
   const config = mergeConfig(cfg);
 
-  if (opts.historyDays < config.calibratingMinHistoryDays || ctl < config.calibratingCtlFloor) {
+  // Non-finite tsb/ctl (e.g. from an upstream NaN that slipped through) must fail toward
+  // 'calibrating', never fall through to the ratio branches below — `NaN < x` is always
+  // `false`, so without this explicit check the calibrating gate would not trigger and the
+  // function would fail open to 'green' via the final `return 'green'` (CR-03).
+  if (
+    !Number.isFinite(tsb) ||
+    !Number.isFinite(ctl) ||
+    opts.historyDays < config.calibratingMinHistoryDays ||
+    ctl < config.calibratingCtlFloor
+  ) {
     return 'calibrating';
   }
 
@@ -100,7 +113,11 @@ export function computeLoadTrendSeries(
   let ctl = 0;
 
   for (let i = 0; i < dailyHSSByDay.length; i++) {
-    const todayHSS = dailyHSSByDay[i] ?? 0;
+    const rawToday = dailyHSSByDay[i] ?? 0;
+    // Same non-finite guard as `ewmaFold` (CR-03) — this fold is inlined separately (see
+    // WR-01) so it needs the same protection against a single bad day permanently NaN-ing
+    // every subsequent point in the series.
+    const todayHSS = Number.isFinite(rawToday) ? rawToday : 0;
     atl = atl + atlLambda * (todayHSS - atl);
     ctl = ctl + ctlLambda * (todayHSS - ctl);
     const tsb = ctl - atl;

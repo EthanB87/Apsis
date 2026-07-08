@@ -40,6 +40,19 @@ describe('computeLoadTrend', () => {
     const { atl, ctl, tsb } = computeLoadTrend(series);
     expect(tsb).toBe(ctl - atl);
   });
+
+  it('does not let a single non-finite day permanently poison every later day (CR-03)', () => {
+    const clean = [80, 100, 90, 60, 110, 70, 100];
+    const withBadDay = [80, 100, NaN, 60, 110, 70, 100];
+    const cleanResult = computeLoadTrend(clean);
+    const poisonedResult = computeLoadTrend(withBadDay);
+    expect(Number.isFinite(poisonedResult.atl)).toBe(true);
+    expect(Number.isFinite(poisonedResult.ctl)).toBe(true);
+    expect(Number.isFinite(poisonedResult.tsb)).toBe(true);
+    // The NaN day is treated as 0, so results differ from the all-clean series, but neither
+    // is NaN and neither throws.
+    expect(poisonedResult.atl).not.toBe(cleanResult.atl);
+  });
 });
 
 describe('computeLoadTrendSeries', () => {
@@ -61,6 +74,17 @@ describe('computeLoadTrendSeries', () => {
     expect(points).toHaveLength(3);
     for (const point of points) {
       expect(typeof point.band).toBe('string');
+    }
+  });
+
+  it('keeps every point finite even when a middle day is NaN, instead of poisoning all later points (CR-03)', () => {
+    const series = [80, 100, NaN, 60, 110, 70, 100];
+    const points = computeLoadTrendSeries(series);
+    expect(points).toHaveLength(series.length);
+    for (const point of points) {
+      expect(Number.isFinite(point.atl)).toBe(true);
+      expect(Number.isFinite(point.ctl)).toBe(true);
+      expect(Number.isFinite(point.tsb)).toBe(true);
     }
   });
 });

@@ -35,4 +35,13 @@ describe('readinessBand', () => {
     expect(points[0].band).toBe('calibrating');
     expect(points[0].band).not.toBe('red');
   });
+
+  it('fails toward calibrating (not green) when tsb/ctl are NaN, even with plenty of history (CR-03)', () => {
+    expect(readinessBand(NaN, NaN, { historyDays: 30 })).toBe('calibrating');
+    expect(readinessBand(NaN, NaN, { historyDays: 30 })).not.toBe('green');
+  });
+
+  it('fails toward calibrating (not green) when only tsb is non-finite', () => {
+    expect(readinessBand(Infinity, 20, { historyDays: 30 })).toBe('calibrating');
+  });
 });

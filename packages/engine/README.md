@@ -119,6 +119,10 @@ lambda = 1 - exp(-1 / days)          // days = atlDays or ctlDays
 value  = value + lambda * (todayHSS - value)
 ```
 
+A non-finite `todayHSS` (`NaN`/`Infinity`, e.g. from a bad persisted row) is treated as `0`
+for that day's fold step rather than corrupting `value` — without this, a single bad day
+would `NaN` every subsequent day's ATL/CTL for the rest of the series.
+
 ```
 TSB = CTL - ATL
 ```
@@ -134,7 +138,8 @@ output with no trend math duplicated in the UI layer.
 
 ```
 ratio = TSB / CTL
-if (historyDays < calibratingMinHistoryDays || ctl < calibratingCtlFloor) → 'calibrating'
+if (!isFinite(tsb) || !isFinite(ctl) ||
+    historyDays < calibratingMinHistoryDays || ctl < calibratingCtlFloor) → 'calibrating'
 else if (ratio < bandRedRatio)   → 'red'
 else if (ratio < bandAmberRatio) → 'amber'
 else                             → 'green'
@@ -143,7 +148,10 @@ else                             → 'green'
 The `'calibrating'` gate (D-01/D-02) is checked before any red/amber/green branch, so it
 always wins — this is what guarantees a brand-new user (or a user returning from a layoff,
 via the CTL floor) is never shown a misleading band, and also protects the ratio from a
-near-zero `ctl` denominator.
+near-zero `ctl` denominator. The gate also fails toward `'calibrating'` (never falls through
+to `'green'`) when `tsb`/`ctl` themselves are non-finite — `NaN < x` is always `false`, so
+without this explicit check a corrupted upstream value would silently fail open to
+`'green'` instead of surfacing as a signal the engine lost track.
 
 ## `DEFAULT_CONFIG` constants (`packages/engine/src/config.ts`)
 
