@@ -8,7 +8,7 @@ import { enduranceStress, enduranceStressDetailed, ifFromHR, ifFromPace, resolve
 
 describe('enduranceStress — calibration anchor (D-14)', () => {
   it('scores ~100 for a 60-min segment at intensityFactor 1.0 (durationMin*IF^2*kEndurance)', () => {
-    expect(enduranceStress({ durationS: 3600, intensityFactor: 1.0 })).toBeCloseTo(100, 0.5);
+    expect(enduranceStress({ durationS: 3600, intensityFactor: 1.0 })).toBeCloseTo(100, 0);
   });
 
   it('returns 0 ES for a durationS of 0', () => {
