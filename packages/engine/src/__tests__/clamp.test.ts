@@ -46,4 +46,18 @@ describe('clampRange', () => {
     expect(low.value).toBe(1);
     expect(low.warning).toBeDefined();
   });
+
+  it('coerces undefined (a non-number sneaking past compile-time types) to a finite clamped value with a warning', () => {
+    const result = clampRange(undefined as unknown as number, 1, 10, 'rpe');
+    expect(Number.isFinite(result.value)).toBe(true);
+    expect(result.value).toBe(1);
+    expect(result.warning).toBeDefined();
+  });
+
+  it('coerces a non-numeric string to a finite clamped value with a warning', () => {
+    const result = clampRange('not-a-number' as unknown as number, 1, 10, 'rpe');
+    expect(Number.isFinite(result.value)).toBe(true);
+    expect(result.value).toBe(1);
+    expect(result.warning).toBeDefined();
+  });
 });

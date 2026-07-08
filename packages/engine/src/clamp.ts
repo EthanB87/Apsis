@@ -13,12 +13,17 @@ export interface ClampResult {
 
 /**
  * Clamp `value` into `[min, max]`, returning a warning string when clamping occurred.
- * Non-finite input (NaN, Infinity, -Infinity) is treated as out-of-range and coerced to a
- * finite clamped value — NaN is treated as below-min. Never throws.
+ * `NaN` and non-numeric input (`undefined`, a string that sneaks past TypeScript's
+ * compile-time-only types — e.g. from the op-sqlite row boundary or a JSON.parse result)
+ * are treated as invalid and coerced to `min` with a warning: neither has a meaningful
+ * sign, and `undefined < min` / `undefined > max` both silently evaluate to `false`, which
+ * previously let `undefined` flow through unclamped and unwarned. `Infinity`/`-Infinity`
+ * are numeric and directional, so they fall through to the ordinary `< min` / `> max`
+ * comparisons below and clamp to `max`/`min` respectively as before. Never throws.
  */
 export function clampRange(value: number, min: number, max: number, label: string): ClampResult {
-  if (Number.isNaN(value)) {
-    return { value: min, warning: `${label} ${value} below min ${min}, clamped` };
+  if (typeof value !== 'number' || Number.isNaN(value)) {
+    return { value: min, warning: `${label} ${value} is not a finite number, clamped to ${min}` };
   }
   if (value < min) {
     return { value: min, warning: `${label} ${value} below min ${min}, clamped` };
