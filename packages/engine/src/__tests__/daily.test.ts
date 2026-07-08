@@ -29,4 +29,11 @@ describe('dailyHSS — sum + double-session penalty (ENG-03)', () => {
     expect(() => dailyHSS([])).not.toThrow();
     expect(() => dailyHSS([NaN])).not.toThrow();
   });
+
+  it('treats a non-finite session score as 0 rather than returning NaN (WR-02)', () => {
+    expect(Number.isFinite(dailyHSS([NaN]))).toBe(true);
+    expect(dailyHSS([NaN])).toBe(0);
+    expect(dailyHSS([50, NaN])).toBeCloseTo(50 * 1.1, 5);
+    expect(Number.isFinite(dailyHSS([50, Infinity]))).toBe(true);
+  });
 });

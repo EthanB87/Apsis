@@ -106,7 +106,10 @@ if (sessionScores.length > 1) dailyHSS *= doublePenalty
 ```
 
 Reflects the added systemic cost of training twice in one day (ENG-03). An empty day
-returns `0`; a single session gets no penalty.
+returns `0`; a single session gets no penalty. Non-finite entries in `sessionScores`
+(`NaN`/`Infinity`) are treated as `0` rather than corrupting the day total — `sessionScores`
+is a public parameter, not an internal detail guaranteed to already be clamped, so `dailyHSS`
+defends its own input per D-15 rather than trusting the caller.
 
 ### Rolling load trend (ATL / CTL / TSB)
 
