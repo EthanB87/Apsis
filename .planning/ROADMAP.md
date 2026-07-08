@@ -26,7 +26,7 @@ HealthKit and submission are additive layers on top of a working core.
 Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 01: Foundation** - Monorepo, pure-TS package skeletons, drizzle schema + migrations, seeded exercise library, Expo boot sequence — COMPLETE
-- [ ] **Phase 02: HSS Engine** - Pure-TS training-load engine (strength/endurance HSS, day HSS, ATL/CTL/TSB trend, readiness band), ≥20 vitest tests — the moat
+- [x] **Phase 02: HSS Engine** - Pure-TS training-load engine (strength/endurance HSS, day HSS, ATL/CTL/TSB trend, readiness band), ≥20 vitest tests — the moat (completed 2026-07-08)
 - [ ] **Phase 03: Onboarding & Lifting Logger** - Profile capture + a Strong/Hevy-speed lifting logger with live HSS feedback
 - [ ] **Phase 04: Run Logger & Home Dashboard** - Run/conditioning logger plus the home screen readiness band and 28-day trend
 - [ ] **Phase 05: HealthKit Integration** - Import runs/HR/bodyweight, write logged sessions back, dedupe against manual entries — lowest priority, first to cut
@@ -71,7 +71,7 @@ Plans:
   4. Given a rolling window of daily HSS values, the engine returns ATL/CTL/TSB over a 28-day window and derives a green/amber/red readiness band from TSB and CTL — and a single cold-start session (< 14 days of history or low CTL) never produces a red band.
   5. `packages/engine` has zero runtime dependencies, never calls `Date.now()` internally (time is always passed in), and its ≥20 vitest unit tests pass via `pnpm --filter @apsis/engine test`.
 
-**Plans**: 5/6 plans executed
+**Plans**: 6/6 plans complete
 
 Plans:
 **Wave 1**
@@ -90,7 +90,7 @@ Plans:
 
 **Wave 4** *(blocked on Wave 3 completion)*
 
-- [ ] 02-06-PLAN.md — Barrel + calibration golden (kStrength tuning) + README + ≥20-test/purity verification (Wave 4)
+- [x] 02-06-PLAN.md — Barrel + calibration golden (kStrength tuning) + README + ≥20-test/purity verification (Wave 4)
 
 **UI hint**: no (pure TS, no screens)
 
@@ -172,7 +172,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 01. Foundation | 4/4 | Complete | 2026-07-02 |
-| 02. HSS Engine | 5/6 | In Progress|  |
+| 02. HSS Engine | 6/6 | Complete   | 2026-07-08 |
 | 03. Onboarding & Lifting Logger | 0/TBD | Not started | - |
 | 04. Run Logger & Home Dashboard | 0/TBD | Not started | - |
 | 05. HealthKit Integration | 0/TBD | Not started | - |
