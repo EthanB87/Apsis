@@ -17,7 +17,7 @@ and a readiness band — fully offline. If everything else fails, this must work
 
 ### Validated
 
-(None yet — ship to validate)
+- [x] Pure-TS engine computes HSS + readiness on-device, fully unit-tested (the moat) — Validated in Phase 02: HSS Engine (61 vitest tests, calibration anchored at 60-min threshold run ≈ 100 HSS, cold-start 'calibrating' band)
 
 ### Active
 
@@ -25,7 +25,6 @@ and a readiness band — fully offline. If everything else fails, this must work
 - [ ] User can log a run / conditioning session (distance, duration, pace, HR if available)
 - [ ] User sees a per-session and per-day HSS, plus a readiness band (green/amber/red)
 - [ ] User sees a 14–30 day load / readiness trend on the home screen
-- [ ] Pure-TS engine computes HSS + readiness on-device, fully unit-tested (the moat)
 - [ ] All logging works fully offline; local SQLite is the source of truth
 - [ ] Onboarding captures the engine's inputs (sex, bodyweight, thresholds)
 - [ ] Apple HealthKit import for runs/HR/weight + push logged workouts back (lowest-priority;
@@ -96,4 +95,4 @@ This document evolves at phase transitions and milestone boundaries.
 
 ---
 
-_Last updated: 2026-06-29 after initialization_
+_Last updated: 2026-07-08 after Phase 02 (HSS Engine) completion — engine shipped and verified; next: Phase 03 Onboarding & Lifting Logger_
