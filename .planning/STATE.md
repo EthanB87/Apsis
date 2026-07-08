@@ -2,18 +2,18 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-current_phase: 2
+current_phase: 02
 current_phase_name: HSS Engine
 status: executing
 stopped_at: Phase 2 context gathered
-last_updated: "2026-07-08T21:08:18.685Z"
-last_activity: 2026-07-02
-last_activity_desc: ROADMAP.md reconstructed and written; REQUIREMENTS.md
+last_updated: "2026-07-08T22:47:38.595Z"
+last_activity: 2026-07-08
+last_activity_desc: Phase 02 execution started
 progress:
   total_phases: 6
   completed_phases: 0
-  total_plans: 0
-  completed_plans: 0
+  total_plans: 6
+  completed_plans: 1
   percent: 0
 ---
 
@@ -25,16 +25,16 @@ See: .planning/PROJECT.md (updated 2026-06-29)
 
 **Core value:** Log lifting + running in one app, instantly see one honest combined
 training-load number (HSS) and a readiness band — fully offline.
-**Current focus:** Phase 01 (Foundation) is complete and committed. Next up: Phase 02 —
+**Current focus:** Phase 02 — HSS Engine
 the pure-TS HSS engine (the moat), which the engine's own `index.ts` explicitly defers to
 "Phase 2."
 
 ## Current Position
 
-Phase: 2 of 6 (HSS Engine) — Phase 1 (Foundation) complete
-Plan: 0 of TBD in current phase (not yet planned)
+Phase: 02 (HSS Engine) — EXECUTING
+Plan: 2 of 6
 Status: Ready to execute
-Last activity: 2026-07-02 — ROADMAP.md reconstructed and written; REQUIREMENTS.md
+Last activity: 2026-07-08 — Phase 02 execution started
 traceability filled; 100% of the 39 pending v1.0 requirements mapped to Phases 02–06.
 
 Progress: [██░░░░░░░░] 17% (1/6 phases complete)
@@ -60,6 +60,7 @@ Progress: [██░░░░░░░░] 17% (1/6 phases complete)
 - Trend: N/A — insufficient instrumented data
 
 *Updated after each plan completion*
+| Phase 02 P01 | 5min | 3 tasks | 6 files |
 
 ## Accumulated Context
 
@@ -78,6 +79,9 @@ Recent decisions affecting current work:
 - [Roadmap]: ROADMAP.md rebuilt 2026-07-02 after the original was lost (`.planning/` was
   gitignored). Phase numbering starts at 01 (Foundation, complete) and continues 02–06;
   this is a reconstruction of the same v1.0 milestone, not a new one.
+
+- [Phase 02]: EngineConfig interface lives in @apsis/shared; DEFAULT_CONFIG value lives in packages/engine to avoid circular workspace dependency
+- [Phase 02]: kEndurance set to 1.6667 (D-14 anchor); kStrength left at 2.0 starting guess for plan 02-06 to tune
 
 ### Pending Todos
 
@@ -99,7 +103,7 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-07-08T20:45:16.872Z
+Last session: 2026-07-08T22:46:35.590Z
 Stopped at: Phase 2 context gathered
 reflect Phase 01 complete / Phase 02 ready to plan.
 Resume file: .planning/phases/02-hss-engine/02-CONTEXT.md

@@ -26,7 +26,7 @@ Requirements for the v1.0 release. Each maps to exactly one roadmap phase.
 - [ ] **ENG-04**: Engine computes a rolling load trend (ATL / CTL / TSB) over a 28-day window
 - [ ] **ENG-05**: Engine derives a readiness band (green / amber / red) from TSB and CTL
 - [ ] **ENG-06**: Engine handles cold-start (<14 days or low CTL) without producing a misleading red band
-- [ ] **ENG-07**: Engine is pure TS (time passed in, no I/O) and covered by ≥20 vitest unit tests
+- [x] **ENG-07**: Engine is pure TS (time passed in, no I/O) and covered by ≥20 vitest unit tests
 
 ### Onboarding & Profile
 
@@ -122,7 +122,7 @@ Which phase covers which requirement. Populated during roadmap creation.
 | ENG-04 | Phase 02 | Pending |
 | ENG-05 | Phase 02 | Pending |
 | ENG-06 | Phase 02 | Pending |
-| ENG-07 | Phase 02 | Pending |
+| ENG-07 | Phase 02 | Complete |
 | ONB-01 | Phase 03 | Pending |
 | ONB-02 | Phase 03 | Pending |
 | ONB-03 | Phase 03 | Pending |
@@ -157,10 +157,12 @@ Which phase covers which requirement. Populated during roadmap creation.
 | REL-04 | Phase 06 | Pending |
 
 **Coverage:**
+
 - v1 requirements: 42 total (3 complete via Phase 01, 39 pending). Note: an earlier
   version of this table said "37 total / 34 pending" — that was a stale placeholder left
   over from initial requirements definition; a full recount of every checklist item above
   gives 42.
+
 - Mapped to phases: 42/42 (100%)
 - Unmapped: 0
 
