@@ -5,15 +5,15 @@ milestone_name: milestone
 current_phase: 02
 current_phase_name: HSS Engine
 status: executing
-stopped_at: Completed 02-03-PLAN.md
-last_updated: "2026-07-08T22:57:13.883Z"
+stopped_at: Completed 02-05-PLAN.md
+last_updated: "2026-07-08T23:01:57.427Z"
 last_activity: 2026-07-08
 last_activity_desc: Phase 02 execution started
 progress:
   total_phases: 6
   completed_phases: 0
   total_plans: 6
-  completed_plans: 3
+  completed_plans: 4
   percent: 0
 ---
 
@@ -32,7 +32,7 @@ the pure-TS HSS engine (the moat), which the engine's own `index.ts` explicitly 
 ## Current Position
 
 Phase: 02 (HSS Engine) — EXECUTING
-Plan: 4 of 6
+Plan: 5 of 6
 Status: Ready to execute
 Last activity: 2026-07-08 — Phase 02 execution started
 traceability filled; 100% of the 39 pending v1.0 requirements mapped to Phases 02–06.
@@ -63,6 +63,7 @@ Progress: [██░░░░░░░░] 17% (1/6 phases complete)
 | Phase 02 P01 | 5min | 3 tasks | 6 files |
 | Phase 02 P02 | 8min | 2 tasks | 2 files |
 | Phase 02 P03 | 6min | 2 tasks | 2 files |
+| Phase 02 P05 | 6min | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -88,6 +89,8 @@ Recent decisions affecting current work:
 - [Phase 02]: Reps clamped to 0..100 (MAX_REPS local const); loadKg only floored at 0 with no upper bound — Matches the plan's explicit clamp-range instructions for strengthStressDetailed
 - [Phase 02]: resolveIF gates HR and pace pairs independently (both fields finite+positive) before deriving an IF, preventing a partial/garbage derivation from a single valid field paired with a missing or zero counterpart
 - [Phase 02]: ifFromHR/ifFromPace each independently guard against a non-positive denominator (returning neutral 1.0), so they remain safe to call directly, not only through resolveIF's gating
+- [Phase 02]: readinessBand signature is (tsb, ctl, opts: { historyDays }, cfg?) per D-03 approved deviation from BUILD.md's 3-band signature
+- [Phase 02]: EWMA convergence test extended to 150 simulated days so CTL's 28-day time constant fully settles within tolerance -- real EWMA math, not a defect
 
 ### Pending Todos
 
@@ -109,7 +112,7 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-07-08T22:57:13.872Z
-Stopped at: Completed 02-03-PLAN.md
+Last session: 2026-07-08T23:01:57.419Z
+Stopped at: Completed 02-05-PLAN.md
 reflect Phase 01 complete / Phase 02 ready to plan.
 Resume file: None

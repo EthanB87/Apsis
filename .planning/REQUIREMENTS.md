@@ -23,9 +23,9 @@ Requirements for the v1.0 release. Each maps to exactly one roadmap phase.
 - [x] **ENG-01**: Engine computes per-session strength HSS from sets (load, reps, RPE; warmups excluded)
 - [x] **ENG-02**: Engine computes per-session endurance HSS from segments (distance/duration/pace, optional HR)
 - [ ] **ENG-03**: Engine computes per-day HSS including the double-session penalty
-- [ ] **ENG-04**: Engine computes a rolling load trend (ATL / CTL / TSB) over a 28-day window
-- [ ] **ENG-05**: Engine derives a readiness band (green / amber / red) from TSB and CTL
-- [ ] **ENG-06**: Engine handles cold-start (<14 days or low CTL) without producing a misleading red band
+- [x] **ENG-04**: Engine computes a rolling load trend (ATL / CTL / TSB) over a 28-day window
+- [x] **ENG-05**: Engine derives a readiness band (green / amber / red) from TSB and CTL
+- [x] **ENG-06**: Engine handles cold-start (<14 days or low CTL) without producing a misleading red band
 - [x] **ENG-07**: Engine is pure TS (time passed in, no I/O) and covered by ≥20 vitest unit tests
 
 ### Onboarding & Profile
@@ -119,9 +119,9 @@ Which phase covers which requirement. Populated during roadmap creation.
 | ENG-01 | Phase 02 | Complete |
 | ENG-02 | Phase 02 | Complete |
 | ENG-03 | Phase 02 | Pending |
-| ENG-04 | Phase 02 | Pending |
-| ENG-05 | Phase 02 | Pending |
-| ENG-06 | Phase 02 | Pending |
+| ENG-04 | Phase 02 | Complete |
+| ENG-05 | Phase 02 | Complete |
+| ENG-06 | Phase 02 | Complete |
 | ENG-07 | Phase 02 | Complete |
 | ONB-01 | Phase 03 | Pending |
 | ONB-02 | Phase 03 | Pending |
