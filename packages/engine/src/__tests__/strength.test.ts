@@ -12,11 +12,11 @@ describe('estimateE1RM', () => {
 });
 
 describe('strengthStress — golden single-set cases', () => {
-  it('computes SS for a single working set: (100/200)*5*1.0 * kStrength(2.0) = 5.0', () => {
+  it('computes SS for a single working set: (100/200)*5*1.0 * kStrength(4.4) = 11.0', () => {
     const sets = [
       { loadKg: 100, e1rmKg: 200, reps: 5, rpe: 10, isLowerBody: false, isWarmup: false },
     ];
-    expect(strengthStress(sets)).toBeCloseTo(5.0, 5);
+    expect(strengthStress(sets)).toBeCloseTo(11.0, 5);
   });
 
   it('excludes warmup sets entirely from the session score', () => {
@@ -26,11 +26,11 @@ describe('strengthStress — golden single-set cases', () => {
     expect(strengthStress(sets)).toBe(0);
   });
 
-  it('amplifies lower-body sets by legMultiplier (default 1.3): 2.5 * 1.3 * 2.0 = 6.5', () => {
+  it('amplifies lower-body sets by legMultiplier (default 1.3): 2.5 * 1.3 * kStrength(4.4) = 14.3', () => {
     const sets = [
       { loadKg: 100, e1rmKg: 200, reps: 5, rpe: 10, isLowerBody: true, isWarmup: false },
     ];
-    expect(strengthStress(sets)).toBeCloseTo(6.5, 5);
+    expect(strengthStress(sets)).toBeCloseTo(14.3, 5);
   });
 
   it('returns 0 for an empty sets array with no warnings', () => {

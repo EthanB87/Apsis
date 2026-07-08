@@ -11,8 +11,12 @@ import type { EngineConfig } from '@apsis/shared';
 /**
  * Literature-anchored starting constants for the HSS formulas (BUILD.md §4.3).
  *
- * - `kStrength`: scales summed set-stress onto the HSS axis. Starting guess of 2.0;
- *   plan 02-06 tunes this value to pass the calibration test (D-13) — do NOT change it here.
+ * - `kStrength`: scales summed set-stress onto the HSS axis. Calibrated to 4.4 by plan
+ *   02-06's calibration test (D-13/D-14): the canonical hard 5x5 squat (140kg/180kg e1RM,
+ *   5 reps, RPE 9, lower-body) sums to a pre-`kStrength` set-stress of 22.75; at 4.4 that
+ *   lands liftHSS ≈ 100.1, within ±25% of the 60-min threshold-run anchor (runHSS ≈ 100.0)
+ *   and inside BUILD.md's ~30–120 readable range for a hard session. See
+ *   `packages/engine/src/__tests__/calibration.test.ts`, the test that drives this value.
  * - `kEndurance`: scales endurance stress onto the HSS axis. Derived from the D-14 anchor —
  *   60 minutes at intensity factor 1.0 should land at ~100 HSS. Since
  *   `ES = durationMin * intensityFactor^2 * kEndurance`, solving `100 = 60 * 1^2 * kEndurance`
@@ -30,7 +34,7 @@ import type { EngineConfig } from '@apsis/shared';
  *   `bandAmberRatio` → green.
  */
 export const DEFAULT_CONFIG: EngineConfig = {
-  kStrength: 2.0,
+  kStrength: 4.4,
   kEndurance: 1.6667,
   legMultiplier: 1.3,
   doublePenalty: 1.1,
