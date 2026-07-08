@@ -19,22 +19,38 @@ import type { EngineConfig, LoadTrendPoint, ReadinessBand } from '@apsis/shared'
 import { mergeConfig } from './config';
 
 /**
+ * Smoothing factor for an EWMA with time constant `days` (WR-01: single source of truth,
+ * shared by `ewmaFold` and `computeLoadTrendSeries` so a future re-fit or formula tweak
+ * can't drift between the two). Standard impulse-response derivation: each day's value
+ * moves toward that day's HSS by a fraction `lambda` of the remaining gap. Larger `days`
+ * (e.g. CTL's 28) yields a smaller lambda and slower response; smaller `days` (e.g. ATL's 7)
+ * yields a larger lambda and faster response.
+ */
+function ewmaLambda(days: number): number {
+  return 1 - Math.exp(-1 / days);
+}
+
+/**
+ * One EWMA fold step: moves `prev` toward `today` by a fraction `lambda` of the remaining
+ * gap. Non-finite `today` (NaN/Infinity, e.g. from a bad persisted row) is treated as 0
+ * rather than corrupting `prev` (CR-03) — without this, a single bad day would NaN every
+ * subsequent fold step. Shared by `ewmaFold` and `computeLoadTrendSeries` (WR-01) so the
+ * guard, like the lambda formula, has exactly one source of truth.
+ */
+function ewmaStep(prev: number, today: number, lambda: number): number {
+  const safeToday = Number.isFinite(today) ? today : 0;
+  return prev + lambda * (safeToday - prev);
+}
+
+/**
  * Fold a chronological array of daily HSS values into a single EWMA, starting from 0
- * (D-08). For a time constant `days`, the smoothing factor is the standard
- * `lambda = 1 - exp(-1/days)` impulse-response derivation: each day's value moves toward
- * that day's HSS by a fraction `lambda` of the remaining gap. Larger `days` (e.g. CTL's 28)
- * yields a smaller lambda and slower response; smaller `days` (e.g. ATL's 7) yields a
- * larger lambda and faster response.
+ * (D-08), using `ewmaLambda`/`ewmaStep` above.
  */
 function ewmaFold(dailyHSSByDay: number[], days: number): number {
-  const lambda = 1 - Math.exp(-1 / days);
+  const lambda = ewmaLambda(days);
   let value = 0;
   for (const todayHSS of dailyHSSByDay) {
-    // Non-finite daily input (NaN/Infinity, e.g. from a bad persisted row) is treated as 0
-    // rather than corrupting `value` — without this, a single bad day would NaN every
-    // subsequent fold step for the rest of the array (CR-03).
-    const safeToday = Number.isFinite(todayHSS) ? todayHSS : 0;
-    value = value + lambda * (safeToday - value);
+    value = ewmaStep(value, todayHSS, lambda);
   }
   return value;
 }
@@ -105,21 +121,17 @@ export function computeLoadTrendSeries(
   cfg?: Partial<EngineConfig>
 ): LoadTrendPoint[] {
   const config = mergeConfig(cfg);
-  const atlLambda = 1 - Math.exp(-1 / config.atlDays);
-  const ctlLambda = 1 - Math.exp(-1 / config.ctlDays);
+  const atlLambda = ewmaLambda(config.atlDays);
+  const ctlLambda = ewmaLambda(config.ctlDays);
 
   const points: LoadTrendPoint[] = [];
   let atl = 0;
   let ctl = 0;
 
   for (let i = 0; i < dailyHSSByDay.length; i++) {
-    const rawToday = dailyHSSByDay[i] ?? 0;
-    // Same non-finite guard as `ewmaFold` (CR-03) — this fold is inlined separately (see
-    // WR-01) so it needs the same protection against a single bad day permanently NaN-ing
-    // every subsequent point in the series.
-    const todayHSS = Number.isFinite(rawToday) ? rawToday : 0;
-    atl = atl + atlLambda * (todayHSS - atl);
-    ctl = ctl + ctlLambda * (todayHSS - ctl);
+    const todayHSS = dailyHSSByDay[i] ?? 0;
+    atl = ewmaStep(atl, todayHSS, atlLambda);
+    ctl = ewmaStep(ctl, todayHSS, ctlLambda);
     const tsb = ctl - atl;
     const band = readinessBand(tsb, ctl, { historyDays: i + 1 }, config);
     points.push({ atl, ctl, tsb, band });
