@@ -7,6 +7,9 @@
   "scripts": {
     "test": "vitest run"
   },
+  "dependencies": {
+    "@apsis/shared": "workspace:*"
+  },
   "devDependencies": {
     "typescript": "6.0.3",
     "vite": "^6.4.3",
