@@ -5,15 +5,15 @@ milestone_name: milestone
 current_phase: 02
 current_phase_name: HSS Engine
 status: executing
-stopped_at: Phase 2 context gathered
-last_updated: "2026-07-08T22:47:38.595Z"
+stopped_at: Completed 02-02-PLAN.md
+last_updated: "2026-07-08T22:52:19.280Z"
 last_activity: 2026-07-08
 last_activity_desc: Phase 02 execution started
 progress:
   total_phases: 6
   completed_phases: 0
   total_plans: 6
-  completed_plans: 1
+  completed_plans: 2
   percent: 0
 ---
 
@@ -32,7 +32,7 @@ the pure-TS HSS engine (the moat), which the engine's own `index.ts` explicitly 
 ## Current Position
 
 Phase: 02 (HSS Engine) — EXECUTING
-Plan: 2 of 6
+Plan: 3 of 6
 Status: Ready to execute
 Last activity: 2026-07-08 — Phase 02 execution started
 traceability filled; 100% of the 39 pending v1.0 requirements mapped to Phases 02–06.
@@ -61,6 +61,7 @@ Progress: [██░░░░░░░░] 17% (1/6 phases complete)
 
 *Updated after each plan completion*
 | Phase 02 P01 | 5min | 3 tasks | 6 files |
+| Phase 02 P02 | 8min | 2 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -82,6 +83,8 @@ Recent decisions affecting current work:
 
 - [Phase 02]: EngineConfig interface lives in @apsis/shared; DEFAULT_CONFIG value lives in packages/engine to avoid circular workspace dependency
 - [Phase 02]: kEndurance set to 1.6667 (D-14 anchor); kStrength left at 2.0 starting guess for plan 02-06 to tune
+- [Phase 02]: e1rmKg<=0 sets are skipped entirely (not clamped to a floor) since clamping would fabricate a stress number from a physically meaningless e1RM — D-15 clamp-and-warn policy; a skip + warning is the honest response when e1RM data is invalid
+- [Phase 02]: Reps clamped to 0..100 (MAX_REPS local const); loadKg only floored at 0 with no upper bound — Matches the plan's explicit clamp-range instructions for strengthStressDetailed
 
 ### Pending Todos
 
@@ -103,7 +106,7 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-07-08T22:46:35.590Z
-Stopped at: Phase 2 context gathered
+Last session: 2026-07-08T22:52:19.270Z
+Stopped at: Completed 02-02-PLAN.md
 reflect Phase 01 complete / Phase 02 ready to plan.
-Resume file: .planning/phases/02-hss-engine/02-CONTEXT.md
+Resume file: None
