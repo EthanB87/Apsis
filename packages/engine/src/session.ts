@@ -1,7 +1,7 @@
 /**
  * @apsis/engine — Per-session HSS: composes strength + endurance stress; version-stamped
  * breakdown (D-05/D-06). Zero runtime dependencies. Pure functions only — no I/O, no
- * Date.now(), no side effects.
+ * wall-clock reads, no side effects.
  *
  * A session may include strength sets, endurance segments, or both (a hybrid session).
  * Session HSS = SS + ES (BUILD.md §4.2). The detailed variant stamps the engine version

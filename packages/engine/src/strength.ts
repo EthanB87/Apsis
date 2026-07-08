@@ -1,6 +1,6 @@
 /**
  * @apsis/engine — strength-side HSS: e1RM-normalized load stress + Epley estimator
- * Zero runtime dependencies. Pure functions only — no I/O, no Date.now(), no side effects.
+ * Zero runtime dependencies. Pure functions only — no I/O, no wall-clock reads, no side effects.
  * Per-set stress is normalized against a caller-supplied e1RM, amplified for lower-body
  * sets (systemic cost), scaled by proximity-to-failure (RPE), and summed into a session
  * strength score. Never throws: bad input is clamped or the offending set is skipped, and

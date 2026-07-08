@@ -1,6 +1,6 @@
 /**
  * @apsis/engine — Endurance-side HSS: duration * IF^2 stress + IF-derivation helpers
- * Zero runtime dependencies. Pure functions only — no I/O, no Date.now(), no side effects.
+ * Zero runtime dependencies. Pure functions only — no I/O, no wall-clock reads, no side effects.
  * Per-segment endurance stress scales with duration and the square of a resolved intensity
  * factor (IF). The 60-min/IF-1.0 anchor (D-14) is the calibration point the whole "one
  * honest number" thesis is pinned against. Never throws: bad input is clamped and reported

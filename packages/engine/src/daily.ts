@@ -1,7 +1,7 @@
 /**
  * @apsis/engine — Per-day HSS rollup: sum sessions + same-day double-session penalty
- * (ENG-03). Zero runtime dependencies. Pure functions only — no I/O, no Date.now(), no
- * side effects.
+ * (ENG-03). Zero runtime dependencies. Pure functions only — no I/O, no wall-clock reads,
+ * no side effects.
  *
  * Daily HSS = sum of session HSS scores; when more than one session lands on the same
  * day, the day total is multiplied by `doublePenalty` (BUILD.md §4.2) — reflecting the

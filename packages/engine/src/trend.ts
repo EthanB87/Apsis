@@ -1,6 +1,6 @@
 /**
  * @apsis/engine — Rolling load trend: EWMA ATL/CTL/TSB + readiness banding
- * Zero runtime dependencies. Pure functions only — no I/O, no Date.now(), no side effects.
+ * Zero runtime dependencies. Pure functions only — no I/O, no wall-clock reads, no side effects.
  *
  * ATL (acute training load, ~7-day time constant) and CTL (chronic training load, ~28-day
  * time constant) are exponentially-weighted moving averages of daily HSS. TSB (training
