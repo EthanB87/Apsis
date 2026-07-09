@@ -5,15 +5,15 @@ milestone_name: milestone
 current_phase: 3
 current_phase_name: Onboarding & Lifting Logger
 status: executing
-stopped_at: Completed 03-01-PLAN.md
-last_updated: "2026-07-09T19:47:51.828Z"
+stopped_at: Completed 03-02-PLAN.md
+last_updated: "2026-07-09T19:58:37.959Z"
 last_activity: 2026-07-09
 last_activity_desc: Phase 3 execution started
 progress:
   total_phases: 6
   completed_phases: 1
   total_plans: 15
-  completed_plans: 7
+  completed_plans: 8
   percent: 17
 ---
 
@@ -32,7 +32,7 @@ the pure-TS HSS engine (the moat), which the engine's own `index.ts` explicitly 
 ## Current Position
 
 Phase: 3 (Onboarding & Lifting Logger) — EXECUTING
-Plan: 2 of 9
+Plan: 3 of 9
 Status: Ready to execute
 Last activity: 2026-07-09 — Phase 3 execution started
 traceability filled; 100% of the 39 pending v1.0 requirements mapped to Phases 02–06.
@@ -68,6 +68,7 @@ Progress: [██░░░░░░░░] 17% (1/6 phases complete)
 | Phase 02 P04 | 4min | 3 tasks | 6 files |
 | Phase 02 P06 | 5min | 3 tasks | 10 files |
 | Phase 03 P01 | 7min | 3 tasks | 14 files |
+| Phase 03 P02 | 5min | 3 tasks | 11 files |
 
 ## Accumulated Context
 
@@ -103,6 +104,8 @@ Recent decisions affecting current work:
 - [Phase ?]: kCarry = 10 tuned via D-20 golden test (4x40m heavy farmer's carry ~= 21.3 total CS, inside the 8..60 hard-accessory band)
 - [Phase ?]: REP_MAX_TABLE floor row at 30 reps (pct 0.45) -- reps above 30 clamp instead of extrapolating (D-18/Pitfall 3)
 - [Phase ?]: packages/shared/tsconfig.json now excludes src/**/__tests__ from the project build, mirroring packages/engine's existing pattern (pre-existing gap exposed by @apsis/shared's first test file)
+- [Phase 03]: [Phase 03 P02]: battle-rope/plank get entryMode 'timed' despite battle-rope's endurance seed type -- PLAN.md scoped the Pitfall-5 endurance-null bucket to only run/ski-erg/rowing-erg/assault-bike
+- [Phase 03]: [Phase 03 P02]: query builders typed against drizzle-orm's BaseSQLiteDatabase base class so the same builder functions work against both the real op-sqlite db and a sqlite-proxy mock in tests
 
 ### Pending Todos
 
@@ -124,6 +127,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-07-09T19:47:51.818Z
-Stopped at: Completed 03-01-PLAN.md
+Last session: 2026-07-09T19:58:37.947Z
+Stopped at: Completed 03-02-PLAN.md
 Resume file: None

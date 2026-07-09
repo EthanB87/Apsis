@@ -109,13 +109,13 @@ Plans:
   4. Each new set for an exercise pre-populates with that exercise's previous-session weight + reps, and the user can add or remove sets inline.
   5. Completing a set starts a configurable auto-rest timer in a persistent banner; the session HSS updates live as each set is logged; the user can save or discard the session (discard requires confirmation) and sees the session HSS on the finish screen.
 
-**Plans**: 1/9 plans executed
+**Plans**: 2/9 plans executed
 
 Plans:
 **Wave 1**
 
 - [x] 03-01-PLAN.md — Engine + shared foundations: bodyweight rep-max e1RM (D-18), carry/sled stress (D-20), session carry composition, pure km/mi + kg/lb units + shared vitest
-- [ ] 03-02-PLAN.md — DB schema migration (bwFactor/entryMode/finishedAt/deletedAt/addedLoadKg/durationS/restTimerDefault) + seed metadata + previous-session/soft-delete query builders [BLOCKING migration]
+- [x] 03-02-PLAN.md — DB schema migration (bwFactor/entryMode/finishedAt/deletedAt/addedLoadKg/durationS/restTimerDefault) + seed metadata + previous-session/soft-delete query builders [BLOCKING migration]
 - [ ] 03-03-PLAN.md — App deps install + legitimacy checkpoint, dark-only design system, Home/Log/Settings tab shell + Home placeholder
 
 **Wave 2** *(blocked on Wave 1)*
@@ -196,7 +196,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 |-------|----------------|--------|-----------|
 | 01. Foundation | 4/4 | Complete | 2026-07-02 |
 | 02. HSS Engine | 6/6 | Complete    | 2026-07-08 |
-| 03. Onboarding & Lifting Logger | 1/9 | In Progress|  |
+| 03. Onboarding & Lifting Logger | 2/9 | In Progress|  |
 | 04. Run Logger & Home Dashboard | 0/TBD | Not started | - |
 | 05. HealthKit Integration | 0/TBD | Not started | - |
 | 06. Polish & App Store Submission | 0/TBD | Not started | - |
