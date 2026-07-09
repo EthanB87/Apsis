@@ -664,9 +664,13 @@ function kgToDisplayLb(kg: number): number {
 being treated as locked decisions, particularly A3/A4 (bodyweight factors for the full
 seeded-exercise list) and A5 (carry-stress formula).
 
-## Open Questions
+## Open Questions (RESOLVED)
 
-1. **What `bwFactor`/`entryMode` values apply to every seeded BW/implement/carry exercise, not just the four D-15 examples?**
+> Both questions below are operationally resolved by the phase plans:
+> - **Q1 (RESOLVED)** — 03-02 Task 1 adopts the full proposed bwFactor/entryMode table verbatim as the seed-data source of truth. Treat the "Proposed full bwFactor / entryMode table" below as the locked table for this phase.
+> - **Q2 (RESOLVED)** — 03-04 Task 1 handles the `Stack.Protected` onboarding gate with the documented `<Redirect>` fallback if the API shape differs from Pattern 1.
+
+1. **What `bwFactor`/`entryMode` values apply to every seeded BW/implement/carry exercise, not just the four D-15 examples?** *(RESOLVED — adopted in 03-02 Task 1.)*
    - What we know: pull-up ≈0.95, dip ≈0.95, push-up ≈0.65 (Suprak-supported), lunge ≈0.85
      (coaching-consensus starting point per CONTEXT.md).
    - What's unclear: chin-up, split-squat, goblet-squat, step-up, box-jump, box-step-over,
@@ -714,7 +718,7 @@ seeded-exercise list) and A5 (carry-stress formula).
 | all barbell/machine lifts (squat, deadlift, bench, ohp, row, etc.) | null | reps | Unchanged — standard Epley/loadKg convention (D-10, Phase 02) |
 | run, ski-erg, rowing-erg, assault-bike | null | null | `type: 'endurance'` — not logged via `strength_set` this phase (Pitfall 5) |
 
-2. **Does `Stack.Protected` exist and behave as described in the current SDK 56 expo-router version installed (`~56.2.11`)?**
+2. **Does `Stack.Protected` exist and behave as described in the current SDK 56 expo-router version installed (`~56.2.11`)?** *(RESOLVED — 03-04 Task 1 implements the gate with a documented `<Redirect>` fallback.)*
    - What we know: SDK 53+ shipped `Stack.Protected`; multiple 2026 sources describe it as
      the current recommended pattern.
    - What's unclear: exact prop name/behavior wasn't verified against the live docs page
