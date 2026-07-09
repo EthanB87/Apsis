@@ -9,7 +9,7 @@
  */
 
 import React from 'react';
-import { View, Text, Pressable, StyleSheet } from 'react-native';
+import { View, Text, Pressable, StyleSheet, KeyboardAvoidingView, Platform, Keyboard } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Colors from '../../constants/Colors';
 import { HIT_TARGET_MIN, Radius, Spacing, Typography } from '../../constants/theme';
@@ -42,34 +42,38 @@ export function WizardStep({
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
-      <View style={styles.container}>
-        <Text style={styles.question}>{question}</Text>
-        <View style={styles.content}>{children}</View>
-        <View
-          style={styles.progressRow}
-          accessibilityRole="progressbar"
-          accessibilityLabel={`Step ${currentIndex + 1} of ${WIZARD_STEP_ORDER.length}`}>
-          {WIZARD_STEP_ORDER.map((name, index) => (
-            <View
-              key={name}
-              style={[styles.dot, index === currentIndex ? styles.dotActive : styles.dotInactive]}
-            />
-          ))}
-        </View>
-      </View>
-      <Pressable
-        onPress={onNext}
-        disabled={nextDisabled}
-        accessibilityRole="button"
-        accessibilityLabel={label}
-        accessibilityState={{ disabled: nextDisabled }}
-        style={({ pressed }) => [
-          styles.button,
-          nextDisabled && styles.buttonDisabled,
-          pressed && !nextDisabled && styles.buttonPressed,
-        ]}>
-        <Text style={styles.buttonLabel}>{label}</Text>
-      </Pressable>
+      <KeyboardAvoidingView
+        style={styles.keyboardAvoiding}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+        <Pressable style={styles.container} onPress={() => Keyboard.dismiss()} accessible={false}>
+          <Text style={styles.question}>{question}</Text>
+          <View style={styles.content}>{children}</View>
+          <View
+            style={styles.progressRow}
+            accessibilityRole="progressbar"
+            accessibilityLabel={`Step ${currentIndex + 1} of ${WIZARD_STEP_ORDER.length}`}>
+            {WIZARD_STEP_ORDER.map((name, index) => (
+              <View
+                key={name}
+                style={[styles.dot, index === currentIndex ? styles.dotActive : styles.dotInactive]}
+              />
+            ))}
+          </View>
+        </Pressable>
+        <Pressable
+          onPress={onNext}
+          disabled={nextDisabled}
+          accessibilityRole="button"
+          accessibilityLabel={label}
+          accessibilityState={{ disabled: nextDisabled }}
+          style={({ pressed }) => [
+            styles.button,
+            nextDisabled && styles.buttonDisabled,
+            pressed && !nextDisabled && styles.buttonPressed,
+          ]}>
+          <Text style={styles.buttonLabel}>{label}</Text>
+        </Pressable>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
@@ -78,6 +82,9 @@ const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
     backgroundColor: Colors.dark.background,
+  },
+  keyboardAvoiding: {
+    flex: 1,
   },
   container: {
     flex: 1,
