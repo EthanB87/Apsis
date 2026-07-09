@@ -10,16 +10,23 @@
  * Security (V7 / T-1-02): query failures are console.error'd for diagnostics only.
  * On failure this resolves to `false` (no profile) rather than throwing — the safe
  * default is routing the user back into onboarding, never silently unlocking the app.
+ *
+ * Re-query trigger (Plan 05): also depends on `useProfileVersion`'s counter so a
+ * successful `useSaveProfile` insert on the review screen causes this hook to
+ * re-run its count query and flip `hasProfile` from false -> true without requiring
+ * an app relaunch (ONB-01's "Save flips the Stack.Protected gate" requirement).
  */
 
 import { useEffect, useState } from 'react';
 import { count } from 'drizzle-orm';
 import { db, userProfile } from '@apsis/db';
+import { useProfileVersion } from '../lib/profileVersion';
 
 export type ProfileExistsState = 'loading' | boolean;
 
 export function useProfileExists(ready: boolean): ProfileExistsState {
   const [state, setState] = useState<ProfileExistsState>('loading');
+  const version = useProfileVersion((versionState) => versionState.version);
 
   useEffect(() => {
     if (!ready) return;
@@ -39,7 +46,7 @@ export function useProfileExists(ready: boolean): ProfileExistsState {
     return () => {
       cancelled = true;
     };
-  }, [ready]);
+  }, [ready, version]);
 
   return state;
 }
