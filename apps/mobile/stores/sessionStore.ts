@@ -18,7 +18,7 @@ import { create } from 'zustand';
 import { randomUUID } from 'expo-crypto';
 import { eq } from 'drizzle-orm';
 import { db, exercise as exerciseTable, strengthSet, userProfile, workout, previousSessionSet } from '@apsis/db';
-import { formatPaceMinSec, type Units } from '@apsis/shared';
+import { formatPaceMinSec, kgToDisplayLb, type Units } from '@apsis/shared';
 import { cancelRestNotification, scheduleRestNotification } from '../lib/notifications';
 import { resolveRestDuration, startRest } from '../lib/restTimer';
 
@@ -126,14 +126,20 @@ function blankSet(): SetDraft {
 
 function formatLastSessionSummary(
   prev: { loadKg: number; addedLoadKg: number | null; reps: number; rpe: number | null; durationS: number | null },
-  meta: { bwFactor: number | null; entryMode: 'reps' | 'timed' }
+  meta: { bwFactor: number | null; entryMode: 'reps' | 'timed' },
+  units: Units
 ): string {
   if (meta.entryMode === 'timed') {
     return `Last: ${formatPaceMinSec(prev.durationS ?? 0)} @ RPE ${prev.rpe ?? DEFAULT_RPE}`;
   }
   const displayLoad = meta.bwFactor != null ? (prev.addedLoadKg ?? 0) : prev.loadKg;
-  const rounded = Math.round(displayLoad * 10) / 10;
-  return `Last: ${rounded} kg × ${prev.reps} @ RPE ${prev.rpe ?? DEFAULT_RPE}`;
+  // WR-05/D-12: storage is metric; the summary is a display surface, so it converts to
+  // the athlete's units like every other surface (SetRow, ProfileReview, Settings).
+  const display =
+    units === 'imperial'
+      ? `${kgToDisplayLb(displayLoad)} lb`
+      : `${Math.round(displayLoad * 10) / 10} kg`;
+  return `Last: ${display} × ${prev.reps} @ RPE ${prev.rpe ?? DEFAULT_RPE}`;
 }
 
 const INITIAL_SESSION = {
@@ -172,7 +178,7 @@ export const useSessionStore = create<SessionState>((set, get) => ({
       const prevRows = await previousSessionSet(db, exercise.id);
       const prev = prevRows[0];
       if (prev) {
-        lastSessionSummary = formatLastSessionSummary(prev, exercise);
+        lastSessionSummary = formatLastSessionSummary(prev, exercise, get().units);
         firstSet = {
           id: randomUUID(),
           setNumber: 1,
