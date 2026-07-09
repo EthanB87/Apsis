@@ -4,17 +4,17 @@ milestone: v1.0
 milestone_name: milestone
 current_phase: 3
 current_phase_name: Onboarding & Lifting Logger
-status: executing
-stopped_at: Completed 03-08-PLAN.md
-last_updated: "2026-07-09T21:25:39.069Z"
+status: verifying
+stopped_at: Completed 03-09-PLAN.md (final plan of Phase 03)
+last_updated: "2026-07-09T21:35:24.728Z"
 last_activity: 2026-07-09
 last_activity_desc: Phase 3 execution started
 progress:
   total_phases: 6
-  completed_phases: 1
+  completed_phases: 2
   total_plans: 15
-  completed_plans: 14
-  percent: 17
+  completed_plans: 15
+  percent: 33
 ---
 
 # Project State — Apsis
@@ -33,7 +33,7 @@ the pure-TS HSS engine (the moat), which the engine's own `index.ts` explicitly 
 
 Phase: 3 (Onboarding & Lifting Logger) — EXECUTING
 Plan: 9 of 9
-Status: Ready to execute
+Status: Phase complete — ready for verification
 Last activity: 2026-07-09 — Phase 3 execution started
 traceability filled; 100% of the 39 pending v1.0 requirements mapped to Phases 02–06.
 
@@ -75,6 +75,7 @@ Progress: [██░░░░░░░░] 17% (1/6 phases complete)
 | Phase 03 P06 | 27min | 3 tasks | 19 files |
 | Phase 03 P07 | ~2min | 3 tasks | 5 files |
 | Phase 03 P08 | 15min | 2 tasks | 4 files |
+| Phase 03 P09 | 9min | 2 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -126,6 +127,8 @@ Recent decisions affecting current work:
 - [Phase ?]: [Phase 03 P07]: LIFT-05's six on-device behaviors deferred to phase UAT per user checkpoint response 'Defer to phase UAT' -- NOT marked passed; requirement left unmarked in REQUIREMENTS.md
 - [Phase ?]: [Phase 03 P08]: finishWorkout is called from finish.tsx's Done action (not just session.tsx's Finish button) so the D-14 crash-resume 'Finish Now' path also sets finishedAt
 - [Phase ?]: [Phase 03 P08]: Per-set/per-exercise warning and stress attribution (breakdown sheet, set-row badges) computed by re-running strengthStressDetailed/carryStressDetailed locally on committed sets rather than piping attribution through sessionStore -- the engine's warnings[]/perSetStress carry no set id
+- [Phase ?]: [Phase 03 P09]: Settings profile editor stages ProfileReview row-taps into a local draft committed via one batched UPDATE (Save Changes), rather than per-field navigation routes -- matches ProfileReview's existing values/onEditField/onSubmit contract within the plan's declared _layout.tsx+index.tsx-only artifact scope
+- [Phase ?]: [Phase 03 P09]: useProfile.ts is a new update-in-place hook (parameterized UPDATE against user_profile only, never workout.hss/load_daily) rather than an edit to useSaveProfile.ts, which stays insert-only for onboarding
 
 ### Pending Todos
 
@@ -149,6 +152,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-07-09T21:25:39.059Z
-Stopped at: Completed 03-08-PLAN.md
+Last session: 2026-07-09T21:35:24.717Z
+Stopped at: Completed 03-09-PLAN.md (final plan of Phase 03)
 Resume file: None

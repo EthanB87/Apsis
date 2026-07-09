@@ -27,7 +27,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 01: Foundation** - Monorepo, pure-TS package skeletons, drizzle schema + migrations, seeded exercise library, Expo boot sequence — COMPLETE
 - [x] **Phase 02: HSS Engine** - Pure-TS training-load engine (strength/endurance HSS, day HSS, ATL/CTL/TSB trend, readiness band), ≥20 vitest tests — the moat (completed 2026-07-08)
-- [ ] **Phase 03: Onboarding & Lifting Logger** - Profile capture + a Strong/Hevy-speed lifting logger with live HSS feedback
+- [x] **Phase 03: Onboarding & Lifting Logger** - Profile capture + a Strong/Hevy-speed lifting logger with live HSS feedback (completed 2026-07-09)
 - [ ] **Phase 04: Run Logger & Home Dashboard** - Run/conditioning logger plus the home screen readiness band and 28-day trend
 - [ ] **Phase 05: HealthKit Integration** - Import runs/HR/bodyweight, write logged sessions back, dedupe against manual entries — lowest priority, first to cut
 - [ ] **Phase 06: Polish & App Store Submission** - Icon, screenshots, privacy label/policy, Sentry health-data audit, EAS submission by ~July 25
@@ -109,7 +109,7 @@ Plans:
   4. Each new set for an exercise pre-populates with that exercise's previous-session weight + reps, and the user can add or remove sets inline.
   5. Completing a set starts a configurable auto-rest timer in a persistent banner; the session HSS updates live as each set is logged; the user can save or discard the session (discard requires confirmation) and sees the session HSS on the finish screen.
 
-**Plans**: 8/9 plans executed
+**Plans**: 9/9 plans complete
 
 Plans:
 **Wave 1**
@@ -131,7 +131,7 @@ Plans:
 
 - [x] 03-07-PLAN.md — Auto-rest timer banner + background notifications + haptics (LIFT-05) [on-device checkpoint]
 - [x] 03-08-PLAN.md — Finish summary + confirmed soft-delete discard + HSS breakdown sheet + warning badges (LIFT-07)
-- [ ] 03-09-PLAN.md — Settings tab: profile editor (ONB-02) + units toggle (ONB-04) + default rest timer
+- [x] 03-09-PLAN.md — Settings tab: profile editor (ONB-02) + units toggle (ONB-04) + default rest timer
 
 **UI hint**: yes
 
@@ -196,7 +196,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 |-------|----------------|--------|-----------|
 | 01. Foundation | 4/4 | Complete | 2026-07-02 |
 | 02. HSS Engine | 6/6 | Complete    | 2026-07-08 |
-| 03. Onboarding & Lifting Logger | 8/9 | In Progress|  |
+| 03. Onboarding & Lifting Logger | 9/9 | Complete   | 2026-07-09 |
 | 04. Run Logger & Home Dashboard | 0/TBD | Not started | - |
 | 05. HealthKit Integration | 0/TBD | Not started | - |
 | 06. Polish & App Store Submission | 0/TBD | Not started | - |
