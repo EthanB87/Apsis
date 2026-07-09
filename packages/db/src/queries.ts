@@ -98,12 +98,17 @@ export function recentExerciseIds(db: QueryableDB, limit: number) {
 // Crash recovery (D-14)
 // ---------------------------------------------------------------------------
 
-/** The open (unfinished, non-deleted) workout, if one exists — D-14 auto-resume prompt. */
+/**
+ * The open (unfinished, non-deleted) workout, if one exists — D-14 auto-resume prompt.
+ * Ordered by `createdAt DESC` so, should multiple open rows ever exist (legacy data from
+ * before the WR-03 start-guard), the most recent one is returned deterministically.
+ */
 export function openWorkout(db: QueryableDB) {
   return db
     .select()
     .from(workout)
     .where(and(isNull(workout.finishedAt), isNull(workout.deletedAt)))
+    .orderBy(desc(workout.createdAt))
     .limit(1);
 }
 

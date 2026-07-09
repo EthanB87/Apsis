@@ -15,7 +15,7 @@ import { useState } from 'react';
 import { Pressable, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import { randomUUID } from 'expo-crypto';
-import { db, workout } from '@apsis/db';
+import { db, workout, openWorkout } from '@apsis/db';
 
 import { Text, View } from '@/components/Themed';
 import Colors from '@/constants/Colors';
@@ -37,6 +37,7 @@ function todayLocalDate(): string {
 export default function LogHomeScreen(): React.JSX.Element {
   const router = useRouter();
   const startSession = useSessionStore((state) => state.startSession);
+  const rehydrateFromDb = useSessionStore((state) => state.rehydrateFromDb);
   const [starting, setStarting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -46,6 +47,19 @@ export default function LogHomeScreen(): React.JSX.Element {
     setErrorMessage(null);
     try {
       const profile = await fetchProfileSummary(db);
+
+      // WR-03: never create a second open workout. If an unfinished, non-deleted
+      // workout already exists (e.g. the user back-swiped out of the session screen
+      // and tapped Start again), resume it instead of inserting — otherwise the
+      // abandoned row stays open forever and the D-14 resume prompt oscillates
+      // between the orphans on subsequent launches.
+      const existingOpen = (await openWorkout(db))[0];
+      if (existingOpen != null) {
+        await rehydrateFromDb(existingOpen.id, profile);
+        router.push({ pathname: '/(tabs)/log/session', params: { workoutId: existingOpen.id } });
+        return;
+      }
+
       const workoutId = randomUUID();
       await db.insert(workout).values({
         id: workoutId,
