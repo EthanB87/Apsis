@@ -6,12 +6,14 @@
     "paths": {
       "@/*": ["./*"],
       "@apsis/shared": ["../../packages/shared/src/index.ts"],
-      "@apsis/db": ["../../packages/db/src/index.ts"]
+      "@apsis/db": ["../../packages/db/src/index.ts"],
+      "@apsis/engine": ["../../packages/engine/src/index.ts"]
     }
   },
   "references": [
     { "path": "../../packages/shared" },
-    { "path": "../../packages/db" }
+    { "path": "../../packages/db" },
+    { "path": "../../packages/engine" }
   ],
   "include": [
     "**/*.ts",
