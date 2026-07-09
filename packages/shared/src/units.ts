@@ -46,3 +46,15 @@ export function paceSecPerKmToSecPerMi(secPerKm: number): number {
 export function paceSecPerMiToSecPerKm(secPerMi: number): number {
   return secPerMi / KM_PER_MI;
 }
+
+/**
+ * Formats a total-seconds pace value as "M:SS" (e.g. 270 -> "4:30"). Pure display
+ * formatting only — no unit conversion; pass sec/km or sec/mi depending on the
+ * caller's display context (onboarding threshold-pace estimate preview, the
+ * ProfileReview row, and Settings all share this so pace formatting never drifts).
+ */
+export function formatPaceMinSec(totalSec: number): string {
+  const minutes = Math.floor(totalSec / 60);
+  const seconds = Math.round(totalSec % 60);
+  return `${minutes}:${String(seconds).padStart(2, '0')}`;
+}
