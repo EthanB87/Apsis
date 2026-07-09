@@ -81,6 +81,10 @@ export function SetRow({
 
   const isTimed = entryMode === 'timed';
   const isBodyweight = exerciseBwFactor != null;
+  // A committed set's fields are locked until unchecked (D-09) — editing them in place
+  // without going through commitSet/uncommitSet would silently drift the UI away from the
+  // persisted SQLite row that's the actual source of truth for the live HSS.
+  const locked = draft.committed;
   const effectiveLoadKg = computeEffectiveLoad(
     { bwFactor: exerciseBwFactor },
     draft.loadFieldKg,
@@ -128,10 +132,11 @@ export function SetRow({
     <View style={styles.row}>
       <Pressable
         onPress={() => patch({ isWarmup: !draft.isWarmup })}
+        disabled={locked}
         hitSlop={10}
         accessibilityRole="button"
         accessibilityLabel="Warmup"
-        accessibilityState={{ selected: draft.isWarmup }}
+        accessibilityState={{ selected: draft.isWarmup, disabled: locked }}
         style={[styles.warmupChip, draft.isWarmup && styles.warmupChipActive]}>
         <Text style={styles.warmupChipLabel}>W</Text>
       </Pressable>
@@ -139,6 +144,7 @@ export function SetRow({
       <View style={styles.fieldGroup}>
         <Pressable
           onPress={() => patch({ loadFieldKg: stepWeight(draft.loadFieldKg, units, -1), isBlank: false })}
+          disabled={locked}
           hitSlop={6}
           accessibilityRole="button"
           accessibilityLabel="Decrease load"
@@ -152,6 +158,7 @@ export function SetRow({
           onChangeText={(text) => patch({ loadFieldKg: parseWeightInput(text, units), isBlank: false })}
           keyboardType="decimal-pad"
           autoFocus={draft.isBlank}
+          editable={!locked}
           selectTextOnFocus
           style={[styles.valueInput, tabularNums]}
           accessibilityLabel={isBodyweight ? 'Added load' : 'Load'}
@@ -159,6 +166,7 @@ export function SetRow({
         <Text style={styles.unitLabel}>{weightUnitLabel(units)}</Text>
         <Pressable
           onPress={() => patch({ loadFieldKg: stepWeight(draft.loadFieldKg, units, 1), isBlank: false })}
+          disabled={locked}
           hitSlop={6}
           accessibilityRole="button"
           accessibilityLabel="Increase load"
@@ -173,6 +181,7 @@ export function SetRow({
             onPress={() =>
               patch({ durationS: Math.max(0, draft.durationS - DURATION_STEP_S), isBlank: false })
             }
+            disabled={locked}
             hitSlop={6}
             accessibilityRole="button"
             accessibilityLabel="Decrease duration"
@@ -188,6 +197,7 @@ export function SetRow({
               patch({ durationS: Number.isFinite(parsed) ? parsed : 0, isBlank: false });
             }}
             keyboardType="number-pad"
+            editable={!locked}
             selectTextOnFocus
             style={[styles.valueInput, tabularNums]}
             accessibilityLabel="Duration in seconds"
@@ -195,6 +205,7 @@ export function SetRow({
           <Text style={styles.unitLabel}>{formatPaceMinSec(draft.durationS)}</Text>
           <Pressable
             onPress={() => patch({ durationS: draft.durationS + DURATION_STEP_S, isBlank: false })}
+            disabled={locked}
             hitSlop={6}
             accessibilityRole="button"
             accessibilityLabel="Increase duration"
@@ -206,6 +217,7 @@ export function SetRow({
         <View style={styles.fieldGroup}>
           <Pressable
             onPress={() => patch({ reps: Math.max(0, draft.reps - 1), isBlank: false })}
+            disabled={locked}
             hitSlop={6}
             accessibilityRole="button"
             accessibilityLabel="Decrease reps"
@@ -221,6 +233,7 @@ export function SetRow({
               patch({ reps: Number.isFinite(parsed) ? parsed : 0, isBlank: false });
             }}
             keyboardType="number-pad"
+            editable={!locked}
             selectTextOnFocus
             style={[styles.valueInput, tabularNums]}
             accessibilityLabel="Reps"
@@ -228,6 +241,7 @@ export function SetRow({
           <Text style={styles.unitLabel}>reps</Text>
           <Pressable
             onPress={() => patch({ reps: draft.reps + 1, isBlank: false })}
+            disabled={locked}
             hitSlop={6}
             accessibilityRole="button"
             accessibilityLabel="Increase reps"
@@ -244,10 +258,11 @@ export function SetRow({
             <Pressable
               key={option}
               onPress={() => patch({ rpe: option })}
+              disabled={locked}
               hitSlop={4}
               accessibilityRole="button"
               accessibilityLabel={`RPE ${option}`}
-              accessibilityState={{ selected }}
+              accessibilityState={{ selected, disabled: locked }}
               style={[styles.rpePill, selected && styles.rpePillSelected]}>
               <Text style={[styles.rpePillLabel, selected && styles.rpePillLabelSelected]}>
                 {option}
