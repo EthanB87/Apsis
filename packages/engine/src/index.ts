@@ -15,6 +15,9 @@ export * from './config';
 // Strength-side HSS: e1RM-normalized load stress + Epley estimator
 export * from './strength';
 
+// Bodyweight-movement e1RM: rep-max table estimator (D-18)
+export * from './bodyweight';
+
 // Endurance-side HSS: duration * IF^2 stress + IF-derivation helpers
 export * from './endurance';
 
