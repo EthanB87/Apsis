@@ -8,7 +8,7 @@ status: verifying
 stopped_at: Completed 03-09-PLAN.md (final plan of Phase 03)
 last_updated: "2026-07-09T21:35:24.728Z"
 last_activity: 2026-07-09
-last_activity_desc: Phase 3 execution started
+last_activity_desc: Completed quick task 260709-qmv (Apsis dark design system restyle + app icon)
 progress:
   total_phases: 6
   completed_phases: 2
@@ -141,6 +141,12 @@ None yet.
   noted for context only.
 
 - LIFT-05 (03-07) pending on-device UAT verification -- six behaviors (rest banner countdown, +30s/Skip, background notification fire, early-return cancellation, haptic+sound at zero, lazy permission timing) deferred from the Task 3 checkpoint to phase UAT
+
+### Quick Tasks Completed
+
+| # | Description | Date | Commit | Directory |
+|---|-------------|------|--------|-----------|
+| 260709-qmv | Restyle app UI to Apsis dark design system (void/volt) + wire app icon | 2026-07-09 | 430cf23 | [260709-qmv-restyle-app-ui-to-apsis-dark-design-syst](./quick/260709-qmv-restyle-app-ui-to-apsis-dark-design-syst/) |
 
 ## Deferred Items
 
