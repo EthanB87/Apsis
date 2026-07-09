@@ -32,7 +32,7 @@ Requirements for the v1.0 release. Each maps to exactly one roadmap phase.
 
 - [ ] **ONB-01**: User completes onboarding capturing sex, bodyweight, threshold HR, and threshold pace
 - [ ] **ONB-02**: User can view and edit profile inputs later from settings
-- [ ] **ONB-03**: Readiness band is gated behind completed onboarding (never shows wrong numbers)
+- [x] **ONB-03**: Readiness band is gated behind completed onboarding (never shows wrong numbers)
 - [x] **ONB-04**: User can toggle display units (km ↔ mi); data is always stored in metric
 
 ### Lifting Logger
@@ -125,7 +125,7 @@ Which phase covers which requirement. Populated during roadmap creation.
 | ENG-07 | Phase 02 | Complete |
 | ONB-01 | Phase 03 | Pending |
 | ONB-02 | Phase 03 | Pending |
-| ONB-03 | Phase 03 | Pending |
+| ONB-03 | Phase 03 | Complete |
 | ONB-04 | Phase 03 | Complete |
 | LIFT-01 | Phase 03 | Pending |
 | LIFT-02 | Phase 03 | Complete |
