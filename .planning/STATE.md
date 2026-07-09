@@ -6,14 +6,14 @@ current_phase: 3
 current_phase_name: Onboarding & Lifting Logger
 status: executing
 stopped_at: Completed 03-02-PLAN.md
-last_updated: "2026-07-09T20:23:26.201Z"
+last_updated: "2026-07-09T20:34:25.333Z"
 last_activity: 2026-07-09
 last_activity_desc: Phase 3 execution started
 progress:
   total_phases: 6
   completed_phases: 1
   total_plans: 15
-  completed_plans: 10
+  completed_plans: 11
   percent: 17
 ---
 
@@ -32,7 +32,7 @@ the pure-TS HSS engine (the moat), which the engine's own `index.ts` explicitly 
 ## Current Position
 
 Phase: 3 (Onboarding & Lifting Logger) — EXECUTING
-Plan: 5 of 9
+Plan: 6 of 9
 Status: Ready to execute
 Last activity: 2026-07-09 — Phase 3 execution started
 traceability filled; 100% of the 39 pending v1.0 requirements mapped to Phases 02–06.
@@ -71,6 +71,7 @@ Progress: [██░░░░░░░░] 17% (1/6 phases complete)
 | Phase 03 P02 | 5min | 3 tasks | 11 files |
 | Phase 03 P03 | 6min | 2 tasks | 8 files |
 | Phase 03 P04 | 13min | 2 tasks | 9 files |
+| Phase 03 P05 | 9min | 2 tasks | 9 files |
 
 ## Accumulated Context
 
@@ -112,6 +113,8 @@ Recent decisions affecting current work:
 - [Phase 03]: All five deps resolved to SDK-56-line versions via expo install/pnpm add, never hand-pinned to 57.x tags
 - [Phase ?]: [Phase 03 P04]: Verified Stack.Protected's guard prop shape against installed expo-router 56.2.11 .d.ts files directly rather than trusting the research doc's web-synthesized example -- matched exactly, no Redirect fallback needed
 - [Phase ?]: [Phase 03 P04]: TS project-reference redirect (composite+references) resolves @apsis/db imports to packages/db/dist declarations, not live src -- root pnpm run typecheck (tsc --build) is the actual cross-package verification entry point, confirmed again after Plan 01's same finding
+- [Phase ?]: [Phase 03 P05]: Race-pace-to-threshold offsets: 5K x1.05, 10K x1.02, half-marathon x1.00 -- offset shrinks toward 1.0 as race distance approaches the engine's ~60-minute threshold-run calibration anchor
+- [Phase ?]: [Phase 03 P05]: Added lib/profileVersion.ts (bumped zustand counter) + extended useProfileExists.ts to depend on it -- closes a gap where the review screen's profile insert would never flip the Stack.Protected gate without an app relaunch (Rule 2 deviation, outside this plan's declared files)
 
 ### Pending Todos
 
@@ -133,6 +136,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-07-09T20:22:49.230Z
+Last session: 2026-07-09T20:33:56.280Z
 Stopped at: Completed 03-02-PLAN.md
 Resume file: None
