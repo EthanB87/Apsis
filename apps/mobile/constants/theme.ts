@@ -1,6 +1,13 @@
 /**
  * Design tokens for Apsis (UI-SPEC: Spacing Scale, Typography).
  * Dark-only theme — see constants/Colors.ts for the color palette.
+ *
+ * Type system (apsis_claude_design_prompt.md): Archivo Expanded (heavy) for display/
+ * headline sizes and big numbers, Archivo for body/UI, JetBrains Mono for data/
+ * telemetry (metrics, units, timestamps, set/rep data) — the mono-for-data rule is
+ * core to the "performance instrument, not a diary" identity. True "Expanded" width
+ * isn't shipped on expo-google-fonts, so heavy-weight Archivo (900/800) is the
+ * pragmatic stand-in the design brief explicitly permits.
  */
 import type { TextStyle } from 'react-native';
 
@@ -25,14 +32,49 @@ export const HIT_TARGET_MIN = 44;
 /** Hairline divider width between set rows / card edges (UI-SPEC exception, not a spacing token). */
 export const HAIRLINE_WIDTH = 2;
 
-type TypographyRole = Pick<TextStyle, 'fontSize' | 'fontWeight' | 'lineHeight'>;
+/** Corner radius tokens — sharp, not pillowy (design brief: ~6-10px on cards/buttons). */
+export const Radius = {
+  sm: 6,
+  md: 8,
+  lg: 10,
+} as const;
 
-/** Typography roles — only these 4 sizes / 2 weights exist in this phase's UI. */
+type TypographyRole = Pick<
+  TextStyle,
+  'fontSize' | 'fontWeight' | 'lineHeight' | 'fontFamily' | 'textTransform' | 'letterSpacing'
+>;
+
+/** Typography roles — display/heading carry the heavy Archivo family, ALL CAPS, tight tracking. */
 export const Typography: Record<'body' | 'label' | 'heading' | 'display', TypographyRole> = {
-  body: { fontSize: 16, fontWeight: '400', lineHeight: 24 },
-  label: { fontSize: 13, fontWeight: '400', lineHeight: 17 },
-  heading: { fontSize: 20, fontWeight: '600', lineHeight: 24 },
-  display: { fontSize: 32, fontWeight: '600', lineHeight: 35 },
+  body: { fontFamily: 'Archivo_400Regular', fontSize: 16, fontWeight: '400', lineHeight: 24 },
+  label: { fontFamily: 'Archivo_500Medium', fontSize: 13, fontWeight: '400', lineHeight: 17 },
+  heading: {
+    fontFamily: 'Archivo_800ExtraBold',
+    fontSize: 20,
+    fontWeight: '600',
+    lineHeight: 24,
+    textTransform: 'uppercase',
+    letterSpacing: -0.5,
+  },
+  display: {
+    fontFamily: 'Archivo_900Black',
+    fontSize: 40,
+    fontWeight: '600',
+    lineHeight: 44,
+    textTransform: 'uppercase',
+    letterSpacing: -0.5,
+  },
+};
+
+/**
+ * Data / telemetry role for metrics, units, timestamps, set/rep data (design brief:
+ * "numbers must look like instrument readouts"). Wide-tracked, uppercase JetBrains Mono.
+ */
+export const Mono: TypographyRole = {
+  fontFamily: 'JetBrainsMono_500Medium',
+  fontSize: 13,
+  letterSpacing: 1,
+  textTransform: 'uppercase',
 };
 
 /**

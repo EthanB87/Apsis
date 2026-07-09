@@ -6,6 +6,8 @@
     "@apsis/db": "workspace:*",
     "@apsis/engine": "workspace:*",
     "@apsis/shared": "workspace:*",
+    "@expo-google-fonts/archivo": "^0.4.2",
+    "@expo-google-fonts/jetbrains-mono": "^0.4.1",
     "@gorhom/bottom-sheet": "^5.2.14",
     "@op-engineering/op-sqlite": "16.2.2",
     "expo": "~56.0.12",

@@ -27,6 +27,14 @@ import { useEffect, useState } from 'react';
 import { StyleSheet } from 'react-native';
 import { Stack, useRouter, type Href } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
+import { useFonts } from 'expo-font';
+import {
+  Archivo_400Regular,
+  Archivo_500Medium,
+  Archivo_800ExtraBold,
+  Archivo_900Black,
+} from '@expo-google-fonts/archivo';
+import { JetBrainsMono_400Regular, JetBrainsMono_500Medium } from '@expo-google-fonts/jetbrains-mono';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useMigrations } from 'drizzle-orm/op-sqlite/migrator';
 import type { InferSelectModel } from 'drizzle-orm';
@@ -40,6 +48,14 @@ type WorkoutRow = InferSelectModel<typeof workout>;
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout(): React.JSX.Element | null {
+  const [fontsLoaded] = useFonts({
+    Archivo_400Regular,
+    Archivo_500Medium,
+    Archivo_800ExtraBold,
+    Archivo_900Black,
+    JetBrainsMono_400Regular,
+    JetBrainsMono_500Medium,
+  });
   const { success, error } = useMigrations(db, migrations);
   const router = useRouter();
   const hasProfile = useProfileExists(success);
@@ -87,14 +103,16 @@ export default function RootLayout(): React.JSX.Element | null {
     }
   }, [openWorkoutRow, pendingRoute, router]);
 
-  // --- Hide splash screen when boot is complete (success or error) ---
+  // --- Hide splash screen when boot is complete (success or error) AND fonts have settled ---
+  // (design-system fontFamily references would render as system fallback if the splash hid
+  // before Archivo/JetBrains Mono finished loading — quick task 260709-qmv).
   useEffect(() => {
-    if (success || error) {
+    if ((success || error) && fontsLoaded) {
       SplashScreen.hideAsync().catch(() => {
         // hideAsync() throws if the splash was already hidden — safe to swallow.
       });
     }
-  }, [success, error]);
+  }, [success, error, fontsLoaded]);
 
   // --- Error gate (V7 / T-1-02) ---
   if (error) {
@@ -107,8 +125,8 @@ export default function RootLayout(): React.JSX.Element | null {
     );
   }
 
-  // --- Loading gate: wait for migrations, profile-exists, and resume-check to settle ---
-  if (!success || hasProfile === 'loading' || openWorkoutRow === 'loading') {
+  // --- Loading gate: wait for fonts, migrations, profile-exists, and resume-check to settle ---
+  if (!fontsLoaded || !success || hasProfile === 'loading' || openWorkoutRow === 'loading') {
     return (
       <GestureHandlerRootView style={styles.fill}>
         <LoadingScreen />

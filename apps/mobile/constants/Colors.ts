@@ -2,24 +2,33 @@
  * Apsis ships dark-mode only in v1.0 (UI-SPEC Design System — Theming decision).
  * The `light`/`dark` key shape is kept for future-proofing, but both resolve to
  * the same dark palette this phase.
+ *
+ * Palette source of truth: apsis_claude_design_prompt.md ("PERFORMANCE INSTRUMENT,
+ * NOT A DIARY") — void/carbon/steel/line/bone/ash/volt/molten. Volt is the single
+ * primary accent; molten is reserved for alert/heat/overreaching states only — the
+ * two must never compete as fills in the same view (quick task 260709-qmv).
  */
 
-const background = '#0C0E12'; // Dominant (60%) — screen backgrounds
-const surface = '#181B20'; // Secondary (30%) — elevated surfaces
-const accent = '#3E8EF7'; // Accent (10%) — primary CTAs, live HSS number, active tab
-const destructive = '#E5484D'; // Discard action, swipe-to-delete reveal
-const warning = '#D9A441'; // Engine-warning badge, out-of-range notice
-const text = '#F2F3F5'; // Primary text on all dark surfaces
-const mutedText = '#8A8F98'; // Secondary/muted text, placeholders
-const border = '#2A2E35'; // Hairline dividers, card edges
+const background = '#0B0C0E'; // void — Dominant (60%) — screen backgrounds
+const surface = '#15171A'; // carbon — Secondary (30%) — cards / elevated surfaces
+const steel = '#1F2329'; // steel — raised surface, inactive track
+const accent = '#C6F23D'; // volt — Accent (10%) — primary CTAs, live HSS number, active tab, "go/ready"
+const onAccent = '#0B0C0E'; // void — label color for volt-filled CTAs (never bone-on-volt)
+const destructive = '#FF5A1F'; // molten — alert/heat accent: overreaching, red-zone readiness, "stop"
+const warning = '#A8B545'; // muted yellow-green — amber/caution readiness (never pure volt)
+const text = '#F2F1EC'; // bone — primary text on all dark surfaces
+const mutedText = '#8A9098'; // ash — secondary/muted text, metadata, placeholders
+const border = '#2A2F36'; // line — hairline dividers, card edges
 
 const darkPalette = {
   text,
   mutedText,
   background,
   surface,
+  steel,
   tint: accent,
   accent,
+  onAccent,
   destructive,
   warning,
   border,
