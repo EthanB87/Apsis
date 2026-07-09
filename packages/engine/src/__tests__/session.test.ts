@@ -6,6 +6,7 @@
 import { sessionHSS, sessionHSSDetailed } from '../session';
 import { strengthStress } from '../strength';
 import { enduranceStress } from '../endurance';
+import { carryStress } from '../carry';
 import { ENGINE_VERSION } from '../version';
 
 describe('sessionHSS — modality composition', () => {
@@ -53,5 +54,24 @@ describe('sessionHSSDetailed — version stamp + breakdown (D-05/D-06)', () => {
 
   it('never throws on empty input', () => {
     expect(() => sessionHSSDetailed({})).not.toThrow();
+  });
+});
+
+describe('sessionHSSDetailed — carry composition (D-20)', () => {
+  it('a carry-only session returns hss === cs (ss and es zero)', () => {
+    const carrySets = [{ loadKg: 100, bodyweightKg: 80, durationS: 20, rpe: 8, isWarmup: false }];
+    const detail = sessionHSSDetailed({ carrySets });
+    expect(detail.ss).toBe(0);
+    expect(detail.es).toBe(0);
+    expect(detail.cs).toBeCloseTo(carryStress(carrySets[0]), 10);
+    expect(detail.hss).toBeCloseTo(detail.cs as number, 10);
+  });
+
+  it('a strengthSets + carrySets session returns hss === ss + cs', () => {
+    const sets = [{ loadKg: 100, e1rmKg: 200, reps: 5, rpe: 10, isLowerBody: false, isWarmup: false }];
+    const carrySets = [{ loadKg: 100, bodyweightKg: 80, durationS: 20, rpe: 8, isWarmup: false }];
+    const detail = sessionHSSDetailed({ strengthSets: sets, carrySets });
+    expect(detail.hss).toBeCloseTo(detail.ss + (detail.cs as number), 10);
+    expect(detail.es).toBe(0);
   });
 });
