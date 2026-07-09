@@ -8,6 +8,13 @@
       "when": 1782779637257,
       "tag": "0000_mushy_satana",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1783626932319,
+      "tag": "0001_long_firebrand",
+      "breakpoints": true
     }
   ]
 }
