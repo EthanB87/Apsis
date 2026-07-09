@@ -109,7 +109,26 @@ Plans:
   4. Each new set for an exercise pre-populates with that exercise's previous-session weight + reps, and the user can add or remove sets inline.
   5. Completing a set starts a configurable auto-rest timer in a persistent banner; the session HSS updates live as each set is logged; the user can save or discard the session (discard requires confirmation) and sees the session HSS on the finish screen.
 
-**Plans**: TBD
+**Plans**: 9 plans
+
+Plans:
+**Wave 1**
+- [ ] 03-01-PLAN.md — Engine + shared foundations: bodyweight rep-max e1RM (D-18), carry/sled stress (D-20), session carry composition, pure km/mi + kg/lb units + shared vitest
+- [ ] 03-02-PLAN.md — DB schema migration (bwFactor/entryMode/finishedAt/deletedAt/addedLoadKg/durationS/restTimerDefault) + seed metadata + previous-session/soft-delete query builders [BLOCKING migration]
+- [ ] 03-03-PLAN.md — App deps install + legitimacy checkpoint, dark-only design system, Home/Log/Settings tab shell + Home placeholder
+
+**Wave 2** *(blocked on Wave 1)*
+- [ ] 03-04-PLAN.md — Onboarding gate (Stack.Protected) + wizard scaffold + sex/bodyweight/units steps + soft validation + resume detection
+
+**Wave 3** *(blocked on Wave 2)*
+- [ ] 03-05-PLAN.md — Threshold HR/pace capture (direct + estimate paths) + reusable review screen + profile save (ONB-01)
+- [ ] 03-06-PLAN.md — Lifting logger core: session store, effective-load + commit pipeline, exercise picker, SetRow, live HSS session screen, add/remove sets
+
+**Wave 4** *(blocked on Wave 3)*
+- [ ] 03-07-PLAN.md — Auto-rest timer banner + background notifications + haptics (LIFT-05) [on-device checkpoint]
+- [ ] 03-08-PLAN.md — Finish summary + confirmed soft-delete discard + HSS breakdown sheet + warning badges (LIFT-07)
+- [ ] 03-09-PLAN.md — Settings tab: profile editor (ONB-02) + units toggle (ONB-04) + default rest timer
+
 **UI hint**: yes
 
 ---
@@ -173,7 +192,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 |-------|----------------|--------|-----------|
 | 01. Foundation | 4/4 | Complete | 2026-07-02 |
 | 02. HSS Engine | 6/6 | Complete    | 2026-07-08 |
-| 03. Onboarding & Lifting Logger | 0/TBD | Not started | - |
+| 03. Onboarding & Lifting Logger | 0/9 | Not started | - |
 | 04. Run Logger & Home Dashboard | 0/TBD | Not started | - |
 | 05. HealthKit Integration | 0/TBD | Not started | - |
 | 06. Polish & App Store Submission | 0/TBD | Not started | - |
