@@ -10,7 +10,7 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
-import { lbToKgExact } from '@apsis/shared';
+import { kgToDisplayLb, lbToKgExact } from '@apsis/shared';
 import { WizardStep } from '../../components/onboarding/WizardStep';
 import { useOnboardingDraft } from '../../lib/onboardingDraft';
 import Colors from '../../constants/Colors';
@@ -22,9 +22,19 @@ const MAX_PLAUSIBLE_KG = 250;
 export default function BodyweightStep(): React.JSX.Element {
   const router = useRouter();
   const units = useOnboardingDraft((state) => state.units);
+  const bodyweightKg = useOnboardingDraft((state) => state.bodyweightKg);
   const setBodyweightKg = useOnboardingDraft((state) => state.setBodyweightKg);
 
-  const [text, setText] = useState('');
+  // WR-08: seed the input from the draft so re-entering this step (the review screen's
+  // D-04 tap-to-edit path) shows the previously entered value — same pattern as the
+  // threshold-hr/threshold-pace steps. Rendered as rounded display units.
+  const seededText =
+    bodyweightKg != null
+      ? units === 'imperial'
+        ? String(kgToDisplayLb(bodyweightKg))
+        : String(Math.round(bodyweightKg * 10) / 10)
+      : '';
+  const [text, setText] = useState(seededText);
 
   const parsed = Number(text);
   const isValidNumber = text.trim().length > 0 && Number.isFinite(parsed) && parsed > 0;
@@ -38,7 +48,11 @@ export default function BodyweightStep(): React.JSX.Element {
   }
 
   function handleNext(): void {
-    if (kgValue != null) {
+    // If the seeded display text was left unedited, keep the exact stored kg rather
+    // than round-tripping the rounded display back to metric (D-12 exact round-trip —
+    // same guard as the Settings bodyweight editor).
+    const unedited = seededText !== '' && text === seededText;
+    if (kgValue != null && !unedited) {
       setBodyweightKg(kgValue);
     }
     router.push('/onboarding/units');
