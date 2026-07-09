@@ -16,7 +16,7 @@ import BottomSheet, { BottomSheetSectionList, BottomSheetTextInput } from '@gorh
 import { db, STARTER_EXERCISES, recentExerciseIds } from '@apsis/db';
 
 import Colors from '../../constants/Colors';
-import { HIT_TARGET_MIN, Spacing, Typography } from '../../constants/theme';
+import { HIT_TARGET_MIN, Radius, Spacing, Typography } from '../../constants/theme';
 import type { AddExerciseInput } from '../../stores/sessionStore';
 
 type LoggableExercise = (typeof STARTER_EXERCISES)[number] & {
@@ -186,7 +186,7 @@ const styles = StyleSheet.create({
     ...Typography.body,
     color: Colors.dark.text,
     backgroundColor: Colors.dark.background,
-    borderRadius: 10,
+    borderRadius: Radius.lg,
     paddingHorizontal: Spacing.md,
     minHeight: HIT_TARGET_MIN,
   },

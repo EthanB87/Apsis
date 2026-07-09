@@ -19,7 +19,7 @@ import { db, workout, openWorkout } from '@apsis/db';
 
 import { Text, View } from '@/components/Themed';
 import Colors from '@/constants/Colors';
-import { HIT_TARGET_MIN, Spacing, Typography } from '@/constants/theme';
+import { HIT_TARGET_MIN, Radius, Spacing, Typography } from '@/constants/theme';
 import { useSessionStore } from '@/stores/sessionStore';
 import { fetchProfileSummary } from '@/lib/commitSet';
 
@@ -128,7 +128,7 @@ const styles = StyleSheet.create({
   button: {
     minHeight: HIT_TARGET_MIN,
     minWidth: 200,
-    borderRadius: 12,
+    borderRadius: Radius.lg,
     backgroundColor: Colors.dark.accent,
     alignItems: 'center',
     justifyContent: 'center',
@@ -142,6 +142,6 @@ const styles = StyleSheet.create({
   },
   buttonLabel: {
     ...Typography.body,
-    color: Colors.dark.text,
+    color: Colors.dark.onAccent,
   },
 });

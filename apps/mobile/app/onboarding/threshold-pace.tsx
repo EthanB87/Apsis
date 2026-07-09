@@ -16,7 +16,7 @@ import { WizardStep } from '../../components/onboarding/WizardStep';
 import { useOnboardingDraft } from '../../lib/onboardingDraft';
 import { thresholdPaceFromRace, type RaceDistanceKey } from '../../lib/thresholdEstimates';
 import Colors from '../../constants/Colors';
-import { HIT_TARGET_MIN, Spacing, Typography, tabularNums } from '../../constants/theme';
+import { HIT_TARGET_MIN, Radius, Spacing, Typography, tabularNums } from '../../constants/theme';
 
 const MIN_PLAUSIBLE_SEC_PER_KM = 150; // 2:30 /km
 const MAX_PLAUSIBLE_SEC_PER_KM = 720; // 12:00 /km
@@ -239,7 +239,7 @@ const styles = StyleSheet.create({
   modeButton: {
     flex: 1,
     minHeight: HIT_TARGET_MIN,
-    borderRadius: 12,
+    borderRadius: Radius.lg,
     borderWidth: 1,
     borderColor: Colors.dark.border,
     backgroundColor: Colors.dark.surface,
@@ -258,7 +258,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   modeButtonLabelSelected: {
-    color: Colors.dark.text,
+    color: Colors.dark.onAccent,
   },
   subLabel: {
     ...Typography.label,

@@ -20,7 +20,7 @@ import { carryStressDetailed, estimateE1RM, estimateE1RMFromRepMaxTable, strengt
 import { kgToDisplayLb, lbToKgExact, formatPaceMinSec, type Units } from '@apsis/shared';
 
 import Colors from '../../constants/Colors';
-import { HIT_TARGET_MIN, Spacing, Typography, tabularNums } from '../../constants/theme';
+import { HIT_TARGET_MIN, Mono, Radius, Spacing, Typography, tabularNums } from '../../constants/theme';
 import { computeEffectiveLoad } from '../../lib/effectiveLoad';
 import { commitSet, uncommitSet } from '../../lib/commitSet';
 import { useSessionStore, type SetDraft } from '../../stores/sessionStore';
@@ -408,7 +408,7 @@ const styles = StyleSheet.create({
   stepper: {
     width: HIT_TARGET_MIN,
     height: HIT_TARGET_MIN,
-    borderRadius: 10,
+    borderRadius: Radius.lg,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: Colors.dark.border,
@@ -418,14 +418,16 @@ const styles = StyleSheet.create({
     color: Colors.dark.text,
   },
   valueInput: {
-    ...Typography.body,
+    ...Mono,
+    fontSize: 16,
+    textTransform: 'none',
     color: Colors.dark.text,
     minWidth: 40,
     textAlign: 'center',
     paddingVertical: 0,
   },
   unitLabel: {
-    ...Typography.label,
+    ...Mono,
     color: Colors.dark.mutedText,
   },
   rpeRow: {
@@ -435,7 +437,7 @@ const styles = StyleSheet.create({
   rpePill: {
     minWidth: HIT_TARGET_MIN,
     height: HIT_TARGET_MIN,
-    borderRadius: 10,
+    borderRadius: Radius.lg,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: Colors.dark.border,
@@ -444,11 +446,11 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.dark.accent,
   },
   rpePillLabel: {
-    ...Typography.label,
+    ...Mono,
     color: Colors.dark.mutedText,
   },
   rpePillLabelSelected: {
-    color: Colors.dark.text,
+    color: Colors.dark.onAccent,
   },
   checkmark: {
     width: HIT_TARGET_MIN,
@@ -464,12 +466,12 @@ const styles = StyleSheet.create({
     borderColor: Colors.dark.accent,
   },
   checkmarkGlyph: {
-    color: Colors.dark.text,
+    color: Colors.dark.onAccent,
     fontSize: 14,
     fontWeight: '700',
   },
   effectiveLoadLabel: {
-    ...Typography.label,
+    ...Mono,
     color: Colors.dark.mutedText,
     width: '100%',
   },
@@ -481,7 +483,7 @@ const styles = StyleSheet.create({
   warningBadge: {
     width: 20,
     height: 20,
-    borderRadius: 10,
+    borderRadius: Radius.md,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: Colors.dark.warning,

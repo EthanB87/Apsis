@@ -14,7 +14,7 @@ import { WizardStep } from '../../components/onboarding/WizardStep';
 import { useOnboardingDraft } from '../../lib/onboardingDraft';
 import { thresholdHrFromMax, thresholdHrFromAge } from '../../lib/thresholdEstimates';
 import Colors from '../../constants/Colors';
-import { HIT_TARGET_MIN, Spacing, Typography, tabularNums } from '../../constants/theme';
+import { HIT_TARGET_MIN, Radius, Spacing, Typography, tabularNums } from '../../constants/theme';
 
 const MIN_PLAUSIBLE_HR = 100;
 const MAX_PLAUSIBLE_HR = 220;
@@ -183,7 +183,7 @@ const styles = StyleSheet.create({
   modeButton: {
     flex: 1,
     minHeight: HIT_TARGET_MIN,
-    borderRadius: 12,
+    borderRadius: Radius.lg,
     borderWidth: 1,
     borderColor: Colors.dark.border,
     backgroundColor: Colors.dark.surface,
@@ -202,7 +202,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   modeButtonLabelSelected: {
-    color: Colors.dark.text,
+    color: Colors.dark.onAccent,
   },
   inputRow: {
     flexDirection: 'row',

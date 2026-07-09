@@ -47,7 +47,7 @@ import {
 } from '../../../components/onboarding/ProfileReview';
 import { useProfile, type ProfileUpdateInput } from '../../../hooks/useProfile';
 import Colors from '../../../constants/Colors';
-import { HIT_TARGET_MIN, Spacing, Typography, tabularNums } from '../../../constants/theme';
+import { HIT_TARGET_MIN, Mono, Radius, Spacing, Typography, tabularNums } from '../../../constants/theme';
 
 const MIN_PLAUSIBLE_KG = 30;
 const MAX_PLAUSIBLE_KG = 250;
@@ -514,7 +514,7 @@ const styles = StyleSheet.create({
   retryButton: {
     minHeight: HIT_TARGET_MIN,
     minWidth: 120,
-    borderRadius: 12,
+    borderRadius: Radius.lg,
     backgroundColor: Colors.dark.accent,
     alignItems: 'center',
     justifyContent: 'center',
@@ -522,7 +522,7 @@ const styles = StyleSheet.create({
   },
   retryLabel: {
     ...Typography.body,
-    color: Colors.dark.text,
+    color: Colors.dark.onAccent,
   },
   scrollContent: {
     paddingBottom: Spacing.xxl,
@@ -555,7 +555,7 @@ const styles = StyleSheet.create({
   choiceButton: {
     flex: 1,
     minHeight: HIT_TARGET_MIN,
-    borderRadius: 12,
+    borderRadius: Radius.lg,
     borderWidth: 1,
     borderColor: Colors.dark.border,
     backgroundColor: Colors.dark.surface,
@@ -580,7 +580,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   choiceLabelSelected: {
-    color: Colors.dark.text,
+    color: Colors.dark.onAccent,
   },
   choiceSub: {
     ...Typography.label,
@@ -593,7 +593,7 @@ const styles = StyleSheet.create({
     gap: Spacing.xs,
   },
   footerText: {
-    ...Typography.label,
+    ...Mono,
     color: Colors.dark.mutedText,
   },
   modalOverlay: {
@@ -605,7 +605,7 @@ const styles = StyleSheet.create({
   },
   modalCard: {
     width: '100%',
-    borderRadius: 16,
+    borderRadius: Radius.lg,
     backgroundColor: Colors.dark.surface,
     padding: Spacing.lg,
   },
@@ -657,7 +657,7 @@ const styles = StyleSheet.create({
   },
   sexOption: {
     minHeight: HIT_TARGET_MIN,
-    borderRadius: 12,
+    borderRadius: Radius.lg,
     borderWidth: 1,
     borderColor: Colors.dark.border,
     backgroundColor: Colors.dark.background,
@@ -673,7 +673,7 @@ const styles = StyleSheet.create({
     color: Colors.dark.text,
   },
   sexOptionLabelSelected: {
-    color: Colors.dark.text,
+    color: Colors.dark.onAccent,
   },
   modalActions: {
     flexDirection: 'row',
@@ -686,7 +686,7 @@ const styles = StyleSheet.create({
   modalActionButton: {
     flex: 1,
     minHeight: HIT_TARGET_MIN,
-    borderRadius: 12,
+    borderRadius: Radius.lg,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -704,6 +704,6 @@ const styles = StyleSheet.create({
   },
   modalActionPrimaryLabel: {
     ...Typography.body,
-    color: Colors.dark.text,
+    color: Colors.dark.onAccent,
   },
 });

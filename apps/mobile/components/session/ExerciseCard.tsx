@@ -14,7 +14,7 @@ import Swipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
 import { db } from '@apsis/db';
 
 import Colors from '../../constants/Colors';
-import { HAIRLINE_WIDTH, HIT_TARGET_MIN, Spacing, Typography } from '../../constants/theme';
+import { HAIRLINE_WIDTH, HIT_TARGET_MIN, Mono, Radius, Spacing, Typography } from '../../constants/theme';
 import { uncommitSet } from '../../lib/commitSet';
 import { useSessionStore, type ExerciseCardState, type SetDraft } from '../../stores/sessionStore';
 import { SetRow } from './SetRow';
@@ -97,7 +97,7 @@ export function ExerciseCard({ exercise }: ExerciseCardProps): React.JSX.Element
 const styles = StyleSheet.create({
   card: {
     backgroundColor: Colors.dark.surface,
-    borderRadius: 24,
+    borderRadius: Radius.lg,
     marginHorizontal: Spacing.md,
     marginBottom: Spacing.md,
     overflow: 'hidden',
@@ -112,7 +112,7 @@ const styles = StyleSheet.create({
     color: Colors.dark.text,
   },
   summary: {
-    ...Typography.label,
+    ...Mono,
     color: Colors.dark.mutedText,
     marginTop: Spacing.xs,
   },

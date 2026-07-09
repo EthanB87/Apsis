@@ -19,7 +19,7 @@ import React from 'react';
 import { View, Text, ActivityIndicator, Pressable, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Colors from '../constants/Colors';
-import { HIT_TARGET_MIN, Spacing, Typography } from '../constants/theme';
+import { HIT_TARGET_MIN, Radius, Spacing, Typography } from '../constants/theme';
 
 // ---------------------------------------------------------------------------
 // LoadingScreen
@@ -32,7 +32,7 @@ import { HIT_TARGET_MIN, Spacing, Typography } from '../constants/theme';
 export function LoadingScreen(): React.JSX.Element {
   return (
     <View style={styles.container} testID="boot-loading">
-      <ActivityIndicator size="large" color="#555" />
+      <ActivityIndicator size="large" color={Colors.dark.accent} />
       <Text style={styles.loadingText}>Starting database...</Text>
     </View>
   );
@@ -141,18 +141,18 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#ffffff',
+    backgroundColor: Colors.dark.background,
     paddingHorizontal: 32,
   },
   loadingText: {
+    ...Typography.body,
     marginTop: 16,
-    fontSize: 16,
-    color: '#666666',
+    color: Colors.dark.mutedText,
     textAlign: 'center',
   },
   errorText: {
-    fontSize: 16,
-    color: '#c0392b',
+    ...Typography.body,
+    color: Colors.dark.destructive,
     textAlign: 'center',
     lineHeight: 24,
   },
@@ -181,7 +181,7 @@ const resumeStyles = StyleSheet.create({
   },
   button: {
     minHeight: HIT_TARGET_MIN,
-    borderRadius: 12,
+    borderRadius: Radius.lg,
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: Spacing.lg,
@@ -194,7 +194,7 @@ const resumeStyles = StyleSheet.create({
   },
   primaryButtonLabel: {
     ...Typography.body,
-    color: Colors.dark.text,
+    color: Colors.dark.onAccent,
   },
   secondaryButton: {
     borderWidth: 1,

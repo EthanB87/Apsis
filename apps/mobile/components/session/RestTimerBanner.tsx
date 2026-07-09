@@ -18,7 +18,7 @@ import { AppState, Pressable, StyleSheet, Text, View } from 'react-native';
 import * as Haptics from 'expo-haptics';
 
 import Colors from '../../constants/Colors';
-import { HIT_TARGET_MIN, Spacing, Typography, tabularNums } from '../../constants/theme';
+import { HIT_TARGET_MIN, Mono, Radius, Spacing, Typography, tabularNums } from '../../constants/theme';
 import { remainingSec } from '../../lib/restTimer';
 import { useSessionStore } from '../../stores/sessionStore';
 
@@ -116,7 +116,8 @@ const styles = StyleSheet.create({
     gap: Spacing.md,
   },
   countdown: {
-    ...Typography.display,
+    ...Mono,
+    fontSize: 24,
     color: Colors.dark.text,
   },
   actions: {
@@ -127,7 +128,7 @@ const styles = StyleSheet.create({
     minHeight: HIT_TARGET_MIN,
     minWidth: HIT_TARGET_MIN,
     paddingHorizontal: Spacing.md,
-    borderRadius: 10,
+    borderRadius: Radius.lg,
     borderWidth: 1,
     borderColor: Colors.dark.accent,
     alignItems: 'center',

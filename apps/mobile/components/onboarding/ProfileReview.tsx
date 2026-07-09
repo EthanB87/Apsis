@@ -17,7 +17,7 @@ import { View, Text, Pressable, ScrollView, ActivityIndicator, StyleSheet } from
 import type { Sex, Units } from '@apsis/shared';
 import { kgToDisplayLb, paceSecPerKmToSecPerMi, formatPaceMinSec } from '@apsis/shared';
 import Colors from '../../constants/Colors';
-import { HIT_TARGET_MIN, Spacing, Typography } from '../../constants/theme';
+import { HIT_TARGET_MIN, Radius, Spacing, Typography } from '../../constants/theme';
 
 export interface ProfileReviewValues {
   sex: Sex | null;
@@ -134,7 +134,7 @@ export function ProfileReview({
           pressed && !submitting && styles.buttonPressed,
         ]}>
         {submitting ? (
-          <ActivityIndicator color={Colors.dark.text} />
+          <ActivityIndicator color={Colors.dark.onAccent} />
         ) : (
           <Text style={styles.buttonLabel}>{primaryLabel}</Text>
         )}
@@ -181,7 +181,7 @@ const styles = StyleSheet.create({
     color: Colors.dark.text,
   },
   estimatedTag: {
-    borderRadius: 6,
+    borderRadius: Radius.sm,
     paddingHorizontal: Spacing.xs,
     paddingVertical: 2,
     backgroundColor: Colors.dark.border,
@@ -204,7 +204,7 @@ const styles = StyleSheet.create({
     marginHorizontal: Spacing.md,
     marginTop: Spacing.md,
     marginBottom: Spacing.md,
-    borderRadius: 12,
+    borderRadius: Radius.lg,
     backgroundColor: Colors.dark.accent,
     alignItems: 'center',
     justifyContent: 'center',
@@ -217,6 +217,6 @@ const styles = StyleSheet.create({
   },
   buttonLabel: {
     ...Typography.body,
-    color: Colors.dark.text,
+    color: Colors.dark.onAccent,
   },
 });

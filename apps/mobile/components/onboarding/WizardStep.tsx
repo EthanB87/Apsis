@@ -12,7 +12,7 @@ import React from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Colors from '../../constants/Colors';
-import { HIT_TARGET_MIN, Spacing, Typography } from '../../constants/theme';
+import { HIT_TARGET_MIN, Radius, Spacing, Typography } from '../../constants/theme';
 import { WIZARD_STEP_ORDER, type WizardStepName } from '../../lib/onboardingDraft';
 
 export interface WizardStepProps {
@@ -116,7 +116,7 @@ const styles = StyleSheet.create({
     minHeight: HIT_TARGET_MIN,
     marginHorizontal: Spacing.md,
     marginBottom: Spacing.md,
-    borderRadius: 12,
+    borderRadius: Radius.lg,
     backgroundColor: Colors.dark.accent,
     alignItems: 'center',
     justifyContent: 'center',
@@ -129,6 +129,6 @@ const styles = StyleSheet.create({
   },
   buttonLabel: {
     ...Typography.body,
-    color: Colors.dark.text,
+    color: Colors.dark.onAccent,
   },
 });

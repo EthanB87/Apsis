@@ -24,7 +24,7 @@ import { sessionHSSDetailed } from '@apsis/engine';
 import type { CarrySet, StrengthSet } from '@apsis/shared';
 
 import Colors from '../../constants/Colors';
-import { HIT_TARGET_MIN, Spacing, Typography, tabularNums } from '../../constants/theme';
+import { HIT_TARGET_MIN, Mono, Radius, Spacing, Typography, tabularNums } from '../../constants/theme';
 import { fetchProfileSummary } from '../../lib/commitSet';
 import { discardWorkout, finishWorkout } from '../../lib/finishWorkout';
 import { useSessionStore } from '../../stores/sessionStore';
@@ -321,7 +321,7 @@ const styles = StyleSheet.create({
     right: Spacing.md,
     zIndex: 2,
     backgroundColor: Colors.dark.surface,
-    borderRadius: 12,
+    borderRadius: Radius.lg,
     paddingVertical: Spacing.xs,
     minWidth: 180,
   },
@@ -361,7 +361,7 @@ const styles = StyleSheet.create({
     color: Colors.dark.text,
   },
   exerciseMeta: {
-    ...Typography.label,
+    ...Mono,
     color: Colors.dark.mutedText,
   },
   warningsSection: {
@@ -382,14 +382,14 @@ const styles = StyleSheet.create({
     minHeight: HIT_TARGET_MIN,
     marginHorizontal: Spacing.lg,
     marginBottom: Spacing.lg,
-    borderRadius: 12,
+    borderRadius: Radius.lg,
     backgroundColor: Colors.dark.accent,
     alignItems: 'center',
     justifyContent: 'center',
   },
   buttonLabel: {
     ...Typography.body,
-    color: Colors.dark.text,
+    color: Colors.dark.onAccent,
   },
   modalBackdrop: {
     flex: 1,
@@ -401,7 +401,7 @@ const styles = StyleSheet.create({
   modalCard: {
     width: '100%',
     backgroundColor: Colors.dark.surface,
-    borderRadius: 16,
+    borderRadius: Radius.lg,
     padding: Spacing.lg,
   },
   modalMessage: {
@@ -414,7 +414,7 @@ const styles = StyleSheet.create({
   },
   modalSecondaryButton: {
     minHeight: HIT_TARGET_MIN,
-    borderRadius: 12,
+    borderRadius: Radius.lg,
     borderWidth: 1,
     borderColor: Colors.dark.border,
     alignItems: 'center',
@@ -426,7 +426,7 @@ const styles = StyleSheet.create({
   },
   modalDestructiveButton: {
     minHeight: HIT_TARGET_MIN,
-    borderRadius: 12,
+    borderRadius: Radius.lg,
     backgroundColor: Colors.dark.destructive,
     alignItems: 'center',
     justifyContent: 'center',

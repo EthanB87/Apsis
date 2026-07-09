@@ -18,7 +18,7 @@ import { eq } from 'drizzle-orm';
 import { db, workout } from '@apsis/db';
 
 import Colors from '@/constants/Colors';
-import { HIT_TARGET_MIN, Spacing, Typography } from '@/constants/theme';
+import { HIT_TARGET_MIN, Radius, Spacing, Typography } from '@/constants/theme';
 import { fetchProfileSummary } from '@/lib/commitSet';
 import { ExerciseCard } from '@/components/session/ExerciseCard';
 import { ExercisePickerSheet } from '@/components/session/ExercisePickerSheet';
@@ -131,7 +131,7 @@ const styles = StyleSheet.create({
     minHeight: HIT_TARGET_MIN,
     marginHorizontal: Spacing.md,
     marginTop: Spacing.xl,
-    borderRadius: 12,
+    borderRadius: Radius.lg,
     borderWidth: 1,
     borderColor: Colors.dark.accent,
     alignItems: 'center',

@@ -22,7 +22,7 @@ import BottomSheet, { BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { carryStressDetailed, estimateE1RM, estimateE1RMFromRepMaxTable, strengthStressDetailed } from '@apsis/engine';
 
 import Colors from '../../constants/Colors';
-import { Spacing, Typography, tabularNums } from '../../constants/theme';
+import { Mono, Spacing, Typography, tabularNums } from '../../constants/theme';
 import { computeEffectiveLoad } from '../../lib/effectiveLoad';
 import { useSessionStore, type ExerciseCardState } from '../../stores/sessionStore';
 
@@ -162,7 +162,7 @@ const styles = StyleSheet.create({
     paddingRight: Spacing.sm,
   },
   exerciseStress: {
-    ...Typography.label,
+    ...Mono,
     color: Colors.dark.mutedText,
   },
   totalRow: {

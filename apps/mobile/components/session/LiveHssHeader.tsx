@@ -16,7 +16,7 @@ import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import Animated, { Easing, useAnimatedProps, useSharedValue, withTiming } from 'react-native-reanimated';
 
 import Colors from '../../constants/Colors';
-import { HIT_TARGET_MIN, Spacing, Typography, tabularNums } from '../../constants/theme';
+import { HIT_TARGET_MIN, Mono, Radius, Spacing, Typography, tabularNums } from '../../constants/theme';
 import { useSessionStore } from '../../stores/sessionStore';
 
 Animated.addWhitelistedNativeProps({ text: true });
@@ -105,7 +105,7 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.sm,
   },
   elapsed: {
-    ...Typography.body,
+    ...Mono,
     color: Colors.dark.text,
     minWidth: 56,
   },
@@ -126,12 +126,12 @@ const styles = StyleSheet.create({
     minWidth: 72,
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: 10,
+    borderRadius: Radius.lg,
     backgroundColor: Colors.dark.accent,
     paddingHorizontal: Spacing.md,
   },
   finishLabel: {
     ...Typography.body,
-    color: Colors.dark.text,
+    color: Colors.dark.onAccent,
   },
 });

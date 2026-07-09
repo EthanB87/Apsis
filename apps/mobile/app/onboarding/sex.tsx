@@ -12,7 +12,7 @@ import type { Sex } from '@apsis/shared';
 import { WizardStep } from '../../components/onboarding/WizardStep';
 import { useOnboardingDraft } from '../../lib/onboardingDraft';
 import Colors from '../../constants/Colors';
-import { HIT_TARGET_MIN, Spacing, Typography } from '../../constants/theme';
+import { HIT_TARGET_MIN, Radius, Spacing, Typography } from '../../constants/theme';
 
 const OPTIONS: ReadonlyArray<{ value: Sex; label: string }> = [
   { value: 'male', label: 'Male' },
@@ -61,7 +61,7 @@ const styles = StyleSheet.create({
   },
   option: {
     minHeight: HIT_TARGET_MIN + 12,
-    borderRadius: 12,
+    borderRadius: Radius.lg,
     borderWidth: 1,
     borderColor: Colors.dark.border,
     backgroundColor: Colors.dark.surface,
@@ -77,6 +77,6 @@ const styles = StyleSheet.create({
     color: Colors.dark.text,
   },
   optionLabelSelected: {
-    color: Colors.dark.text,
+    color: Colors.dark.onAccent,
   },
 });

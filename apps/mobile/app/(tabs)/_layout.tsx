@@ -1,3 +1,4 @@
+import { Image } from 'react-native';
 import { SymbolView } from 'expo-symbols';
 import { Tabs } from 'expo-router';
 
@@ -15,6 +16,8 @@ export default function TabLayout() {
         tabBarInactiveTintColor: Colors[colorScheme].tabIconDefault,
         tabBarStyle: {
           backgroundColor: Colors[colorScheme].surface,
+          borderTopColor: Colors[colorScheme].border,
+          borderTopWidth: 1,
         },
         // Disable the static render of the header on web
         // to prevent a hydration error in React Navigation v6.
@@ -25,10 +28,10 @@ export default function TabLayout() {
         options={{
           title: 'Home',
           tabBarIcon: ({ color }) => (
-            <SymbolView
-              name={{ ios: 'house.fill', android: 'home', web: 'home' }}
-              tintColor={color}
-              size={28}
+            <Image
+              source={require('../../assets/images/apsis-plate-mark.png')}
+              style={{ width: 28, height: 28, tintColor: color }}
+              resizeMode="contain"
             />
           ),
         }}
