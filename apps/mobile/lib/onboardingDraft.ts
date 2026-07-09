@@ -17,8 +17,8 @@ import type { Sex, Units } from '@apsis/shared';
 
 export const WIZARD_STEP_ORDER = [
   'sex',
-  'bodyweight',
   'units',
+  'bodyweight',
   'threshold-hr',
   'threshold-pace',
   'review',

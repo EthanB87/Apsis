@@ -1,5 +1,5 @@
 /**
- * apps/mobile/app/onboarding/units.tsx — wizard step 3 of 6 (D-01/D-05)
+ * apps/mobile/app/onboarding/units.tsx — wizard step 2 of 6 (D-01/D-05)
  *
  * Single metric/imperial choice -> draft.units, matching the schema's single
  * `user_profile.units` enum (covers both km<->mi and kg<->lb display together).
@@ -30,7 +30,7 @@ export default function UnitsStep(): React.JSX.Element {
     <WizardStep
       step="units"
       question="Which units do you use?"
-      onNext={() => router.push('/onboarding/threshold-hr')}>
+      onNext={() => router.push('/onboarding/bodyweight')}>
       <View style={styles.options}>
         {OPTIONS.map((option) => {
           const selected = units === option.value;

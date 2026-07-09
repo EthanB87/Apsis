@@ -1,5 +1,5 @@
 /**
- * apps/mobile/app/onboarding/bodyweight.tsx — wizard step 2 of 6 (D-01)
+ * apps/mobile/app/onboarding/bodyweight.tsx — wizard step 3 of 6 (D-01)
  *
  * Numeric entry honoring the draft's unit preference (kg direct, or lb converted to
  * exact kg via lbToKgExact for storage — D-05). Soft validation (D-03): accept any
@@ -55,7 +55,7 @@ export default function BodyweightStep(): React.JSX.Element {
     if (kgValue != null && !unedited) {
       setBodyweightKg(kgValue);
     }
-    router.push('/onboarding/units');
+    router.push('/onboarding/threshold-hr');
   }
 
   return (

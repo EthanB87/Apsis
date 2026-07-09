@@ -29,7 +29,7 @@ export default function SexStep(): React.JSX.Element {
     <WizardStep
       step="sex"
       question="What's your sex?"
-      onNext={() => router.push('/onboarding/bodyweight')}
+      onNext={() => router.push('/onboarding/units')}
       nextDisabled={sex == null}>
       <View style={styles.options}>
         {OPTIONS.map((option) => {
