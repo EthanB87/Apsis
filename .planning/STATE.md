@@ -2,18 +2,18 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-current_phase: 03
+current_phase: 3
 current_phase_name: Onboarding & Lifting Logger
 status: executing
-stopped_at: Phase 3 UI-SPEC approved
-last_updated: "2026-07-09T19:33:33.551Z"
-last_activity: 2026-07-08
-last_activity_desc: Phase 02 complete, transitioned to Phase 03
+stopped_at: Completed 03-01-PLAN.md
+last_updated: "2026-07-09T19:47:51.828Z"
+last_activity: 2026-07-09
+last_activity_desc: Phase 3 execution started
 progress:
   total_phases: 6
   completed_phases: 1
-  total_plans: 6
-  completed_plans: 6
+  total_plans: 15
+  completed_plans: 7
   percent: 17
 ---
 
@@ -25,16 +25,16 @@ See: .planning/PROJECT.md (updated 2026-06-29)
 
 **Core value:** Log lifting + running in one app, instantly see one honest combined
 training-load number (HSS) and a readiness band — fully offline.
-**Current focus:** Phase 02 — HSS Engine
+**Current focus:** Phase 3 — Onboarding & Lifting Logger
 the pure-TS HSS engine (the moat), which the engine's own `index.ts` explicitly defers to
 "Phase 2."
 
 ## Current Position
 
-Phase: 03 — Onboarding & Lifting Logger
-Plan: Not started
+Phase: 3 (Onboarding & Lifting Logger) — EXECUTING
+Plan: 2 of 9
 Status: Ready to execute
-Last activity: 2026-07-08 — Phase 02 complete, transitioned to Phase 03
+Last activity: 2026-07-09 — Phase 3 execution started
 traceability filled; 100% of the 39 pending v1.0 requirements mapped to Phases 02–06.
 
 Progress: [██░░░░░░░░] 17% (1/6 phases complete)
@@ -67,6 +67,7 @@ Progress: [██░░░░░░░░] 17% (1/6 phases complete)
 | Phase 02 P05 | 6min | 2 tasks | 3 files |
 | Phase 02 P04 | 4min | 3 tasks | 6 files |
 | Phase 02 P06 | 5min | 3 tasks | 10 files |
+| Phase 03 P01 | 7min | 3 tasks | 14 files |
 
 ## Accumulated Context
 
@@ -99,6 +100,9 @@ Recent decisions affecting current work:
 - [Phase 02]: dailyHSS empty array returns 0, single session has no penalty, only length > 1 triggers doublePenalty (Claude's Discretion per 02-CONTEXT.md)
 - [Phase 02]: kStrength calibrated to 4.4 (from 2.0 starting guess) via the D-13 calibration golden -- canonical hard 5x5 squat lands at HSS ~=100.1, ratio ~1.001 vs the 60-min threshold-run anchor (~=100.0)
 - [Phase 02]: @apsis/engine public barrel wired in index.ts (config/strength/endurance/session/daily/trend/version); placeholder.test.ts removed
+- [Phase ?]: kCarry = 10 tuned via D-20 golden test (4x40m heavy farmer's carry ~= 21.3 total CS, inside the 8..60 hard-accessory band)
+- [Phase ?]: REP_MAX_TABLE floor row at 30 reps (pct 0.45) -- reps above 30 clamp instead of extrapolating (D-18/Pitfall 3)
+- [Phase ?]: packages/shared/tsconfig.json now excludes src/**/__tests__ from the project build, mirroring packages/engine's existing pattern (pre-existing gap exposed by @apsis/shared's first test file)
 
 ### Pending Todos
 
@@ -120,6 +124,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-07-09T18:56:57.603Z
-Stopped at: Phase 3 UI-SPEC approved
-Resume file: .planning/phases/03-onboarding-lifting-logger/03-UI-SPEC.md
+Last session: 2026-07-09T19:47:51.818Z
+Stopped at: Completed 03-01-PLAN.md
+Resume file: None

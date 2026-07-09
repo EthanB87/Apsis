@@ -33,18 +33,18 @@ Requirements for the v1.0 release. Each maps to exactly one roadmap phase.
 - [ ] **ONB-01**: User completes onboarding capturing sex, bodyweight, threshold HR, and threshold pace
 - [ ] **ONB-02**: User can view and edit profile inputs later from settings
 - [ ] **ONB-03**: Readiness band is gated behind completed onboarding (never shows wrong numbers)
-- [ ] **ONB-04**: User can toggle display units (km ↔ mi); data is always stored in metric
+- [x] **ONB-04**: User can toggle display units (km ↔ mi); data is always stored in metric
 
 ### Lifting Logger
 
 - [ ] **LIFT-01**: User can search the seeded exercise library inline (< 2 taps to find a movement)
-- [ ] **LIFT-02**: User can log a set (load, reps, RPE, warmup flag) in ≤ 3 taps
+- [x] **LIFT-02**: User can log a set (load, reps, RPE, warmup flag) in ≤ 3 taps
 - [ ] **LIFT-03**: Each set pre-populates with the previous-session weight + reps for that exercise
 - [ ] **LIFT-04**: RPE entry is a persistent quick-row (6–10), last value pre-selected, never behind a modal
 - [ ] **LIFT-05**: Auto-rest timer starts on set completion (configurable, persistent banner)
 - [ ] **LIFT-06**: User can add and remove sets inline
 - [ ] **LIFT-07**: User can save or discard a session (discard confirmed); session HSS shown on finish
-- [ ] **LIFT-08**: Session HSS updates live as each set is logged (differentiator)
+- [x] **LIFT-08**: Session HSS updates live as each set is logged (differentiator)
 
 ### Run / Conditioning Logger
 
@@ -126,15 +126,15 @@ Which phase covers which requirement. Populated during roadmap creation.
 | ONB-01 | Phase 03 | Pending |
 | ONB-02 | Phase 03 | Pending |
 | ONB-03 | Phase 03 | Pending |
-| ONB-04 | Phase 03 | Pending |
+| ONB-04 | Phase 03 | Complete |
 | LIFT-01 | Phase 03 | Pending |
-| LIFT-02 | Phase 03 | Pending |
+| LIFT-02 | Phase 03 | Complete |
 | LIFT-03 | Phase 03 | Pending |
 | LIFT-04 | Phase 03 | Pending |
 | LIFT-05 | Phase 03 | Pending |
 | LIFT-06 | Phase 03 | Pending |
 | LIFT-07 | Phase 03 | Pending |
-| LIFT-08 | Phase 03 | Pending |
+| LIFT-08 | Phase 03 | Complete |
 | RUN-01 | Phase 04 | Pending |
 | RUN-02 | Phase 04 | Pending |
 | RUN-03 | Phase 04 | Pending |
