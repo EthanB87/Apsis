@@ -216,9 +216,13 @@ export const useSessionStore = create<SessionState>((set, get) => ({
       exercises: s.exercises.map((card) => {
         if (card.exerciseId !== exerciseId) return card;
         const last = card.sets[card.sets.length - 1];
+        // WR-06: derive the next setNumber from the max existing number, not the array
+        // length — after a mid-list delete, length + 1 would reuse a committed set's
+        // number, persisting duplicates that make rehydrate's ORDER BY setNumber
+        // nondeterministic.
         const newSet: SetDraft = {
           id: randomUUID(),
-          setNumber: card.sets.length + 1,
+          setNumber: Math.max(0, ...card.sets.map((s) => s.setNumber)) + 1,
           reps: last?.reps ?? 0,
           loadFieldKg: last?.loadFieldKg ?? 0,
           rpe: last?.rpe ?? DEFAULT_RPE,
