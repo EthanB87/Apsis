@@ -6,14 +6,14 @@ current_phase: 3
 current_phase_name: Onboarding & Lifting Logger
 status: executing
 stopped_at: Completed 03-02-PLAN.md
-last_updated: "2026-07-09T21:04:31.227Z"
+last_updated: "2026-07-09T21:15:31.839Z"
 last_activity: 2026-07-09
 last_activity_desc: Phase 3 execution started
 progress:
   total_phases: 6
   completed_phases: 1
   total_plans: 15
-  completed_plans: 12
+  completed_plans: 13
   percent: 17
 ---
 
@@ -32,7 +32,7 @@ the pure-TS HSS engine (the moat), which the engine's own `index.ts` explicitly 
 ## Current Position
 
 Phase: 3 (Onboarding & Lifting Logger) — EXECUTING
-Plan: 7 of 9
+Plan: 8 of 9
 Status: Ready to execute
 Last activity: 2026-07-09 — Phase 3 execution started
 traceability filled; 100% of the 39 pending v1.0 requirements mapped to Phases 02–06.
@@ -73,6 +73,7 @@ Progress: [██░░░░░░░░] 17% (1/6 phases complete)
 | Phase 03 P04 | 13min | 2 tasks | 9 files |
 | Phase 03 P05 | 9min | 2 tasks | 9 files |
 | Phase 03 P06 | 27min | 3 tasks | 19 files |
+| Phase 03 P07 | ~2min | 3 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -119,6 +120,9 @@ Recent decisions affecting current work:
 - [Phase ?]: loadFieldKg stores the full load for barbell lifts and only the added weight for bodyweight movements, so computeEffectiveLoad applies uniformly to both
 - [Phase ?]: Carry-set bodyweightKg is not persisted per set; every recompute uses the current profile bodyweight for the engine's load-ratio multiplier
 - [Phase ?]: Committed sets lock their input fields until unchecked, preventing draft/DB drift
+- [Phase ?]: [Phase 03 P07]: SetRow.tsx wired to call startRestTimer on commit (Rule 2 deviation, outside declared files) -- plan action mandated it but caller site wasn't listed in files_modified
+- [Phase ?]: [Phase 03 P07]: Rest-duration resolution (per-exercise override vs profile default, D-25) resolved store-side inside startRestTimer via a live DB query with FALLBACK_REST_DEFAULT_SEC=120, not passed in by caller
+- [Phase ?]: [Phase 03 P07]: LIFT-05's six on-device behaviors deferred to phase UAT per user checkpoint response 'Defer to phase UAT' -- NOT marked passed; requirement left unmarked in REQUIREMENTS.md
 
 ### Pending Todos
 
@@ -130,6 +134,8 @@ None yet.
   for that phase lives only in git commit messages (`6c02971`…`44f6017`). Not blocking;
   noted for context only.
 
+- LIFT-05 (03-07) pending on-device UAT verification -- six behaviors (rest banner countdown, +30s/Skip, background notification fire, early-return cancellation, haptic+sound at zero, lazy permission timing) deferred from the Task 3 checkpoint to phase UAT
+
 ## Deferred Items
 
 Items acknowledged and carried forward from previous milestone close:
@@ -140,6 +146,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-07-09T21:01:40.184Z
+Last session: 2026-07-09T21:14:41.277Z
 Stopped at: Completed 03-02-PLAN.md
 Resume file: None
