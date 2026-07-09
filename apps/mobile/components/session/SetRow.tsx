@@ -13,9 +13,10 @@
  * area").
  */
 
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { db } from '@apsis/db';
+import { carryStressDetailed, estimateE1RM, estimateE1RMFromRepMaxTable, strengthStressDetailed } from '@apsis/engine';
 import { kgToDisplayLb, lbToKgExact, formatPaceMinSec, type Units } from '@apsis/shared';
 
 import Colors from '../../constants/Colors';
@@ -91,6 +92,47 @@ export function SetRow({
     draft.loadFieldKg,
     profileBodyweightKg
   );
+
+  // D-29: engine warnings carry no set id, so a committed set's own warnings are derived
+  // by re-running the SAME per-set formula `commitSet.ts` uses (single-set input) rather
+  // than trying to attribute a warning string out of the session-wide flat list. Warmups
+  // never warn — they're excluded from HSS entirely, same as the real recompute.
+  const setWarnings = useMemo<string[]>(() => {
+    if (!draft.committed || draft.isWarmup) return [];
+    if (isTimed) {
+      return carryStressDetailed({
+        loadKg: effectiveLoadKg,
+        bodyweightKg: profileBodyweightKg,
+        durationS: draft.durationS,
+        rpe: draft.rpe,
+        isWarmup: draft.isWarmup,
+      }).warnings;
+    }
+    const e1rmKg = isBodyweight
+      ? estimateE1RMFromRepMaxTable(effectiveLoadKg, draft.reps)
+      : estimateE1RM(effectiveLoadKg, draft.reps);
+    return strengthStressDetailed([
+      {
+        loadKg: effectiveLoadKg,
+        reps: draft.reps,
+        rpe: draft.rpe,
+        e1rmKg,
+        isLowerBody: false,
+        isWarmup: draft.isWarmup,
+      },
+    ]).warnings;
+  }, [
+    draft.committed,
+    draft.isWarmup,
+    draft.reps,
+    draft.rpe,
+    draft.durationS,
+    effectiveLoadKg,
+    isTimed,
+    isBodyweight,
+    profileBodyweightKg,
+  ]);
+  const [warningExpanded, setWarningExpanded] = useState(false);
 
   function patch(fields: Partial<SetDraft>): void {
     updateSetDraft(exerciseId, draft.id, fields);
@@ -296,10 +338,19 @@ export function SetRow({
 
       {commitError ? <Text style={styles.errorLabel}>{commitError}</Text> : null}
 
-      {draft.warning ? (
-        <View style={styles.warningBadge} accessibilityLabel={draft.warning}>
+      {setWarnings.length > 0 ? (
+        <Pressable
+          onPress={() => setWarningExpanded((open) => !open)}
+          hitSlop={12}
+          accessibilityRole="button"
+          accessibilityLabel={`Warning: ${setWarnings.join('; ')}`}
+          style={styles.warningBadge}>
           <Text style={styles.warningBadgeGlyph}>⚠</Text>
-        </View>
+        </Pressable>
+      ) : null}
+
+      {setWarnings.length > 0 && warningExpanded ? (
+        <Text style={styles.warningMessage}>{setWarnings.join(' ')}</Text>
       ) : null}
     </View>
   );
@@ -422,5 +473,10 @@ const styles = StyleSheet.create({
   warningBadgeGlyph: {
     fontSize: 12,
     color: Colors.dark.background,
+  },
+  warningMessage: {
+    ...Typography.label,
+    color: Colors.dark.warning,
+    width: '100%',
   },
 });
