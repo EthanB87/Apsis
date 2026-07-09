@@ -398,5 +398,11 @@ export const useSessionStore = create<SessionState>((set, get) => ({
     }
   },
 
-  reset: () => set({ ...INITIAL_SESSION }),
+  reset: () => {
+    // WR-04: finishing/discarding a workout inside the rest window must not leave the
+    // scheduled OS "Rest complete" notification behind — cancel it before wiping the id.
+    const { restNotificationId } = get();
+    void cancelRestNotification(restNotificationId);
+    set({ ...INITIAL_SESSION });
+  },
 }));
