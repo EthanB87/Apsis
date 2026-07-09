@@ -23,6 +23,15 @@ import type { EngineConfig } from '@apsis/shared';
  *   gives `kEndurance = 100 / 60 ≈ 1.6667`.
  * - `legMultiplier`: systemic cost multiplier applied to lower-body strength sets.
  * - `doublePenalty`: same-day compounding multiplier when a day has more than one session.
+ * - `kCarry` (D-20): scales loaded-carry/sled stress onto the HSS axis. Tuned via plan
+ *   03-01's carry golden test: `CS = durationMin * (RPE/10)^2 * kCarry * loadRatioMultiplier`
+ *   where `loadRatioMultiplier = clamp(1 + loadKg/bodyweightKg, 1, 4)`. A 4x40m heavy
+ *   farmer's carry (~20s/set, load = 1.5x bodyweight, RPE 8) sums to a pre-`kCarry`
+ *   per-set factor of `(20/60) * 0.8^2 * 2.5 ≈ 0.5333`; at `kCarry = 10` the 4-set total is
+ *   ≈21.3, comfortably inside the (8, 60) hard-accessory band and well under the ~100 HSS
+ *   threshold-run anchor (D-20/A5 — this golden test is authoritative over the formula
+ *   shape suggested by research if they ever conflict). See
+ *   `packages/engine/src/__tests__/carry.test.ts`.
  * - `atlDays` / `ctlDays`: acute/chronic EWMA time constants (days) for load trend.
  * - `calibratingMinHistoryDays` (D-02): below this many days of history, the readiness band
  *   reports `'calibrating'` regardless of TSB/CTL — covers brand-new users.
@@ -38,6 +47,7 @@ export const DEFAULT_CONFIG: EngineConfig = {
   kEndurance: 1.6667,
   legMultiplier: 1.3,
   doublePenalty: 1.1,
+  kCarry: 10,
   atlDays: 7,
   ctlDays: 28,
   calibratingMinHistoryDays: 14,
