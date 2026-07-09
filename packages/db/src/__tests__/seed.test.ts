@@ -39,3 +39,73 @@ describe('STARTER_EXERCISES seed data', () => {
     expect(unique.size, `duplicate ids found: ${ids.filter((id, i) => ids.indexOf(id) !== i).join(', ')}`).toBe(ids.length);
   });
 });
+
+describe('STARTER_EXERCISES bwFactor/entryMode (D-15/D-21)', () => {
+  const byId = new Map(STARTER_EXERCISES.map((e) => [e.id, e]));
+
+  const BODYWEIGHT_FACTORS: Record<string, number> = {
+    'pull-up': 0.95,
+    'chin-up': 0.95,
+    dip: 0.95,
+    'push-up': 0.65,
+    lunge: 0.85,
+    'split-squat': 0.85,
+    'step-up': 0.90,
+    'box-step-over': 0.90,
+    'box-jump': 1.0,
+    'burpee-broad-jump': 1.0,
+    'wall-ball': 0.30,
+    'kb-swing': 0.30,
+    'sandbag-lunge': 0.85,
+  };
+
+  const TIMED_IDS = ['farmers-carry', 'yoke-carry', 'sled-push', 'sled-pull', 'plank', 'battle-rope'];
+
+  const ENDURANCE_IDS = ['run', 'ski-erg', 'rowing-erg', 'assault-bike'];
+
+  it('every bodyweight movement has its literature-anchored bwFactor and entryMode "reps"', () => {
+    for (const [id, factor] of Object.entries(BODYWEIGHT_FACTORS)) {
+      const entry = byId.get(id);
+      expect(entry, `missing seed entry for ${id}`).toBeDefined();
+      expect(entry?.bwFactor, `bwFactor mismatch for ${id}`).toBe(factor);
+      expect(entry?.entryMode, `entryMode mismatch for ${id}`).toBe('reps');
+    }
+  });
+
+  it('pull-up has bwFactor 0.95 and entryMode "reps"', () => {
+    const pullUp = byId.get('pull-up');
+    expect(pullUp?.bwFactor).toBe(0.95);
+    expect(pullUp?.entryMode).toBe('reps');
+  });
+
+  it('farmers-carry has entryMode "timed" and bwFactor null', () => {
+    const farmersCarry = byId.get('farmers-carry');
+    expect(farmersCarry?.entryMode).toBe('timed');
+    expect(farmersCarry?.bwFactor).toBeNull();
+  });
+
+  it('every timed movement has entryMode "timed" and bwFactor null', () => {
+    for (const id of TIMED_IDS) {
+      const entry = byId.get(id);
+      expect(entry, `missing seed entry for ${id}`).toBeDefined();
+      expect(entry?.entryMode, `entryMode mismatch for ${id}`).toBe('timed');
+      expect(entry?.bwFactor, `bwFactor should be null for ${id}`).toBeNull();
+    }
+  });
+
+  it('every endurance-type seed row has bwFactor null and entryMode null (Pitfall 5)', () => {
+    for (const id of ENDURANCE_IDS) {
+      const entry = byId.get(id);
+      expect(entry, `missing seed entry for ${id}`).toBeDefined();
+      expect(entry?.type, `expected endurance type for ${id}`).toBe('endurance');
+      expect(entry?.bwFactor, `bwFactor should be null for endurance row ${id}`).toBeNull();
+      expect(entry?.entryMode, `entryMode should be null for endurance row ${id}`).toBeNull();
+    }
+  });
+
+  it('workout table definition contains finished_at and deleted_at columns', async () => {
+    const { workout } = await import('../schema');
+    expect(workout.finishedAt).toBeDefined();
+    expect(workout.deletedAt).toBeDefined();
+  });
+});

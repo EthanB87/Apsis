@@ -27,6 +27,8 @@ export const userProfile = sqliteTable('user_profile', {
   thresholdHr: integer('threshold_hr'),
   thresholdPaceSecPerKm: integer('threshold_pace_sec_per_km'),
   units: text('units', { enum: ['metric', 'imperial'] }).default('metric'),
+  /** Global default rest-timer duration in seconds (D-25/D-32); per-exercise override lives on `exercise.restTimerSec`. */
+  restTimerDefaultSec: integer('rest_timer_default_sec').default(120),
   createdAt: integer('created_at', { mode: 'timestamp' }).default(sql`(unixepoch())`),
   updatedAt: integer('updated_at', { mode: 'timestamp' }).default(sql`(unixepoch())`),
 });
@@ -42,6 +44,12 @@ export const exercise = sqliteTable('exercise', {
   type: text('type', { enum: ['strength', 'endurance', 'hybrid'] }).notNull(),
   bodyPart: text('body_part'),
   isSeeded: integer('is_seeded', { mode: 'boolean' }).default(true),
+  /** Bodyweight-load factor (D-15/D-21); null = not a bodyweight movement. */
+  bwFactor: real('bw_factor'),
+  /** Set entry shape (D-19/D-21): 'reps' or 'timed'; null = not logged as strength this phase (endurance rows). */
+  entryMode: text('entry_mode', { enum: ['reps', 'timed'] }),
+  /** Per-exercise rest-timer override in seconds (D-25); null = use profile default. */
+  restTimerSec: integer('rest_timer_sec'),
 });
 
 // ---------------------------------------------------------------------------
@@ -57,6 +65,10 @@ export const workout = sqliteTable('workout', {
   /** Session HSS written by the engine after all sets/segments logged */
   hss: real('hss').default(0),
   createdAt: integer('created_at', { mode: 'timestamp' }).default(sql`(unixepoch())`),
+  /** Set when the session is finished (D-14); null = open/in-progress session (crash recovery). */
+  finishedAt: integer('finished_at', { mode: 'timestamp' }),
+  /** Soft-delete marker (D-28); null = active. Every load/HSS read must filter this IS NULL. */
+  deletedAt: integer('deleted_at', { mode: 'timestamp' }),
 });
 
 // ---------------------------------------------------------------------------
@@ -81,6 +93,10 @@ export const strengthSet = sqliteTable('strength_set', {
   e1rmKg: real('e1rm_kg'),
   /** Raw strength stress component — written by engine */
   stressScore: real('stress_score'),
+  /** User-entered added weight for bodyweight/implement movements (D-17); null for barbell lifts. */
+  addedLoadKg: real('added_load_kg'),
+  /** Duration in seconds for timed carry/sled sets (D-19); null for rep sets. Timed sets store reps=0. */
+  durationS: integer('duration_s'),
 });
 
 // ---------------------------------------------------------------------------
