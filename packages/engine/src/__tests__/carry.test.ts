@@ -6,6 +6,52 @@
  * formula shape if they conflict).
  */
 import { carryStress, carryStressDetailed } from '../carry';
+import { sessionHSSDetailed } from '../session';
+
+describe('carryStressDetailed — warmup exclusion', () => {
+  it('a warmup carry set contributes zero stress and no warnings', () => {
+    const detail = carryStressDetailed({
+      loadKg: 120,
+      bodyweightKg: 80,
+      durationS: 30,
+      rpe: 9,
+      isWarmup: true,
+    });
+    expect(detail.cs).toBe(0);
+    expect(detail.warnings).toEqual([]);
+  });
+
+  it('a warmup carry set with out-of-range inputs still yields cs 0 and no clamp warnings', () => {
+    const detail = carryStressDetailed({
+      loadKg: -20,
+      bodyweightKg: 80,
+      durationS: -5,
+      rpe: 12,
+      isWarmup: true,
+    });
+    expect(detail.cs).toBe(0);
+    expect(detail.warnings).toEqual([]);
+  });
+
+  it('a session containing only warmup carries has hss === 0', () => {
+    const result = sessionHSSDetailed({
+      carrySets: [
+        { loadKg: 120, bodyweightKg: 80, durationS: 30, rpe: 9, isWarmup: true },
+        { loadKg: 60, bodyweightKg: 80, durationS: 45, rpe: 7, isWarmup: true },
+      ],
+    });
+    expect(result.hss).toBe(0);
+    expect(result.cs).toBe(0);
+  });
+
+  it('mixed warmup + working carries count only the working set', () => {
+    const working = { loadKg: 120, bodyweightKg: 80, durationS: 30, rpe: 9, isWarmup: false };
+    const warmup = { ...working, isWarmup: true };
+    const workingOnly = sessionHSSDetailed({ carrySets: [working] });
+    const mixed = sessionHSSDetailed({ carrySets: [warmup, working] });
+    expect(mixed.hss).toBeCloseTo(workingOnly.hss, 10);
+  });
+});
 
 describe('carryStressDetailed — clamp/skip robustness (D-15)', () => {
   it('clamps a negative durationS to 0, records a warning, never throws', () => {

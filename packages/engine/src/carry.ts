@@ -27,6 +27,14 @@ export function carryStressDetailed(
   cfg?: Partial<EngineConfig>
 ): CarryStressDetail {
   const config = mergeConfig(cfg);
+
+  // Warmup carry/timed sets are excluded from HSS entirely — mirrors the strength-side
+  // warmup skip (strength.ts) and the UI contract (SetRow: "Warmups never warn — they're
+  // excluded from HSS entirely, same as the real recompute").
+  if (seg.isWarmup) {
+    return { cs: 0, warnings: [] };
+  }
+
   const warnings: string[] = [];
 
   const durationClamp = clampRange(seg.durationS, 0, Number.POSITIVE_INFINITY, 'durationS');
