@@ -5,15 +5,15 @@ milestone_name: milestone
 current_phase: 3
 current_phase_name: Onboarding & Lifting Logger
 status: executing
-stopped_at: Completed 03-02-PLAN.md
-last_updated: "2026-07-09T21:15:31.839Z"
+stopped_at: Completed 03-08-PLAN.md
+last_updated: "2026-07-09T21:25:39.069Z"
 last_activity: 2026-07-09
 last_activity_desc: Phase 3 execution started
 progress:
   total_phases: 6
   completed_phases: 1
   total_plans: 15
-  completed_plans: 13
+  completed_plans: 14
   percent: 17
 ---
 
@@ -32,7 +32,7 @@ the pure-TS HSS engine (the moat), which the engine's own `index.ts` explicitly 
 ## Current Position
 
 Phase: 3 (Onboarding & Lifting Logger) — EXECUTING
-Plan: 8 of 9
+Plan: 9 of 9
 Status: Ready to execute
 Last activity: 2026-07-09 — Phase 3 execution started
 traceability filled; 100% of the 39 pending v1.0 requirements mapped to Phases 02–06.
@@ -74,6 +74,7 @@ Progress: [██░░░░░░░░] 17% (1/6 phases complete)
 | Phase 03 P05 | 9min | 2 tasks | 9 files |
 | Phase 03 P06 | 27min | 3 tasks | 19 files |
 | Phase 03 P07 | ~2min | 3 tasks | 5 files |
+| Phase 03 P08 | 15min | 2 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -123,6 +124,8 @@ Recent decisions affecting current work:
 - [Phase ?]: [Phase 03 P07]: SetRow.tsx wired to call startRestTimer on commit (Rule 2 deviation, outside declared files) -- plan action mandated it but caller site wasn't listed in files_modified
 - [Phase ?]: [Phase 03 P07]: Rest-duration resolution (per-exercise override vs profile default, D-25) resolved store-side inside startRestTimer via a live DB query with FALLBACK_REST_DEFAULT_SEC=120, not passed in by caller
 - [Phase ?]: [Phase 03 P07]: LIFT-05's six on-device behaviors deferred to phase UAT per user checkpoint response 'Defer to phase UAT' -- NOT marked passed; requirement left unmarked in REQUIREMENTS.md
+- [Phase ?]: [Phase 03 P08]: finishWorkout is called from finish.tsx's Done action (not just session.tsx's Finish button) so the D-14 crash-resume 'Finish Now' path also sets finishedAt
+- [Phase ?]: [Phase 03 P08]: Per-set/per-exercise warning and stress attribution (breakdown sheet, set-row badges) computed by re-running strengthStressDetailed/carryStressDetailed locally on committed sets rather than piping attribution through sessionStore -- the engine's warnings[]/perSetStress carry no set id
 
 ### Pending Todos
 
@@ -146,6 +149,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-07-09T21:14:41.277Z
-Stopped at: Completed 03-02-PLAN.md
+Last session: 2026-07-09T21:25:39.059Z
+Stopped at: Completed 03-08-PLAN.md
 Resume file: None
