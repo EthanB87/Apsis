@@ -1,14 +1,25 @@
 import { StyleSheet } from 'react-native';
 
-import EditScreenInfo from '@/components/EditScreenInfo';
 import { Text, View } from '@/components/Themed';
+import Colors from '@/constants/Colors';
+import { Spacing, Typography } from '@/constants/theme';
 
-export default function TabOneScreen() {
+/**
+ * Home placeholder (D-31): a branded "coming soon" screen. Phase 4 fills this
+ * tab in with the HOME-* home-screen requirements. This phase must render no
+ * session summary of any kind — ONB-03 is satisfied structurally by never
+ * showing that summary anywhere yet.
+ */
+export default function HomeScreen() {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Tab One</Text>
-      <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
-      <EditScreenInfo path="app/(tabs)/index.tsx" />
+      <Text style={styles.title}>Coming soon</Text>
+      <Text
+        style={styles.body}
+        lightColor={Colors.light.mutedText}
+        darkColor={Colors.dark.mutedText}>
+        Your training overview will live here. Head to the Log tab to start a workout.
+      </Text>
     </View>
   );
 }
@@ -18,14 +29,14 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+    paddingHorizontal: Spacing.lg,
   },
   title: {
-    fontSize: 20,
-    fontWeight: 'bold',
+    ...Typography.heading,
+    marginBottom: Spacing.sm,
   },
-  separator: {
-    marginVertical: 30,
-    height: 1,
-    width: '80%',
+  body: {
+    ...Typography.label,
+    textAlign: 'center',
   },
 });
