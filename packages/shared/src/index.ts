@@ -31,10 +31,26 @@ export interface EnduranceSegment {
   intensityFactor: number;
 }
 
-/** Combined session input: a session may have strength sets, endurance segments, or both */
+/** A single logged loaded-carry/sled set (farmer's carry, yoke carry, sled push/pull) (D-20) */
+export interface CarrySet {
+  loadKg: number;
+  bodyweightKg: number;
+  durationS: number;
+  rpe: number;
+  isWarmup: boolean;
+}
+
+/** Carry-side breakdown: total CS plus any clamp warnings */
+export interface CarryStressDetail {
+  cs: number;
+  warnings: string[];
+}
+
+/** Combined session input: a session may have strength sets, endurance segments, carry sets, or any combination */
 export interface SessionInput {
   strengthSets?: StrengthSet[];
   enduranceSegments?: EnduranceSegment[];
+  carrySets?: CarrySet[];
 }
 
 /** Versioned, tunable engine config — all formula constants live here so they can be re-fit without code changes */
@@ -43,6 +59,7 @@ export interface EngineConfig {
   kEndurance: number;
   legMultiplier: number;
   doublePenalty: number;
+  kCarry: number;
   atlDays: number;
   ctlDays: number;
   calibratingMinHistoryDays: number;
@@ -69,6 +86,7 @@ export interface SessionHSSResult {
   hss: number;
   ss: number;
   es: number;
+  cs?: number;
   perSetStress: number[];
   warnings: string[];
   engineVersion: string;
@@ -82,3 +100,5 @@ export interface LoadTrendPoint {
   tsb: number;
   band: ReadinessBand;
 }
+
+export * from './units';
