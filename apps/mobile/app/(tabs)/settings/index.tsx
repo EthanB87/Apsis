@@ -70,6 +70,27 @@ function formatRestLabel(sec: number): string {
   return seconds === 0 ? `${minutes}:00` : `${minutes}:${String(seconds).padStart(2, '0')}`;
 }
 
+/**
+ * WR-02: field editors are seeded with a *rounded display* rendering of the stored
+ * metric value. These helpers produce that rendering in one place so the commit
+ * handlers can detect "opened but not actually edited" and keep the exact stored
+ * value instead of round-tripping the rounded display back to metric (which silently
+ * drifts it, e.g. 80 kg -> 176 lb -> 79.83 kg).
+ */
+function bodyweightDisplayText(kg: number | null, imperial: boolean): string {
+  if (kg == null) return '';
+  return imperial ? String(kgToDisplayLb(kg)) : String(Math.round(kg));
+}
+
+function paceDisplayTexts(secPerKm: number | null, imperial: boolean): { min: string; sec: string } {
+  if (secPerKm == null) return { min: '', sec: '' };
+  const displaySec = imperial ? paceSecPerKmToSecPerMi(secPerKm) : secPerKm;
+  return {
+    min: String(Math.floor(displaySec / 60)),
+    sec: String(Math.round(displaySec % 60)).padStart(2, '0'),
+  };
+}
+
 export default function SettingsScreen(): React.JSX.Element {
   const { profile, loading, submitting, errorMessage, update } = useProfile();
 
@@ -117,15 +138,13 @@ export default function SettingsScreen(): React.JSX.Element {
     }
     setEditingField(field);
     if (field === 'bodyweightKg') {
-      const kg = draft.bodyweightKg;
-      setNumericText(kg != null ? (isImperial ? String(kgToDisplayLb(kg)) : String(Math.round(kg))) : '');
+      setNumericText(bodyweightDisplayText(draft.bodyweightKg, isImperial));
     } else if (field === 'thresholdHr') {
       setNumericText(draft.thresholdHr != null ? String(draft.thresholdHr) : '');
     } else if (field === 'thresholdPaceSecPerKm') {
-      const secPerKm = draft.thresholdPaceSecPerKm;
-      const displaySec = secPerKm != null ? (isImperial ? paceSecPerKmToSecPerMi(secPerKm) : secPerKm) : null;
-      setPaceMinText(displaySec != null ? String(Math.floor(displaySec / 60)) : '');
-      setPaceSecText(displaySec != null ? String(Math.round(displaySec % 60)).padStart(2, '0') : '');
+      const seeded = paceDisplayTexts(draft.thresholdPaceSecPerKm, isImperial);
+      setPaceMinText(seeded.min);
+      setPaceSecText(seeded.sec);
     }
   }
 
@@ -139,6 +158,14 @@ export default function SettingsScreen(): React.JSX.Element {
   }
 
   function commitBodyweight(): void {
+    // WR-02: if the text still matches the seeded display rendering, the user didn't
+    // edit the field — keep the exact stored kg instead of round-tripping the rounded
+    // display back to metric (display conversion must be exact-round-trip, D-12).
+    const seeded = bodyweightDisplayText(draft?.bodyweightKg ?? null, isImperial);
+    if (seeded !== '' && numericText === seeded) {
+      setEditingField(null);
+      return;
+    }
     const parsed = Number(numericText);
     if (!Number.isFinite(parsed) || parsed <= 0) return;
     const kg = isImperial ? lbToKgExact(parsed) : parsed;
@@ -154,6 +181,12 @@ export default function SettingsScreen(): React.JSX.Element {
   }
 
   function commitThresholdPace(): void {
+    // WR-02: unchanged seeded text -> keep the exact stored sec/km (no display round-trip).
+    const seeded = paceDisplayTexts(draft?.thresholdPaceSecPerKm ?? null, isImperial);
+    if (seeded.min !== '' && paceMinText === seeded.min && paceSecText === seeded.sec) {
+      setEditingField(null);
+      return;
+    }
     const minVal = Number(paceMinText) || 0;
     const secVal = Number(paceSecText) || 0;
     const totalDisplaySec = minVal * 60 + secVal;
@@ -164,8 +197,15 @@ export default function SettingsScreen(): React.JSX.Element {
   }
 
   async function handleUnitsChange(next: Units): Promise<void> {
+    if (draft == null || draft.units === next) return;
+    const previous = draft.units;
+    // Optimistic draft update with rollback (WR-02): if the UPDATE fails, the draft
+    // must not keep claiming the new units while the DB still holds the old ones.
     setDraft((prev) => (prev ? { ...prev, units: next } : prev));
-    await update({ units: next });
+    const ok = await update({ units: next });
+    if (!ok) {
+      setDraft((prev) => (prev ? { ...prev, units: previous } : prev));
+    }
   }
 
   async function handleRestPreset(sec: number): Promise<void> {
