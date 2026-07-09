@@ -92,7 +92,8 @@ function paceDisplayTexts(secPerKm: number | null, imperial: boolean): { min: st
 }
 
 export default function SettingsScreen(): React.JSX.Element {
-  const { profile, loading, submitting, errorMessage, update } = useProfile();
+  const { profile, loading, submitting, errorMessage, loadErrorMessage, reload, update } =
+    useProfile();
 
   const [draft, setDraft] = useState<ProfileReviewValues | null>(null);
   const [editingField, setEditingField] = useState<ProfileReviewField | null>(null);
@@ -115,6 +116,29 @@ export default function SettingsScreen(): React.JSX.Element {
       });
     }
   }, [profile, draft]);
+
+  // WR-07: a failed profile read must not leave the screen on an indefinite spinner —
+  // show the generic error string (never the raw error) with a retry action.
+  if (!loading && profile == null && loadErrorMessage != null) {
+    return (
+      <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
+        <View style={styles.loadingContainer}>
+          <Text style={styles.loadErrorText} accessibilityRole="alert">
+            {loadErrorMessage}
+          </Text>
+          <Pressable
+            onPress={() => {
+              void reload();
+            }}
+            accessibilityRole="button"
+            accessibilityLabel="Retry"
+            style={styles.retryButton}>
+            <Text style={styles.retryLabel}>Retry</Text>
+          </Pressable>
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   if (loading || draft == null || profile == null) {
     return (
@@ -479,6 +503,26 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+    paddingHorizontal: Spacing.lg,
+    gap: Spacing.md,
+  },
+  loadErrorText: {
+    ...Typography.body,
+    color: Colors.dark.text,
+    textAlign: 'center',
+  },
+  retryButton: {
+    minHeight: HIT_TARGET_MIN,
+    minWidth: 120,
+    borderRadius: 12,
+    backgroundColor: Colors.dark.accent,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: Spacing.lg,
+  },
+  retryLabel: {
+    ...Typography.body,
+    color: Colors.dark.text,
   },
   scrollContent: {
     paddingBottom: Spacing.xxl,

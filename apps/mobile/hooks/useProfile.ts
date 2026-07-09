@@ -26,6 +26,7 @@ import type { Sex, Units } from '@apsis/shared';
 import { useSettingsStore } from '../lib/settingsStore';
 
 const UPDATE_ERROR_MESSAGE = "Couldn't save your profile. Check available storage and try again.";
+const LOAD_ERROR_MESSAGE = "Couldn't load your profile. Try again.";
 
 export interface ProfileValues {
   id: number;
@@ -51,6 +52,10 @@ export interface UseProfileResult {
   loading: boolean;
   submitting: boolean;
   errorMessage: string | null;
+  /** Generic message when the initial profile read failed (WR-07) — never the raw error. */
+  loadErrorMessage: string | null;
+  /** Re-runs the initial profile read — the retry action for the load-failure state. */
+  reload: () => Promise<void>;
   /** Forward-only UPDATE against `user_profile` (D-05) — never touches stored scores. */
   update: (patch: ProfileUpdateInput) => Promise<boolean>;
 }
@@ -60,10 +65,12 @@ export function useProfile(): UseProfileResult {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [loadErrorMessage, setLoadErrorMessage] = useState<string | null>(null);
   const setUnits = useSettingsStore((state) => state.setUnits);
 
   const load = useCallback(async () => {
     setLoading(true);
+    setLoadErrorMessage(null);
     try {
       const rows = await db.select().from(userProfile).limit(1);
       const row = rows[0];
@@ -82,7 +89,10 @@ export function useProfile(): UseProfileResult {
       }
     } catch (err: unknown) {
       // Raw error logged for developer diagnostics only — never rendered (T-03-08).
+      // WR-07: surface a generic load-error state so callers can show a retry action
+      // instead of an indefinite spinner.
       console.error('[Apsis] useProfile select failed:', err);
+      setLoadErrorMessage(LOAD_ERROR_MESSAGE);
     } finally {
       setLoading(false);
     }
@@ -115,5 +125,5 @@ export function useProfile(): UseProfileResult {
     }
   }
 
-  return { profile, loading, submitting, errorMessage, update };
+  return { profile, loading, submitting, errorMessage, loadErrorMessage, reload: load, update };
 }
