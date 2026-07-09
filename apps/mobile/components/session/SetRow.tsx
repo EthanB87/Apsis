@@ -80,6 +80,11 @@ export function SetRow({
 
   const [committing, setCommitting] = useState(false);
   const [commitError, setCommitError] = useState<string | null>(null);
+  // While the load field is being typed into, keep the raw text locally so the controlled
+  // value isn't re-formatted on every keystroke (formatting "62." back to "62" silently
+  // drops the decimal point, turning an intended 62.5 into 625). The draft still receives
+  // the parsed kg value on every change; the formatted value re-syncs on blur/steppers.
+  const [loadText, setLoadText] = useState<string | null>(null);
 
   const isTimed = entryMode === 'timed';
   const isBodyweight = exerciseBwFactor != null;
@@ -191,7 +196,10 @@ export function SetRow({
 
       <View style={styles.fieldGroup}>
         <Pressable
-          onPress={() => patch({ loadFieldKg: stepWeight(draft.loadFieldKg, units, -1), isBlank: false })}
+          onPress={() => {
+            setLoadText(null);
+            patch({ loadFieldKg: stepWeight(draft.loadFieldKg, units, -1), isBlank: false });
+          }}
           disabled={locked}
           hitSlop={6}
           accessibilityRole="button"
@@ -200,10 +208,15 @@ export function SetRow({
           <Text style={styles.stepperLabel}>-</Text>
         </Pressable>
         <TextInput
-          value={draft.isBlank ? '' : formatWeightValue(draft.loadFieldKg, units)}
+          value={loadText ?? (draft.isBlank ? '' : formatWeightValue(draft.loadFieldKg, units))}
           placeholder="0"
           placeholderTextColor={Colors.dark.mutedText}
-          onChangeText={(text) => patch({ loadFieldKg: parseWeightInput(text, units), isBlank: false })}
+          onChangeText={(text) => {
+            const clean = text.replace(/[^0-9.]/g, '');
+            setLoadText(clean);
+            patch({ loadFieldKg: parseWeightInput(clean, units), isBlank: false });
+          }}
+          onBlur={() => setLoadText(null)}
           keyboardType="decimal-pad"
           autoFocus={draft.isBlank}
           editable={!locked}
@@ -213,7 +226,10 @@ export function SetRow({
         />
         <Text style={styles.unitLabel}>{weightUnitLabel(units)}</Text>
         <Pressable
-          onPress={() => patch({ loadFieldKg: stepWeight(draft.loadFieldKg, units, 1), isBlank: false })}
+          onPress={() => {
+            setLoadText(null);
+            patch({ loadFieldKg: stepWeight(draft.loadFieldKg, units, 1), isBlank: false });
+          }}
           disabled={locked}
           hitSlop={6}
           accessibilityRole="button"
