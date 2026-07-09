@@ -4,14 +4,17 @@
  * STARTER_EXERCISES: >= 40 HYROX / tactical / strength / conditioning movements.
  * All ids are kebab-case, unique, and stable (never rename — they are FK targets).
  *
- * seedExercises(): idempotent (count-before-insert guard).
+ * seedExercises(): idempotent per-id upsert.
  *   - Runs on every app launch after useMigrations succeeds.
- *   - If exercise table already has rows, returns immediately — safe to call repeatedly.
- *   - Uses drizzle parameterized query builders exclusively (T-1-01: no raw sql interpolation).
- *
- * Assumption A2 (RESEARCH): count-before-insert has a partial-population window on power-loss
- * during the initial seed. Acceptable for Phase 1: seeding is a single run on first boot,
- * the exercise table is never partially populated in practice, and recovery is a re-install.
+ *   - INSERT ... ON CONFLICT(id) DO UPDATE keeps the phase-added columns (bw_factor,
+ *     entry_mode) in sync with STARTER_EXERCISES for rows seeded by earlier builds —
+ *     migration 0001 adds those columns as NULL and a count guard would never backfill
+ *     them, leaving timed/bodyweight movements scoring 0 HSS on upgraded installs.
+ *   - Uses drizzle parameterized query builders exclusively (T-1-01: no raw sql
+ *     interpolation — the `excluded.*` refs below are static column identifiers, never
+ *     user input).
+ *   - The upsert also self-heals the Assumption A2 partial-population window (power-loss
+ *     mid-seed): the next launch simply inserts the missing rows.
  */
 
 import { sql } from 'drizzle-orm';
@@ -84,21 +87,32 @@ export const STARTER_EXERCISES = [
 // ---------------------------------------------------------------------------
 
 /**
- * Insert the starter exercise library if the table is empty.
+ * Upsert the starter exercise library: insert missing rows, and backfill the
+ * phase-added `bw_factor`/`entry_mode` columns on rows seeded by earlier builds
+ * (WR-01: migration 0001 leaves them NULL and the old count guard skipped them,
+ * so upgraded installs routed timed sets through the strength branch and scored 0).
  *
  * @param db — drizzle OPSQLiteDatabase instance (passed in to keep seed.ts testable
  *             without importing the module-level db singleton from client.ts).
  *
  * Security (T-1-01): all DB operations use drizzle's query builder — no raw SQL
- * string interpolation. This pattern is the foundation reused when user input
- * reaches the DB in Phase 3.
+ * string interpolation. The `excluded.*` sql fragments reference static column
+ * names only (SQLite upsert syntax), never user input. This pattern is the
+ * foundation reused when user input reaches the DB in Phase 3.
  */
 export async function seedExercises(db: OPSQLiteDatabase<Record<string, unknown>>): Promise<void> {
-  // Count-before-insert idempotent guard (RESEARCH Pattern 4, Assumption A2).
-  const rows = await db.select({ count: sql<number>`count(*)` }).from(exercise);
-  const count = rows[0]?.count ?? 0;
-  if (count > 0) return;
-
-  // Insert all starter exercises in a single batched insert (T-1-01: parameterized).
-  await db.insert(exercise).values([...STARTER_EXERCISES]);
+  // Per-id upsert (idempotent): insert new rows; on conflict, sync the seed-owned
+  // engine-critical columns so the in-memory STARTER_EXERCISES array and the DB rows
+  // can never diverge on entryMode/bwFactor (the two-sources-of-truth hazard).
+  // User-adjustable columns (restTimerSec) are deliberately NOT overwritten.
+  await db
+    .insert(exercise)
+    .values([...STARTER_EXERCISES])
+    .onConflictDoUpdate({
+      target: exercise.id,
+      set: {
+        bwFactor: sql`excluded.bw_factor`,
+        entryMode: sql`excluded.entry_mode`,
+      },
+    });
 }
