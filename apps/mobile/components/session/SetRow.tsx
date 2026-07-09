@@ -75,6 +75,7 @@ export function SetRow({
   const updateSetDraft = useSessionStore((s) => s.updateSetDraft);
   const setCommitted = useSessionStore((s) => s.setCommitted);
   const setLiveHss = useSessionStore((s) => s.setLiveHss);
+  const startRestTimer = useSessionStore((s) => s.startRestTimer);
 
   const [committing, setCommitting] = useState(false);
   const [commitError, setCommitError] = useState<string | null>(null);
@@ -115,6 +116,11 @@ export function SetRow({
         });
         setCommitted(exerciseId, draft.id, true);
         setLiveHss(result.hss, result.warnings);
+        // LIFT-05/D-25: the auto-rest timer starts on a successful set commit, never on an
+        // uncommit (unchecking undoes the set, it shouldn't also restart a rest period).
+        startRestTimer(exerciseId).catch((err: unknown) => {
+          console.error('[Apsis] startRestTimer failed:', err);
+        });
       } else {
         const result = await uncommitSet(db, workoutId, draft.id, profileBodyweightKg);
         setCommitted(exerciseId, draft.id, false);

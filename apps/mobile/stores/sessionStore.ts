@@ -17,8 +17,13 @@
 import { create } from 'zustand';
 import { randomUUID } from 'expo-crypto';
 import { eq } from 'drizzle-orm';
-import { db, exercise as exerciseTable, strengthSet, workout, previousSessionSet } from '@apsis/db';
+import { db, exercise as exerciseTable, strengthSet, userProfile, workout, previousSessionSet } from '@apsis/db';
 import { formatPaceMinSec, type Units } from '@apsis/shared';
+import { cancelRestNotification, scheduleRestNotification } from '../lib/notifications';
+import { resolveRestDuration, startRest } from '../lib/restTimer';
+
+/** Fallback rest duration (sec) if the profile row is somehow missing (D-25 schema default). */
+const FALLBACK_REST_DEFAULT_SEC = 120;
 
 /** Pre-selected RPE for a set with no prior logged RPE to inherit (D-08). */
 export const DEFAULT_RPE = 8;
@@ -76,6 +81,9 @@ interface SessionState {
   liveHss: number;
   warnings: string[];
   restTimerEndsAt: number | null;
+  /** Id of the currently-scheduled background completion notification (D-26), or null if none
+   * is pending (no timer running, permission denied, or it was already cancelled/fired). */
+  restNotificationId: string | null;
   breakdownOpen: boolean;
 
   startSession: (workoutId: string, profile: { bodyweightKg: number; units: Units }) => void;
@@ -87,6 +95,17 @@ interface SessionState {
   setLiveHss: (hss: number, warnings: string[]) => void;
   setRestTimerEndsAt: (endsAt: number | null) => void;
   setBreakdownOpen: (open: boolean) => void;
+  /** Starts the rest timer for `exerciseId` on a successful set commit (D-25/D-26): resolves
+   * the per-exercise override vs. profile global default, sets `restTimerEndsAt`, requests
+   * notification permission lazily, and schedules the background completion notification. */
+  startRestTimer: (exerciseId: string) => Promise<void>;
+  /** "+30s" ghost button: extends the running timer and reschedules the pending notification. */
+  addThirtySeconds: () => void;
+  /** "Skip" ghost button: clears the timer and cancels the pending notification. */
+  skipRest: () => void;
+  /** Returning-early effect (D-26): cancels the pending notification WITHOUT clearing the
+   * still-running countdown — called when the app foregrounds before the timer expires. */
+  cancelPendingNotification: () => void;
   rehydrateFromDb: (workoutId: string, profile: { bodyweightKg: number; units: Units }) => Promise<void>;
   reset: () => void;
 }
@@ -125,6 +144,7 @@ const INITIAL_SESSION = {
   liveHss: 0,
   warnings: [] as string[],
   restTimerEndsAt: null as number | null,
+  restNotificationId: null as string | null,
   breakdownOpen: false,
 };
 
@@ -247,6 +267,61 @@ export const useSessionStore = create<SessionState>((set, get) => ({
   setRestTimerEndsAt: (endsAt) => set({ restTimerEndsAt: endsAt }),
 
   setBreakdownOpen: (open) => set({ breakdownOpen: open }),
+
+  startRestTimer: async (exerciseId) => {
+    const card = get().exercises.find((c) => c.exerciseId === exerciseId);
+
+    let profileDefaultSec = FALLBACK_REST_DEFAULT_SEC;
+    try {
+      const rows = await db
+        .select({ restTimerDefaultSec: userProfile.restTimerDefaultSec })
+        .from(userProfile)
+        .limit(1);
+      profileDefaultSec = rows[0]?.restTimerDefaultSec ?? FALLBACK_REST_DEFAULT_SEC;
+    } catch (err: unknown) {
+      // The countdown must still start on a fetch failure — fall back to the schema default
+      // rather than blocking the timer on a profile-read error.
+      console.error('[Apsis] startRestTimer profile query failed:', err);
+    }
+
+    const durationSec = resolveRestDuration(card?.restTimerSec ?? null, profileDefaultSec);
+    const endsAt = startRest(durationSec);
+    set({ restTimerEndsAt: endsAt, restNotificationId: null });
+
+    const notificationId = await scheduleRestNotification(endsAt);
+    // Guard against a race: a rapid Skip or a second set's commit could have moved
+    // restTimerEndsAt on while this async schedule call was still in flight.
+    if (get().restTimerEndsAt === endsAt) {
+      set({ restNotificationId: notificationId });
+    } else {
+      void cancelRestNotification(notificationId);
+    }
+  },
+
+  addThirtySeconds: () => {
+    const { restTimerEndsAt, restNotificationId } = get();
+    if (restTimerEndsAt == null) return;
+    const nextEndsAt = restTimerEndsAt + 30_000;
+    set({ restTimerEndsAt: nextEndsAt, restNotificationId: null });
+    void cancelRestNotification(restNotificationId);
+    void scheduleRestNotification(nextEndsAt).then((id) => {
+      if (get().restTimerEndsAt === nextEndsAt) set({ restNotificationId: id });
+      else void cancelRestNotification(id);
+    });
+  },
+
+  skipRest: () => {
+    const { restNotificationId } = get();
+    set({ restTimerEndsAt: null, restNotificationId: null });
+    void cancelRestNotification(restNotificationId);
+  },
+
+  cancelPendingNotification: () => {
+    const { restNotificationId } = get();
+    if (restNotificationId == null) return;
+    set({ restNotificationId: null });
+    void cancelRestNotification(restNotificationId);
+  },
 
   rehydrateFromDb: async (workoutId, profile) => {
     set({
