@@ -25,7 +25,7 @@
 
 import { useEffect, useState } from 'react';
 import { StyleSheet } from 'react-native';
-import { Stack, useRouter } from 'expo-router';
+import { Stack, useRouter, type Href } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useMigrations } from 'drizzle-orm/op-sqlite/migrator';
@@ -44,6 +44,7 @@ export default function RootLayout(): React.JSX.Element | null {
   const router = useRouter();
   const hasProfile = useProfileExists(success);
   const [openWorkoutRow, setOpenWorkoutRow] = useState<'loading' | WorkoutRow | null>('loading');
+  const [pendingRoute, setPendingRoute] = useState<Href | null>(null);
 
   // --- Seed exercises once migrations succeed ---
   useEffect(() => {
@@ -72,6 +73,19 @@ export default function RootLayout(): React.JSX.Element | null {
       cancelled = true;
     };
   }, [success]);
+
+  // --- Deferred resume-prompt navigation (D-14) ---
+  // ResumePrompt renders *instead of* a navigator, so calling router.push synchronously
+  // from its handlers targets a navigator that has never mounted — expo-router rejects
+  // that ("Attempted to navigate before mounting the Root Layout component"). Store the
+  // target and push from an effect that runs only after the openWorkoutRow === null
+  // re-render has actually mounted the <Stack>.
+  useEffect(() => {
+    if (openWorkoutRow === null && pendingRoute != null) {
+      router.push(pendingRoute);
+      setPendingRoute(null);
+    }
+  }, [openWorkoutRow, pendingRoute, router]);
 
   // --- Hide splash screen when boot is complete (success or error) ---
   useEffect(() => {
@@ -110,12 +124,12 @@ export default function RootLayout(): React.JSX.Element | null {
         <ResumePrompt
           startedAt={openWorkoutRow.createdAt ?? new Date()}
           onResume={() => {
+            setPendingRoute({ pathname: '/(tabs)/log/session', params: { workoutId } });
             setOpenWorkoutRow(null);
-            router.push({ pathname: '/(tabs)/log/session', params: { workoutId } });
           }}
           onFinishNow={() => {
+            setPendingRoute({ pathname: '/session/finish', params: { workoutId } });
             setOpenWorkoutRow(null);
-            router.push({ pathname: '/session/finish', params: { workoutId } });
           }}
           onDiscard={() => {
             softDeleteWorkout(db, workoutId, new Date())
