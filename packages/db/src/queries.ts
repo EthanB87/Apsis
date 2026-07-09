@@ -13,7 +13,7 @@
  * read path — no query anywhere should hand-roll its own `isNull(workout.deletedAt)`.
  */
 
-import { and, desc, eq, isNotNull, isNull } from 'drizzle-orm';
+import { and, desc, eq, isNotNull, isNull, sql } from 'drizzle-orm';
 import type { BaseSQLiteDatabase } from 'drizzle-orm/sqlite-core';
 import { strengthSet, workout } from './schema';
 
@@ -67,6 +67,31 @@ export function previousSessionSet(db: QueryableDB, exerciseId: string) {
     )
     .orderBy(desc(workout.finishedAt))
     .limit(1);
+}
+
+// ---------------------------------------------------------------------------
+// Recents (LIFT-01/D-10)
+// ---------------------------------------------------------------------------
+
+/**
+ * Most recently used distinct exercise ids, most recent first — feeds the exercise
+ * picker's "Recents" section (D-10). `strength_set` has no timestamp of its own, so
+ * recency is derived from the owning (active) workout's `createdAt` via a grouped max().
+ * Read-only aggregate over column references only — no user-supplied value is
+ * interpolated into the `sql` template (T-1-01).
+ */
+export function recentExerciseIds(db: QueryableDB, limit: number) {
+  return db
+    .select({
+      exerciseId: strengthSet.exerciseId,
+      lastUsed: sql<number>`max(${workout.createdAt})`.as('lastUsed'),
+    })
+    .from(strengthSet)
+    .innerJoin(workout, eq(strengthSet.workoutId, workout.id))
+    .where(activeWorkoutFilter)
+    .groupBy(strengthSet.exerciseId)
+    .orderBy(desc(sql`max(${workout.createdAt})`))
+    .limit(limit);
 }
 
 // ---------------------------------------------------------------------------

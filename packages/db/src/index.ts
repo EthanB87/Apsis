@@ -26,6 +26,7 @@ export {
   activeWorkoutFilter,
   selectActiveWorkouts,
   previousSessionSet,
+  recentExerciseIds,
   openWorkout,
   softDeleteWorkout,
 } from './queries';

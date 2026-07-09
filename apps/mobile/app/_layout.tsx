@@ -24,8 +24,10 @@
  */
 
 import { useEffect, useState } from 'react';
+import { StyleSheet } from 'react-native';
 import { Stack, useRouter } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useMigrations } from 'drizzle-orm/op-sqlite/migrator';
 import type { InferSelectModel } from 'drizzle-orm';
 import { db, migrations, seedExercises, workout, openWorkout, softDeleteWorkout } from '@apsis/db';
@@ -84,53 +86,71 @@ export default function RootLayout(): React.JSX.Element | null {
   if (error) {
     // Log raw error for developer diagnostics; ErrorScreen renders a generic string only.
     console.error('[Apsis] useMigrations error — raw details (developer only):', error);
-    return <ErrorScreen />;
+    return (
+      <GestureHandlerRootView style={styles.fill}>
+        <ErrorScreen />
+      </GestureHandlerRootView>
+    );
   }
 
   // --- Loading gate: wait for migrations, profile-exists, and resume-check to settle ---
   if (!success || hasProfile === 'loading' || openWorkoutRow === 'loading') {
-    return <LoadingScreen />;
+    return (
+      <GestureHandlerRootView style={styles.fill}>
+        <LoadingScreen />
+      </GestureHandlerRootView>
+    );
   }
 
   // --- Crash/kill resume prompt (D-14) — rendered before the tab shell ever mounts ---
   if (openWorkoutRow) {
     const workoutId = openWorkoutRow.id;
     return (
-      <ResumePrompt
-        startedAt={openWorkoutRow.createdAt ?? new Date()}
-        onResume={() => {
-          setOpenWorkoutRow(null);
-          // Lands in Plan 06 — the active-session screen doesn't exist yet.
-          router.push({ pathname: '/(tabs)/log/session', params: { workoutId } });
-        }}
-        onFinishNow={() => {
-          setOpenWorkoutRow(null);
-          // Lands in Plan 08 — the finish-summary screen doesn't exist yet.
-          router.push({ pathname: '/session/finish', params: { workoutId } });
-        }}
-        onDiscard={() => {
-          softDeleteWorkout(db, workoutId, new Date())
-            .then(() => setOpenWorkoutRow(null))
-            .catch((err: unknown) => {
-              console.error('[Apsis] softDeleteWorkout (resume discard) failed:', err);
-              // Fail safe: stop blocking the app even if the write failed — the row
-              // simply reappears as an open workout again on the next launch.
-              setOpenWorkoutRow(null);
-            });
-        }}
-      />
+      <GestureHandlerRootView style={styles.fill}>
+        <ResumePrompt
+          startedAt={openWorkoutRow.createdAt ?? new Date()}
+          onResume={() => {
+            setOpenWorkoutRow(null);
+            router.push({ pathname: '/(tabs)/log/session', params: { workoutId } });
+          }}
+          onFinishNow={() => {
+            setOpenWorkoutRow(null);
+            router.push({ pathname: '/session/finish', params: { workoutId } });
+          }}
+          onDiscard={() => {
+            softDeleteWorkout(db, workoutId, new Date())
+              .then(() => setOpenWorkoutRow(null))
+              .catch((err: unknown) => {
+                console.error('[Apsis] softDeleteWorkout (resume discard) failed:', err);
+                // Fail safe: stop blocking the app even if the write failed — the row
+                // simply reappears as an open workout again on the next launch.
+                setOpenWorkoutRow(null);
+              });
+          }}
+        />
+      </GestureHandlerRootView>
     );
   }
 
   // --- Success: profile-gated route tree (D-01) ---
+  // GestureHandlerRootView is required by @gorhom/bottom-sheet (ExercisePickerSheet,
+  // HSSBreakdownSheet) and react-native-gesture-handler's Swipeable (ExerciseCard
+  // swipe-to-delete), both introduced in Plan 06 — must wrap the whole app, not just the
+  // log stack, per the library's own setup requirement.
   return (
-    <Stack screenOptions={{ headerShown: false }}>
-      <Stack.Protected guard={!hasProfile}>
-        <Stack.Screen name="onboarding" />
-      </Stack.Protected>
-      <Stack.Protected guard={hasProfile}>
-        <Stack.Screen name="(tabs)" />
-      </Stack.Protected>
-    </Stack>
+    <GestureHandlerRootView style={styles.fill}>
+      <Stack screenOptions={{ headerShown: false }}>
+        <Stack.Protected guard={!hasProfile}>
+          <Stack.Screen name="onboarding" />
+        </Stack.Protected>
+        <Stack.Protected guard={hasProfile}>
+          <Stack.Screen name="(tabs)" />
+        </Stack.Protected>
+      </Stack>
+    </GestureHandlerRootView>
   );
 }
+
+const styles = StyleSheet.create({
+  fill: { flex: 1 },
+});
