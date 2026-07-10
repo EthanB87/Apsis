@@ -7,6 +7,7 @@ import {
   KM_PER_MI,
   LB_PER_KG,
   kgToDisplayLb,
+  kgToDisplayLbFractional,
   kmToDisplayMi,
   lbToKgExact,
   miToKmExact,
@@ -29,6 +30,29 @@ describe('lb <-> kg exact round-trip (D-12)', () => {
     const kg = 102.058;
     expect(kgToDisplayLb(kg)).toBe(Math.round(kg * LB_PER_KG));
     expect(kgToDisplayLb(kg)).toBe(225);
+  });
+});
+
+describe('fractional lb display round-trip (half-pound plate loads)', () => {
+  it('62.5 lb round-trips to exactly 62.5 (never 63)', () => {
+    const kg = lbToKgExact(62.5);
+    expect(kgToDisplayLbFractional(kg)).toBe(62.5);
+  });
+
+  it('182.5 lb round-trips to exactly 182.5', () => {
+    const kg = lbToKgExact(182.5);
+    expect(kgToDisplayLbFractional(kg)).toBe(182.5);
+  });
+
+  it('whole-lb values stay whole (225 -> 225, no .0 drift artifacts)', () => {
+    const kg = lbToKgExact(225);
+    expect(kgToDisplayLbFractional(kg)).toBe(225);
+  });
+
+  it('a +5 lb step on a .5 fraction preserves the fraction (62.5 -> 67.5)', () => {
+    const kg = lbToKgExact(62.5);
+    const steppedKg = lbToKgExact(kgToDisplayLbFractional(kg) + 5);
+    expect(kgToDisplayLbFractional(steppedKg)).toBe(67.5);
   });
 });
 

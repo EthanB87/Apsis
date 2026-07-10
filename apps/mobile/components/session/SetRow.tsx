@@ -23,7 +23,7 @@ import { useMemo, useState } from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { db } from '@apsis/db';
 import { carryStressDetailed, estimateE1RM, estimateE1RMFromRepMaxTable, strengthStressDetailed } from '@apsis/engine';
-import { kgToDisplayLb, lbToKgExact, type Units } from '@apsis/shared';
+import { kgToDisplayLbFractional, lbToKgExact, type Units } from '@apsis/shared';
 
 import Colors from '../../constants/Colors';
 import { Mono, Radius, Spacing, Typography, tabularNums } from '../../constants/theme';
@@ -40,11 +40,10 @@ const DURATION_STEP_S = 5;
 const COMMIT_ERROR_MESSAGE = "Couldn't save that set. Nothing was lost — try the checkmark again.";
 
 function formatWeightValue(kg: number, units: Units): string {
-  if (units === 'imperial') {
-    return String(kgToDisplayLb(kg));
-  }
-  const rounded = Math.round(kg * 10) / 10;
-  return Number.isInteger(rounded) ? String(rounded) : rounded.toFixed(1);
+  // Fractional lb display (checkpoint fix): a typed "62.5" lb must re-display as 62.5,
+  // never Math.round'd to 63 — storage was already the exact kg equivalent.
+  const display = units === 'imperial' ? kgToDisplayLbFractional(kg) : Math.round(kg * 10) / 10;
+  return Number.isInteger(display) ? String(display) : display.toFixed(1);
 }
 
 function weightUnitLabel(units: Units): string {
@@ -59,7 +58,9 @@ function parseWeightInput(text: string, units: Units): number {
 
 function stepWeight(kg: number, units: Units, direction: 1 | -1): number {
   if (units === 'imperial') {
-    const nextLb = Math.max(0, kgToDisplayLb(kg) + direction * WEIGHT_STEP_LB);
+    // Fractional-aware stepping: ±5 lb from 62.5 lands on 67.5/57.5 — a whole-lb round
+    // here would silently destroy an existing half-pound fraction.
+    const nextLb = Math.max(0, kgToDisplayLbFractional(kg) + direction * WEIGHT_STEP_LB);
     return lbToKgExact(nextLb);
   }
   return Math.max(0, Math.round((kg + direction * WEIGHT_STEP_KG) * 10) / 10);

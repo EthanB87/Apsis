@@ -27,6 +27,17 @@ export function kgToDisplayLb(kg: number): number {
   return Math.round(kg * LB_PER_KG);
 }
 
+/**
+ * Convert stored kilograms to a display pound value rounded to the nearest 0.1 lb,
+ * preserving fractional plate loads: `kgToDisplayLbFractional(lbToKgExact(62.5)) === 62.5`,
+ * never `63`. Use this wherever the user ENTERS or STEPS a load in lb (set logging), so a
+ * typed half-pound value survives the kg round-trip; keep `kgToDisplayLb` for read-only
+ * whole-lb summaries.
+ */
+export function kgToDisplayLbFractional(kg: number): number {
+  return Math.round(kg * LB_PER_KG * 10) / 10;
+}
+
 /** Convert stored kilometers to a display mile value (no rounding applied here). */
 export function kmToDisplayMi(km: number): number {
   return km / KM_PER_MI;
