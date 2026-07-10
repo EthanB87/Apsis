@@ -14,22 +14,32 @@
  *     so the data survives as a support/debug safety net while being excluded from every
  *     history/HSS/load_daily read via `activeWorkoutFilter`.
  *
+ * Both terminal actions now also await `recomputeLoadDaily` (Plan 04-03, RESEARCH Pitfall 1 /
+ * D-29): previously `load_daily` was never written anywhere, so Home would only ever reflect
+ * runs. Finishing OR discarding a lifting session now refreshes the full-history `load_daily`
+ * rollup so Home's ring/band/chart stay consistent for lifting sessions too.
+ *
  * Security (T-1-01): both functions call parameterized drizzle query builders only —
  * no raw sql template literals with interpolated user-supplied values.
  */
 
 import { eq } from 'drizzle-orm';
 import { softDeleteWorkout, workout, type DB } from '@apsis/db';
+import { recomputeLoadDaily } from './recomputeLoadDaily';
 
 /** Sets `workout.finishedAt` (D-14 invariant: an open session must never be left dangling
- * after a normal or crash-resume finish flow). */
+ * after a normal or crash-resume finish flow), then recomputes `load_daily` so Home reflects
+ * this session immediately (Pitfall 1). */
 export async function finishWorkout(database: DB, workoutId: string, finishedAt: Date): Promise<void> {
   await database.update(workout).set({ finishedAt }).where(eq(workout.id, workoutId));
+  await recomputeLoadDaily(database);
 }
 
 /** Soft-deletes the workout (D-28) — sets `deletedAt` via the shared Plan 02 builder,
  * never a hard row delete. The discarded session then never appears in history or any
- * HSS/load computation (every read filters `deletedAt IS NULL`). */
+ * HSS/load computation (every read filters `deletedAt IS NULL`). Also recomputes `load_daily`
+ * (D-29) so the removed session's load disappears from the trend. */
 export async function discardWorkout(database: DB, workoutId: string, deletedAt: Date): Promise<void> {
   await softDeleteWorkout(database, workoutId, deletedAt);
+  await recomputeLoadDaily(database);
 }
