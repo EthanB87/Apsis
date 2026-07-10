@@ -3,6 +3,7 @@ import { SymbolView } from 'expo-symbols';
 import { Tabs } from 'expo-router';
 
 import Colors from '@/constants/Colors';
+import { HAIRLINE_WIDTH, Typography } from '@/constants/theme';
 import { useColorScheme } from '@/components/useColorScheme';
 import { useClientOnlyValue } from '@/components/useClientOnlyValue';
 
@@ -30,6 +31,21 @@ export default function TabLayout() {
         // Disable the static render of the header on web
         // to prevent a hydration error in React Navigation v6.
         headerShown: useClientOnlyValue(false, true),
+        // DESIGN-SYSTEM.md void contract (checkpoint fix, Plan 03-10): the stock native
+        // header rendered white with black text. Void background, bone Archivo-heavy
+        // uppercase title, hairline bottom border instead of a shadow.
+        headerStyle: {
+          backgroundColor: Colors[colorScheme].background,
+          borderBottomColor: Colors[colorScheme].border,
+          borderBottomWidth: HAIRLINE_WIDTH,
+        },
+        headerShadowVisible: false,
+        headerTintColor: Colors[colorScheme].text,
+        headerTitleStyle: {
+          ...Typography.heading,
+          fontSize: 17,
+          color: Colors[colorScheme].text,
+        },
       }}>
       <Tabs.Screen
         name="index"
@@ -61,6 +77,9 @@ export default function TabLayout() {
         name="settings"
         options={{
           title: 'Settings',
+          // Settings renders its own Design System v1 ScreenHeader inside a SafeAreaView —
+          // showing the tab header too would double the header (and double the top inset).
+          headerShown: false,
           tabBarIcon: ({ color }) => (
             <SymbolView
               name={{ ios: 'gearshape.fill', android: 'settings', web: 'settings' }}
