@@ -131,7 +131,7 @@ const styles = StyleSheet.create({
     minHeight: HIT_TARGET_MIN,
     marginHorizontal: Spacing.md,
     marginTop: Spacing.xl,
-    borderRadius: Radius.lg,
+    borderRadius: Radius.md,
     borderWidth: 1,
     borderColor: Colors.dark.accent,
     alignItems: 'center',

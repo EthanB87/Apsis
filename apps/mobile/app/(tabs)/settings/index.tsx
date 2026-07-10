@@ -46,6 +46,7 @@ import {
   type ProfileReviewValues,
 } from '../../../components/onboarding/ProfileReview';
 import { useProfile, type ProfileUpdateInput } from '../../../hooks/useProfile';
+import { ScreenHeader } from '../../../components/ScreenHeader';
 import Colors from '../../../constants/Colors';
 import { HIT_TARGET_MIN, Mono, Radius, Spacing, Typography, tabularNums } from '../../../constants/theme';
 
@@ -276,13 +277,13 @@ export default function SettingsScreen(): React.JSX.Element {
   return (
     <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
-        <Text style={styles.heading}>Settings</Text>
+        <ScreenHeader kicker="CONFIG" title="Settings" style={styles.screenHeader} />
 
         <Text style={styles.sectionLabel}>Profile</Text>
         <ProfileReview
           values={draft}
           onEditField={openFieldEditor}
-          primaryLabel="Save Changes"
+          primaryLabel="Save changes"
           onSubmit={handleSaveChanges}
           submitting={submitting}
           errorMessage={errorMessage}
@@ -512,9 +513,9 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   retryButton: {
-    minHeight: HIT_TARGET_MIN,
+    minHeight: 48,
     minWidth: 120,
-    borderRadius: Radius.lg,
+    borderRadius: Radius.md,
     backgroundColor: Colors.dark.accent,
     alignItems: 'center',
     justifyContent: 'center',
@@ -527,9 +528,7 @@ const styles = StyleSheet.create({
   scrollContent: {
     paddingBottom: Spacing.xxl,
   },
-  heading: {
-    ...Typography.heading,
-    color: Colors.dark.text,
+  screenHeader: {
     paddingHorizontal: Spacing.md,
     paddingTop: Spacing.lg,
   },
@@ -555,7 +554,7 @@ const styles = StyleSheet.create({
   choiceButton: {
     flex: 1,
     minHeight: HIT_TARGET_MIN,
-    borderRadius: Radius.lg,
+    borderRadius: Radius.sm,
     borderWidth: 1,
     borderColor: Colors.dark.border,
     backgroundColor: Colors.dark.surface,
@@ -657,7 +656,7 @@ const styles = StyleSheet.create({
   },
   sexOption: {
     minHeight: HIT_TARGET_MIN,
-    borderRadius: Radius.lg,
+    borderRadius: Radius.sm,
     borderWidth: 1,
     borderColor: Colors.dark.border,
     backgroundColor: Colors.dark.background,

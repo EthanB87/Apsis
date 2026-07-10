@@ -61,7 +61,7 @@ const styles = StyleSheet.create({
   },
   option: {
     minHeight: HIT_TARGET_MIN + 12,
-    borderRadius: Radius.lg,
+    borderRadius: Radius.sm,
     borderWidth: 1,
     borderColor: Colors.dark.border,
     backgroundColor: Colors.dark.surface,

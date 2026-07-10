@@ -128,7 +128,7 @@ const styles = StyleSheet.create({
     minHeight: HIT_TARGET_MIN,
     minWidth: HIT_TARGET_MIN,
     paddingHorizontal: Spacing.md,
-    borderRadius: Radius.lg,
+    borderRadius: Radius.md,
     borderWidth: 1,
     borderColor: Colors.dark.accent,
     alignItems: 'center',

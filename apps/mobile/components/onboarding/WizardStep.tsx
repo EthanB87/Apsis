@@ -12,7 +12,7 @@ import React from 'react';
 import { View, Text, Pressable, StyleSheet, KeyboardAvoidingView, Platform, Keyboard } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Colors from '../../constants/Colors';
-import { HIT_TARGET_MIN, Radius, Spacing, Typography } from '../../constants/theme';
+import { DISABLED_OPACITY, HIT_TARGET_MIN, Radius, Spacing, Typography } from '../../constants/theme';
 import { WIZARD_STEP_ORDER, type WizardStepName } from '../../lib/onboardingDraft';
 
 export interface WizardStepProps {
@@ -71,7 +71,7 @@ export function WizardStep({
             nextDisabled && styles.buttonDisabled,
             pressed && !nextDisabled && styles.buttonPressed,
           ]}>
-          <Text style={styles.buttonLabel}>{label}</Text>
+          <Text style={[styles.buttonLabel, nextDisabled && styles.buttonLabelDisabled]}>{label}</Text>
         </Pressable>
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -120,22 +120,26 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.dark.border,
   },
   button: {
-    minHeight: HIT_TARGET_MIN,
+    minHeight: 48,
     marginHorizontal: Spacing.md,
     marginBottom: Spacing.md,
-    borderRadius: Radius.lg,
+    borderRadius: Radius.md,
     backgroundColor: Colors.dark.accent,
     alignItems: 'center',
     justifyContent: 'center',
   },
   buttonDisabled: {
-    opacity: 0.4,
+    backgroundColor: Colors.dark.steel,
+    opacity: DISABLED_OPACITY,
   },
   buttonPressed: {
-    opacity: 0.85,
+    backgroundColor: Colors.dark.accentPressed,
   },
   buttonLabel: {
     ...Typography.body,
     color: Colors.dark.onAccent,
+  },
+  buttonLabelDisabled: {
+    color: Colors.dark.mutedText,
   },
 });

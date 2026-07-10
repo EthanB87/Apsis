@@ -88,7 +88,7 @@ export function LiveHssHeader({ startedAt, onFinish }: LiveHssHeaderProps): Reac
         onPress={onFinish}
         accessibilityRole="button"
         accessibilityLabel="Finish"
-        style={styles.finishButton}>
+        style={({ pressed }) => [styles.finishButton, pressed && { backgroundColor: Colors.dark.accentPressed }]}>
         <Text style={styles.finishLabel}>Finish</Text>
       </Pressable>
     </View>
@@ -122,11 +122,11 @@ const styles = StyleSheet.create({
     padding: 0,
   },
   finishButton: {
-    minHeight: HIT_TARGET_MIN,
+    minHeight: 48,
     minWidth: 72,
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: Radius.lg,
+    borderRadius: Radius.md,
     backgroundColor: Colors.dark.accent,
     paddingHorizontal: Spacing.md,
   },

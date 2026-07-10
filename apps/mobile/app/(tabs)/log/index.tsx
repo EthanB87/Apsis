@@ -19,7 +19,7 @@ import { db, workout, openWorkout } from '@apsis/db';
 
 import { Text, View } from '@/components/Themed';
 import Colors from '@/constants/Colors';
-import { HIT_TARGET_MIN, Radius, Spacing, Typography } from '@/constants/theme';
+import { DISABLED_OPACITY, HIT_TARGET_MIN, Radius, Spacing, Typography } from '@/constants/theme';
 import { useSessionStore } from '@/stores/sessionStore';
 import { fetchProfileSummary } from '@/lib/commitSet';
 
@@ -97,7 +97,7 @@ export default function LogHomeScreen(): React.JSX.Element {
           starting && styles.buttonDisabled,
           pressed && !starting && styles.buttonPressed,
         ]}>
-        <Text style={styles.buttonLabel}>Start Workout</Text>
+        <Text style={[styles.buttonLabel, starting && styles.buttonLabelDisabled]}>Start workout</Text>
       </Pressable>
     </View>
   );
@@ -126,22 +126,26 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.md,
   },
   button: {
-    minHeight: HIT_TARGET_MIN,
+    minHeight: 48,
     minWidth: 200,
-    borderRadius: Radius.lg,
+    borderRadius: Radius.md,
     backgroundColor: Colors.dark.accent,
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: Spacing.lg,
   },
   buttonDisabled: {
-    opacity: 0.5,
+    backgroundColor: Colors.dark.steel,
+    opacity: DISABLED_OPACITY,
   },
   buttonPressed: {
-    opacity: 0.85,
+    backgroundColor: Colors.dark.accentPressed,
   },
   buttonLabel: {
     ...Typography.body,
     color: Colors.dark.onAccent,
+  },
+  buttonLabelDisabled: {
+    color: Colors.dark.mutedText,
   },
 });

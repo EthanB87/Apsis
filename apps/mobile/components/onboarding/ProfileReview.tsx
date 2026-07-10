@@ -17,7 +17,7 @@ import { View, Text, Pressable, ScrollView, ActivityIndicator, StyleSheet } from
 import type { Sex, Units } from '@apsis/shared';
 import { kgToDisplayLb, paceSecPerKmToSecPerMi, formatPaceMinSec } from '@apsis/shared';
 import Colors from '../../constants/Colors';
-import { HIT_TARGET_MIN, Radius, Spacing, Typography } from '../../constants/theme';
+import { DISABLED_OPACITY, HIT_TARGET_MIN, Radius, Spacing, Typography } from '../../constants/theme';
 
 export interface ProfileReviewValues {
   sex: Sex | null;
@@ -200,23 +200,27 @@ const styles = StyleSheet.create({
     marginTop: Spacing.sm,
   },
   button: {
-    minHeight: HIT_TARGET_MIN,
+    minHeight: 48,
     marginHorizontal: Spacing.md,
     marginTop: Spacing.md,
     marginBottom: Spacing.md,
-    borderRadius: Radius.lg,
+    borderRadius: Radius.md,
     backgroundColor: Colors.dark.accent,
     alignItems: 'center',
     justifyContent: 'center',
   },
   buttonDisabled: {
-    opacity: 0.6,
+    backgroundColor: Colors.dark.steel,
+    opacity: DISABLED_OPACITY,
   },
   buttonPressed: {
-    opacity: 0.85,
+    backgroundColor: Colors.dark.accentPressed,
   },
   buttonLabel: {
     ...Typography.body,
     color: Colors.dark.onAccent,
+  },
+  buttonLabelDisabled: {
+    color: Colors.dark.mutedText,
   },
 });

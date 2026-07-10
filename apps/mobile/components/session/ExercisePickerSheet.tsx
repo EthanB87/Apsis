@@ -186,7 +186,7 @@ const styles = StyleSheet.create({
     ...Typography.body,
     color: Colors.dark.text,
     backgroundColor: Colors.dark.background,
-    borderRadius: Radius.lg,
+    borderRadius: Radius.md,
     paddingHorizontal: Spacing.md,
     minHeight: HIT_TARGET_MIN,
   },

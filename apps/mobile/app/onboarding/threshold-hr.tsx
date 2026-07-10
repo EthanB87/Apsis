@@ -183,7 +183,7 @@ const styles = StyleSheet.create({
   modeButton: {
     flex: 1,
     minHeight: HIT_TARGET_MIN,
-    borderRadius: Radius.lg,
+    borderRadius: Radius.sm,
     borderWidth: 1,
     borderColor: Colors.dark.border,
     backgroundColor: Colors.dark.surface,

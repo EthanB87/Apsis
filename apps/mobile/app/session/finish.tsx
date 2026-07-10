@@ -24,7 +24,7 @@ import { sessionHSSDetailed } from '@apsis/engine';
 import type { CarrySet, StrengthSet } from '@apsis/shared';
 
 import Colors from '../../constants/Colors';
-import { HIT_TARGET_MIN, Mono, Radius, Spacing, Typography, tabularNums } from '../../constants/theme';
+import { DISABLED_OPACITY, HIT_TARGET_MIN, Mono, Radius, Spacing, Typography, tabularNums } from '../../constants/theme';
 import { fetchProfileSummary } from '../../lib/commitSet';
 import { discardWorkout, finishWorkout } from '../../lib/finishWorkout';
 import { useSessionStore } from '../../stores/sessionStore';
@@ -209,7 +209,7 @@ export default function FinishScreen(): React.JSX.Element {
               accessibilityRole="button"
               accessibilityLabel="Discard Workout"
               style={styles.menuItem}>
-              <Text style={styles.menuItemLabel}>Discard Workout</Text>
+              <Text style={styles.menuItemLabel}>Discard workout</Text>
             </Pressable>
           </View>
         </>
@@ -250,8 +250,13 @@ export default function FinishScreen(): React.JSX.Element {
         disabled={busy}
         accessibilityRole="button"
         accessibilityLabel="Done"
-        style={styles.button}>
-        <Text style={styles.buttonLabel}>Done</Text>
+        accessibilityState={{ disabled: busy }}
+        style={({ pressed }) => [
+          styles.button,
+          busy && styles.buttonDisabled,
+          pressed && !busy && styles.buttonPressed,
+        ]}>
+        <Text style={[styles.buttonLabel, busy && styles.buttonLabelDisabled]}>Done</Text>
       </Pressable>
 
       <Modal
@@ -269,7 +274,7 @@ export default function FinishScreen(): React.JSX.Element {
                 accessibilityRole="button"
                 accessibilityLabel="Keep Training"
                 style={styles.modalSecondaryButton}>
-                <Text style={styles.modalSecondaryLabel}>Keep Training</Text>
+                <Text style={styles.modalSecondaryLabel}>Keep training</Text>
               </Pressable>
               <Pressable
                 onPress={handleConfirmDiscard}
@@ -277,7 +282,7 @@ export default function FinishScreen(): React.JSX.Element {
                 accessibilityRole="button"
                 accessibilityLabel="Discard Workout"
                 style={styles.modalDestructiveButton}>
-                <Text style={styles.modalDestructiveLabel}>Discard Workout</Text>
+                <Text style={styles.modalDestructiveLabel}>Discard workout</Text>
               </Pressable>
             </View>
           </View>
@@ -379,17 +384,27 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.xs,
   },
   button: {
-    minHeight: HIT_TARGET_MIN,
+    minHeight: 48,
     marginHorizontal: Spacing.lg,
     marginBottom: Spacing.lg,
-    borderRadius: Radius.lg,
+    borderRadius: Radius.md,
     backgroundColor: Colors.dark.accent,
     alignItems: 'center',
     justifyContent: 'center',
   },
+  buttonDisabled: {
+    backgroundColor: Colors.dark.steel,
+    opacity: DISABLED_OPACITY,
+  },
+  buttonPressed: {
+    backgroundColor: Colors.dark.accentPressed,
+  },
   buttonLabel: {
     ...Typography.body,
     color: Colors.dark.onAccent,
+  },
+  buttonLabelDisabled: {
+    color: Colors.dark.mutedText,
   },
   modalBackdrop: {
     flex: 1,
