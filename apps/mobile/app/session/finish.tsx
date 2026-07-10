@@ -31,8 +31,9 @@ import {
   type Units,
 } from '@apsis/shared';
 
+import HssRing from '../../components/home/HssRing';
 import Colors from '../../constants/Colors';
-import { DISABLED_OPACITY, HIT_TARGET_MIN, Mono, Radius, Spacing, Typography, tabularNums } from '../../constants/theme';
+import { DISABLED_OPACITY, HIT_TARGET_MIN, Mono, Radius, Spacing, Typography } from '../../constants/theme';
 import { fetchProfileSummary } from '../../lib/commitSet';
 import { discardWorkout, finishWorkout } from '../../lib/finishWorkout';
 import { useSessionStore } from '../../stores/sessionStore';
@@ -278,7 +279,9 @@ export default function FinishScreen(): React.JSX.Element {
       setBusy(false);
     }
     reset();
-    router.replace('/(tabs)/log');
+    // D-07: Done lands on TODAY (not LOG) after either a lift or a run — the more natural
+    // landing point now that Home/TODAY shows both activity families' combined load.
+    router.replace('/(tabs)');
   }
 
   async function handleConfirmDiscard(): Promise<void> {
@@ -293,7 +296,7 @@ export default function FinishScreen(): React.JSX.Element {
     }
     setConfirmOpen(false);
     reset();
-    router.replace('/(tabs)/log');
+    router.replace('/(tabs)');
   }
 
   return (
@@ -333,7 +336,13 @@ export default function FinishScreen(): React.JSX.Element {
 
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <Text style={styles.label}>Session Complete</Text>
-        <Text style={[styles.hss, tabularNums]}>{hss == null ? '—' : Math.round(hss)}</Text>
+        <View style={styles.ringWrapper}>
+          {/* D-04: 84px mini-ring shared with the home 200px hero (HssRing.tsx). A finish
+              screen is a one-time view, so it always animates (D-05's once-per-day gate is a
+              Home-only concern) — pass a non-calibrating band so the volt arc renders; the
+              session HSS ring never shows a readiness band, only the session's own number. */}
+          <HssRing size={84} hss={hss ?? 0} band="green" animate />
+        </View>
 
         {enduranceSummaryLine != null ? (
           <View style={styles.exerciseRow}>
@@ -472,9 +481,7 @@ const styles = StyleSheet.create({
     marginTop: Spacing.lg,
     marginBottom: Spacing.sm,
   },
-  hss: {
-    ...Typography.display,
-    color: Colors.dark.accent,
+  ringWrapper: {
     marginBottom: Spacing.xxxl,
   },
   exerciseRow: {
