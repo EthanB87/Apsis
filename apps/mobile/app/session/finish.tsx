@@ -19,9 +19,17 @@ import { Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-nati
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { eq } from 'drizzle-orm';
-import { db, exercise as exerciseTable, strengthSet } from '@apsis/db';
+import { db, enduranceSegment, exercise as exerciseTable, strengthSet, workout } from '@apsis/db';
 import { sessionHSSDetailed } from '@apsis/engine';
-import { kgToDisplayLb, type CarrySet, type StrengthSet, type Units } from '@apsis/shared';
+import {
+  formatPaceMinSec,
+  kgToDisplayLb,
+  kmToDisplayMi,
+  paceSecPerKmToSecPerMi,
+  type CarrySet,
+  type StrengthSet,
+  type Units,
+} from '@apsis/shared';
 
 import Colors from '../../constants/Colors';
 import { DISABLED_OPACITY, HIT_TARGET_MIN, Mono, Radius, Spacing, Typography, tabularNums } from '../../constants/theme';
@@ -59,6 +67,56 @@ function formatDuration(totalSeconds: number): string {
   return `${minutes}:${String(seconds).padStart(2, '0')} total`;
 }
 
+// Compact h:mm:ss / m:ss duration for the endurance summary line (no " total" suffix,
+// since it's one segment of a "distance · pace · duration" compound line) — same
+// h>0-branch convention as @apsis/shared's parseDurationDigits display format.
+function formatSessionDuration(totalSeconds: number): string {
+  const hours = Math.floor(totalSeconds / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = Math.floor(totalSeconds % 60);
+  return hours > 0
+    ? `${hours}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`
+    : `${minutes}:${String(seconds).padStart(2, '0')}`;
+}
+
+// Builds the per-type endurance summary line (RUN-06, 04-UI-SPEC.md section 8): run/erg show
+// distance + pace + duration; conditioning shows duration + AVG HR only (D-16, no distance/pace
+// concept for conditioning).
+function formatEnduranceSummary(
+  activityType: 'run' | 'erg' | 'conditioning' | 'sled' | 'other',
+  distanceM: number | null,
+  durationS: number,
+  avgHr: number | null,
+  units: Units
+): string {
+  const durationLabel = formatSessionDuration(durationS);
+
+  if (activityType === 'conditioning') {
+    return avgHr != null ? `${durationLabel} · ${avgHr} BPM` : durationLabel;
+  }
+
+  if (activityType === 'erg') {
+    const pace = distanceM != null && distanceM > 0 ? durationS / (distanceM / 500) : null;
+    const distanceLabel = distanceM != null ? `${Math.round(distanceM)} M` : null;
+    const paceLabel = pace != null ? `${formatPaceMinSec(pace)} /500M` : null;
+    return [distanceLabel, paceLabel, durationLabel].filter(Boolean).join(' · ');
+  }
+
+  // run (and any other segment types default to the run-style distance/pace/duration format)
+  const paceSecPerKm = distanceM != null && distanceM > 0 ? durationS / (distanceM / 1000) : null;
+  const distanceLabel =
+    distanceM != null
+      ? units === 'imperial'
+        ? `${kmToDisplayMi(distanceM / 1000).toFixed(1)} MI`
+        : `${(distanceM / 1000).toFixed(1)} KM`
+      : null;
+  const paceLabel =
+    paceSecPerKm != null
+      ? `${formatPaceMinSec(units === 'imperial' ? paceSecPerKmToSecPerMi(paceSecPerKm) : paceSecPerKm)} /${units === 'imperial' ? 'MI' : 'KM'}`
+      : null;
+  return [distanceLabel, paceLabel, durationLabel].filter(Boolean).join(' · ');
+}
+
 export default function FinishScreen(): React.JSX.Element {
   const params = useLocalSearchParams<{ workoutId: string }>();
   const workoutId = params.workoutId;
@@ -69,6 +127,7 @@ export default function FinishScreen(): React.JSX.Element {
   const [warnings, setWarnings] = useState<string[]>([]);
   const [units, setUnits] = useState<Units>('metric');
   const [exerciseSummaries, setExerciseSummaries] = useState<ExerciseSummary[]>([]);
+  const [enduranceSummaryLine, setEnduranceSummaryLine] = useState<string | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -81,6 +140,56 @@ export default function FinishScreen(): React.JSX.Element {
       try {
         const profile = await fetchProfileSummary(db);
 
+        const workoutRows = await db
+          .select({ type: workout.type })
+          .from(workout)
+          .where(eq(workout.id, workoutId));
+        const workoutType = workoutRows[0]?.type ?? 'strength';
+
+        if (workoutType === 'endurance') {
+          // RUN-06: re-derive the endurance summary straight from SQLite (never from a
+          // store, matching this screen's D-14 invariant) — the run-save flow never mounts
+          // a persistent session store the way lifting does.
+          const segmentRows = await db
+            .select({
+              activityType: enduranceSegment.activityType,
+              distanceM: enduranceSegment.distanceM,
+              durationS: enduranceSegment.durationS,
+              avgHr: enduranceSegment.avgHr,
+              intensityFactor: enduranceSegment.intensityFactor,
+            })
+            .from(enduranceSegment)
+            .where(eq(enduranceSegment.workoutId, workoutId));
+
+          const result = sessionHSSDetailed({
+            enduranceSegments: segmentRows.map((row) => ({
+              durationS: row.durationS,
+              intensityFactor: row.intensityFactor ?? 1.0,
+            })),
+          });
+
+          const firstSegment = segmentRows[0];
+          const summaryLine = firstSegment
+            ? formatEnduranceSummary(
+                firstSegment.activityType,
+                firstSegment.distanceM,
+                firstSegment.durationS,
+                firstSegment.avgHr,
+                profile.units
+              )
+            : null;
+
+          if (!cancelled) {
+            setHss(result.hss);
+            setWarnings(result.warnings);
+            setUnits(profile.units);
+            setExerciseSummaries([]);
+            setEnduranceSummaryLine(summaryLine);
+          }
+          return;
+        }
+
+        // strength (and hybrid) — existing per-exercise summary path, unchanged.
         const rows = await db
           .select({
             exerciseId: strengthSet.exerciseId,
@@ -145,6 +254,7 @@ export default function FinishScreen(): React.JSX.Element {
           setWarnings(result.warnings);
           setUnits(profile.units);
           setExerciseSummaries(Array.from(byExercise.values()));
+          setEnduranceSummaryLine(null);
         }
       } catch (err: unknown) {
         console.error('[Apsis] finish.tsx summary query failed:', err);
@@ -225,19 +335,25 @@ export default function FinishScreen(): React.JSX.Element {
         <Text style={styles.label}>Session Complete</Text>
         <Text style={[styles.hss, tabularNums]}>{hss == null ? '—' : Math.round(hss)}</Text>
 
-        {exerciseSummaries.map((summary) => (
-          <View key={summary.exerciseId} style={styles.exerciseRow}>
-            <Text style={styles.exerciseName}>{summary.name}</Text>
-            <Text style={styles.exerciseMeta}>
-              {`${summary.setCount} set${summary.setCount === 1 ? '' : 's'}`}
-            </Text>
-            <Text style={styles.exerciseMeta}>
-              {summary.entryMode === 'timed'
-                ? formatDuration(summary.totalDurationS)
-                : formatVolume(summary.volumeKg, units)}
-            </Text>
+        {enduranceSummaryLine != null ? (
+          <View style={styles.exerciseRow}>
+            <Text style={styles.exerciseMeta}>{enduranceSummaryLine}</Text>
           </View>
-        ))}
+        ) : (
+          exerciseSummaries.map((summary) => (
+            <View key={summary.exerciseId} style={styles.exerciseRow}>
+              <Text style={styles.exerciseName}>{summary.name}</Text>
+              <Text style={styles.exerciseMeta}>
+                {`${summary.setCount} set${summary.setCount === 1 ? '' : 's'}`}
+              </Text>
+              <Text style={styles.exerciseMeta}>
+                {summary.entryMode === 'timed'
+                  ? formatDuration(summary.totalDurationS)
+                  : formatVolume(summary.volumeKg, units)}
+              </Text>
+            </View>
+          ))
+        )}
 
         {warnings.length > 0 ? (
           <View style={styles.warningsSection}>
