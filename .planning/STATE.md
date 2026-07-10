@@ -5,16 +5,16 @@ milestone_name: milestone
 current_phase: 03
 current_phase_name: onboarding-lifting-logger
 status: executing
-stopped_at: Paused at 03-10-PLAN.md Task 3 (blocking human-verify checkpoint) -- Tasks 1-2 committed
-last_updated: "2026-07-10T13:08:21.387Z"
+stopped_at: Completed 03-10-PLAN.md (set-logging UI gap closure + user-directed overhaul, UAT Test 9 closed)
+last_updated: "2026-07-10T16:58:32.834Z"
 last_activity: 2026-07-10
 last_activity_desc: Phase 03 execution started
 progress:
   total_phases: 6
-  completed_phases: 1
+  completed_phases: 2
   total_plans: 17
-  completed_plans: 16
-  percent: 17
+  completed_plans: 17
+  percent: 33
 ---
 
 # Project State — Apsis
@@ -32,7 +32,7 @@ the pure-TS HSS engine (the moat), which the engine's own `index.ts` explicitly 
 ## Current Position
 
 Phase: 03 (onboarding-lifting-logger) — EXECUTING
-Plan: 2 of 11
+Plan: 3 of 11
 Status: Ready to execute
 Last activity: 2026-07-10 — Phase 03 execution started
 traceability filled; 100% of the 39 pending v1.0 requirements mapped to Phases 02–06.
@@ -77,6 +77,7 @@ Progress: [██░░░░░░░░] 17% (1/6 phases complete)
 | Phase 03 P08 | 15min | 2 tasks | 4 files |
 | Phase 03 P09 | 9min | 2 tasks | 4 files |
 | Phase 03 P11 | 20min | 3 tasks | 22 files |
+| Phase 03 P10 | ~5h | 3 tasks | 13 files |
 
 ## Accumulated Context
 
@@ -132,6 +133,10 @@ Recent decisions affecting current work:
 - [Phase ?]: [Phase 03 P09]: useProfile.ts is a new update-in-place hook (parameterized UPDATE against user_profile only, never workout.hss/load_daily) rather than an edit to useSaveProfile.ts, which stays insert-only for onboarding
 - [Phase 03]: Ordered largest-first Spacing token rename (xxxl->xxxxl,xxl->xxxl,xl->xxl,lg->xl,md->lg) with a pre/post count-invariant guard across 20 consumer files — Mechanical rename must preserve every rendered value; count-invariant catches missed/double renames tsc cannot catch
 - [Phase 03]: Segmented-control active fill switches volt->bone whenever the same screen/modal already has a volt-filled primary CTA — Enforces DESIGN-SYSTEM.md's one-volt-per-screen hard rule on WizardStep Continue, ProfileReview Save changes, and modal Set button screens
+- [Phase ?]: [Phase 03 P10]: User superseded DESIGN-SYSTEM.md component specs for the logging surface at the on-device checkpoint (palette-only constraint) — shipped ledger set-row (tap-to-type fields, no steppers) is the new source of truth there, recorded in 03-UI-SPEC.md
+- [Phase ?]: [Phase 03 P10]: Store-writing screen effects must use useFocusEffect, not useEffect — expo-router keeps stacked screens mounted and unfocused plain effects caused an A<->B rehydrateFromDb oscillation that resurrected finished workouts and wiped rest-timer state
+- [Phase ?]: [Phase 03 P10]: OS-notification lifecycle is a paired invariant — the D-26 cancel-on-foreground-return now has a reschedule-on-background inverse (ensureRestNotificationScheduled), so a foreground bounce mid-rest can no longer permanently destroy the completion signal
+- [Phase ?]: [Phase 03 P10]: kgToDisplayLbFractional (nearest 0.1 lb) for entry surfaces; whole-lb kgToDisplayLb retained for read-only summaries per D-12
 
 ### Pending Todos
 
@@ -163,6 +168,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-07-10T13:08:21.377Z
-Stopped at: Paused at 03-10-PLAN.md Task 3 (blocking human-verify checkpoint) -- Tasks 1-2 committed
-Resume file: .planning/phases/03-onboarding-lifting-logger/03-10-PLAN.md
+Last session: 2026-07-10T16:58:32.823Z
+Stopped at: Completed 03-10-PLAN.md (set-logging UI gap closure + user-directed overhaul, UAT Test 9 closed)
+Resume file: None
