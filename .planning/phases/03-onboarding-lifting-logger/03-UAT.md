@@ -1,5 +1,5 @@
 ---
-status: complete
+status: diagnosed
 phase: 03-onboarding-lifting-logger
 source: [03-VERIFICATION.md]
 started: 2026-07-09T22:20:00Z
@@ -93,11 +93,22 @@ blocked: 0
   debug_session: ""
 
 - truth: "Session screen and set-logging UI render cleanly with UI-SPEC spacing"
-  status: failed
+  status: diagnosed
   reason: "User reported: while the color is correct the UI when adding sets and logging a workout is a little broken and spaced weird"
   severity: minor
   test: 9
-  root_cause: ""
-  artifacts: []
-  missing: []
-  debug_session: ""
+  root_cause: "SetRow's intrinsic single-line width (~690px: two 44px-stepper-flanked field groups, five 44px RPE pills, 44px checkmark, warmup chip, gaps/padding) is ~2x the ~361pt available inside an ExerciseCard on any iPhone; styles.row uses flexWrap:'wrap', so every set row silently folds into 2-3 ragged lines instead of the UI-SPEC single ~56-64px row. Defect original to commit c6a938a (Plan 03-06) — the file's own header comment intended small visuals + hitSlop for the 44pt touch target, but styles use HIT_TARGET_MIN=44 as the VISUAL size. Design System v1 restyle (3922c13/ce4fef7) widened content further and, by fixing colors, made the wrap the newly visible defect."
+  artifacts:
+    - path: "apps/mobile/components/session/SetRow.tsx"
+      issue: "flexWrap:'wrap' on styles.row (line 379); 44px visual steppers (409-418), RPE pills (441-448), checkmark (462-470); valueInput pairs Archivo_800ExtraBold with mismatched fontWeight '600' (424-426)"
+    - path: "apps/mobile/components/session/ExerciseCard.tsx"
+      issue: "header padding lg=24 misaligned with SetRow padding md=16 (8px left-edge offset); inset dashed add-set box deviates from spec's full-width ghost row (123-134)"
+    - path: "apps/mobile/constants/theme.ts"
+      issue: "Mono role (letterSpacing 1, uppercase) and heading/display/title pair single-face families with fontWeight '600' — width/metrics contributors"
+  missing:
+    - "Rebuild SetRow as a true single-line row: shrink visual control sizes (steppers/RPE pills/checkmark to ~28-32px) with hitSlop supplying the 44pt touch target"
+    - "Remove flexWrap:'wrap' from styles.row; keep effective-load/error/warning as explicit second-line rows"
+    - "Reconsider per-row density — stepper-flanked groups + 5 pills + checkmark cannot fit 390pt at 44px visuals (Strong/Hevy use compact text fields)"
+    - "Align SetRow horizontal padding with card header padding"
+    - "Drop redundant fontWeight on single-face Archivo families"
+  debug_session: .planning/debug/session-logger-ui-spacing.md
