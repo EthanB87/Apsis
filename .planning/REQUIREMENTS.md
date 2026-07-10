@@ -53,7 +53,7 @@ Requirements for the v1.0 release. Each maps to exactly one roadmap phase.
 - [x] **RUN-03**: User can optionally enter average HR
 - [x] **RUN-04**: Session date defaults to today and is editable
 - [x] **RUN-05**: User can add an optional free-text note / tag
-- [ ] **RUN-06**: Session HSS is shown on the finish screen
+- [x] **RUN-06**: Session HSS is shown on the finish screen
 
 ### Home / Dashboard
 
@@ -140,7 +140,7 @@ Which phase covers which requirement. Populated during roadmap creation.
 | RUN-03 | Phase 04 | Complete |
 | RUN-04 | Phase 04 | Complete |
 | RUN-05 | Phase 04 | Complete |
-| RUN-06 | Phase 04 | Pending |
+| RUN-06 | Phase 04 | Complete |
 | HOME-01 | Phase 04 | Complete |
 | HOME-02 | Phase 04 | Complete |
 | HOME-03 | Phase 04 | Complete |

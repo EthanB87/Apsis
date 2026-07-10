@@ -6,14 +6,14 @@ current_phase: 04
 current_phase_name: run-logger-home-dashboard
 status: executing
 stopped_at: Completed 04-01-PLAN.md
-last_updated: "2026-07-10T21:23:25.779Z"
+last_updated: "2026-07-10T21:30:15.533Z"
 last_activity: 2026-07-10
 last_activity_desc: Phase 04 execution started
 progress:
   total_phases: 6
   completed_phases: 2
   total_plans: 25
-  completed_plans: 22
+  completed_plans: 23
   percent: 33
 ---
 
@@ -30,7 +30,7 @@ training-load number (HSS) and a readiness band — fully offline.
 ## Current Position
 
 Phase: 04 (run-logger-home-dashboard) — EXECUTING
-Plan: 6 of 8
+Plan: 7 of 8
 Status: Ready to execute
 Last activity: 2026-07-10 — Phase 04 execution started
 traceability filled; 100% of the 39 pending v1.0 requirements mapped to Phases 02–06.
@@ -82,6 +82,7 @@ Progress: [█████░░░░░] 50% (3/6 phases complete)
 | Phase 04 P03 | 8min | 3 tasks | 4 files |
 | Phase 04 P04 | 12min | 3 tasks | 5 files |
 | Phase 04 P05 | 22min | 3 tasks | 8 files |
+| Phase 04 P06 | 15min | 2 tasks | 1 files |
 
 ## Accumulated Context
 
@@ -152,6 +153,8 @@ Recent decisions affecting current work:
 - [Phase 04 P05]: runEntryLogic.ts extracted from runEntry.ts (zero @apsis/db/native imports) so Task 1's tdd=true requirement could be honored under vitest -- @apsis/db's barrel eagerly opens the native op-sqlite JSI connection at module load, making the file itself unimportable under plain Node
 - [Phase 04 P05]: Added a minimal apps/mobile vitest harness (lib/** only) -- first test coverage apps/mobile has ever had; screens/components remain untested (documented STATE.md gap)
 - [Phase 04 P05]: dateToLocalDateStr(d) extracted from localDate.ts's todayLocalDate() so the run form's date-sheet serialization reuses the single local-date formatter (Pitfall 4)
+- [Phase ?]: Session HSS mini-ring always passes a hardcoded non-calibrating band ('green') since a single-session ring never carries readiness-band semantics — Phase 04 P06
+- [Phase ?]: Endurance segment rows feed sessionHSSDetailed directly via durationS + intensityFactor already persisted by saveRun -- no IF re-resolution duplicated on the finish screen — Phase 04 P06
 
 ### Pending Todos
 
@@ -189,6 +192,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-07-10T21:22:45.589Z
+Last session: 2026-07-10T21:29:56.247Z
 Stopped at: Completed 04-01-PLAN.md
 Resume file: None
