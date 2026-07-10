@@ -5,16 +5,16 @@ milestone_name: milestone
 current_phase: 04
 current_phase_name: run-logger-home-dashboard
 status: executing
-stopped_at: Completed 04-08-PLAN.md
-last_updated: "2026-07-10T22:49:33.327Z"
+stopped_at: Completed 04-09-PLAN.md
+last_updated: "2026-07-10T23:16:57.568Z"
 last_activity: 2026-07-10
 last_activity_desc: Phase 04 execution started
 progress:
   total_phases: 6
-  completed_phases: 3
-  total_plans: 25
-  completed_plans: 25
-  percent: 50
+  completed_phases: 2
+  total_plans: 27
+  completed_plans: 26
+  percent: 33
 ---
 
 # Project State — Apsis
@@ -30,8 +30,8 @@ training-load number (HSS) and a readiness band — fully offline.
 ## Current Position
 
 Phase: 04 (run-logger-home-dashboard) — EXECUTING
-Plan: 8 of 8
-Status: Ready to execute
+Plan: 9 of 10
+Status: Executing Phase 04
 Last activity: 2026-07-10 — Phase 04 execution started
 traceability filled; 100% of the 39 pending v1.0 requirements mapped to Phases 02–06.
 
@@ -85,6 +85,7 @@ Progress: [█████░░░░░] 50% (3/6 phases complete)
 | Phase 04 P06 | 15min | 2 tasks | 1 files |
 | Phase 04 P07 | 35min | 3 tasks | 3 files |
 | Phase 04 P08 | ~25min | 3 tasks | 5 files |
+| Phase 04 P09 | 6min | 2 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -164,6 +165,8 @@ Recent decisions affecting current work:
 - [Phase 04]: History paginates client-side over a single full-table load_daily/session read per focus rather than paginated SQL, matching recomputeLoadDaily's existing read-everything-fold-in-memory discipline for this local-first dataset size
 - [Phase 04]: session/detail.tsx uses plain useEffect (not useFocusEffect) -- one-time pushed screen with no store writes, matching finish.tsx's precedent, not the Pitfall-5 store-oscillation risk
 - [Phase 04]: Added app/(tabs)/history/_layout.tsx (Rule 2 deviation, outside plan's declared files) to match the log/settings tab-group Stack convention exactly
+- [Phase 04]: formatSignedTsb kept as standalone helper with 'worklet' directive added (not inlined) per plan's preferred fix form for CR-01
+- [Phase 04]: recomputeLoadDaily's stale-row cleanup DELETE stays sequential (non-transactional), issued immediately before the upsert loop -- op-sqlite's drizzle transaction() callback is synchronous (returns T not Promise<T>), incompatible with the function's async upsert loop, so the plan's explicit fallback applies (CR-02)
 
 ### Pending Todos
 
@@ -201,6 +204,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-07-10T22:06:37.983Z
+Last session: 2026-07-10T23:16:57.558Z
 Stopped at: Completed 04-08-PLAN.md
 Resume file: None
