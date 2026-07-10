@@ -2,11 +2,16 @@
  * apps/mobile/components/session/ExerciseCard.tsx
  *
  * A single exercise's card in the active-session scroll (D-22): a secondary-surface
- * container with a Heading name + Label last-session summary header, its SetRows stacked
- * with hairline dividers, and a full-width "+ Add set" ghost row that clones the previous
- * set (D-11/LIFT-06). Swipe-left -> Delete (D-11) removes a set inline; if the set was
- * already committed, the persisted row is deleted and the session HSS recomputed BEFORE the
- * row leaves the in-memory list, so the live header never shows a stale total.
+ * container with a Heading name + Label last-session summary header, a mono uppercase
+ * column-header row (units/entry-mode aware) labeling the set-row columns, its SetRows
+ * stacked with hairline dividers, and a full-width "+ Add set" ghost row that clones the
+ * previous set (D-11/LIFT-06). Swipe-left -> Delete (D-11) removes a set inline; if the set
+ * was already committed, the persisted row is deleted and the session HSS recomputed BEFORE
+ * the row leaves the in-memory list, so the live header never shows a stale total.
+ *
+ * Header padding and the column-header row share SetRow's primary-row left edge (both
+ * Spacing.md) per DESIGN-SYSTEM.md — see .planning/debug/session-logger-ui-spacing.md for
+ * the prior left-edge offset this closes (Plan 03-10).
  */
 
 import { Pressable, StyleSheet, Text, View } from 'react-native';
@@ -38,6 +43,7 @@ export interface ExerciseCardProps {
 export function ExerciseCard({ exercise }: ExerciseCardProps): React.JSX.Element {
   const workoutId = useSessionStore((s) => s.workoutId);
   const profileBodyweightKg = useSessionStore((s) => s.profileBodyweightKg);
+  const units = useSessionStore((s) => s.units);
   const removeSet = useSessionStore((s) => s.removeSet);
   const addSet = useSessionStore((s) => s.addSet);
   const setLiveHss = useSessionStore((s) => s.setLiveHss);
@@ -65,6 +71,18 @@ export function ExerciseCard({ exercise }: ExerciseCardProps): React.JSX.Element
         {exercise.lastSessionSummary ? (
           <Text style={styles.summary}>{exercise.lastSessionSummary}</Text>
         ) : null}
+      </View>
+
+      <View style={styles.columnHeaderRow}>
+        <View style={styles.columnHeaderChipSpace} />
+        <Text style={[styles.columnHeader, styles.columnHeaderLoad]}>
+          {units === 'imperial' ? 'LB' : 'KG'}
+        </Text>
+        <Text style={[styles.columnHeader, styles.columnHeaderReps]}>
+          {exercise.entryMode === 'timed' ? 'SEC' : 'REPS'}
+        </Text>
+        <Text style={[styles.columnHeader, styles.columnHeaderRpe]}>RPE</Text>
+        <View style={styles.columnHeaderCheckSpace} />
       </View>
 
       {exercise.sets.map((set, index) => (
@@ -103,7 +121,9 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   header: {
-    paddingHorizontal: Spacing.xl,
+    // Spacing.md matches SetRow's primary-row paddingHorizontal (Task 1) so the exercise
+    // name / summary shares the same left edge as the set-row content beneath it.
+    paddingHorizontal: Spacing.md,
     paddingTop: Spacing.xl,
     paddingBottom: Spacing.sm,
   },
@@ -116,25 +136,52 @@ const styles = StyleSheet.create({
     color: Colors.dark.mutedText,
     marginTop: Spacing.xs,
   },
+  // Mono uppercase column labels above the set rows; widths mirror SetRow's primary-row
+  // group widths (chip 24 / load ~92 / reps-or-sec ~76 / RPE ~74 / checkmark 32) so each
+  // label roughly sits over its column.
+  columnHeaderRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.xs,
+    paddingHorizontal: Spacing.md,
+    paddingBottom: Spacing.xs,
+  },
+  columnHeaderChipSpace: {
+    width: 24,
+  },
+  columnHeader: {
+    ...Mono,
+    color: Colors.dark.mutedText,
+    textAlign: 'center',
+  },
+  columnHeaderLoad: {
+    width: 92,
+  },
+  columnHeaderReps: {
+    width: 76,
+  },
+  columnHeaderRpe: {
+    width: 74,
+  },
+  columnHeaderCheckSpace: {
+    width: 32,
+  },
   setDivider: {
     borderTopWidth: HAIRLINE_WIDTH,
     borderTopColor: Colors.dark.border,
   },
+  // Full-width ghost row (DESIGN-SYSTEM.md §5 Secondary/ghost: transparent fill, no inset
+  // margin box, no dashed border) separated from the set list by a top hairline divider.
   addSetRow: {
     minHeight: HIT_TARGET_MIN,
     alignItems: 'center',
     justifyContent: 'center',
-    borderWidth: 1,
-    borderStyle: 'dashed',
-    borderColor: Colors.dark.accent,
-    borderRadius: Radius.md,
-    marginHorizontal: Spacing.lg,
-    marginTop: Spacing.sm,
-    marginBottom: Spacing.lg,
+    borderTopWidth: HAIRLINE_WIDTH,
+    borderTopColor: Colors.dark.border,
   },
   addSetLabel: {
     ...Typography.body,
-    color: Colors.dark.accent,
+    color: Colors.dark.text,
   },
   deleteAction: {
     width: 88,
