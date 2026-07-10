@@ -18,7 +18,7 @@ import { eq } from 'drizzle-orm';
 import { db, workout } from '@apsis/db';
 
 import Colors from '@/constants/Colors';
-import { HIT_TARGET_MIN, Radius, Spacing, Typography } from '@/constants/theme';
+import { Spacing } from '@/constants/theme';
 import { fetchProfileSummary } from '@/lib/commitSet';
 import { ExerciseCard } from '@/components/session/ExerciseCard';
 import { ExercisePickerSheet } from '@/components/session/ExercisePickerSheet';
@@ -124,21 +124,24 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.dark.background,
   },
   scrollContent: {
-    paddingTop: Spacing.lg,
+    paddingTop: Spacing.md,
     paddingBottom: Spacing.xxxxl,
   },
+  // Ghost affordance matching the card language (hairline border, card radius); volt stays
+  // reserved for the live HSS readout and Finish so the accent keeps its signal value.
   addExerciseButton: {
-    minHeight: HIT_TARGET_MIN,
+    minHeight: 52,
     marginHorizontal: Spacing.lg,
-    marginTop: Spacing.xxl,
-    borderRadius: Radius.md,
+    marginTop: Spacing.xs,
+    borderRadius: 12,
     borderWidth: 1,
-    borderColor: Colors.dark.accent,
+    borderColor: Colors.dark.border,
     alignItems: 'center',
     justifyContent: 'center',
   },
   addExerciseLabel: {
-    ...Typography.body,
-    color: Colors.dark.accent,
+    fontFamily: 'Archivo_500Medium',
+    fontSize: 15,
+    color: Colors.dark.text,
   },
 });

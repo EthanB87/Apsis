@@ -16,7 +16,7 @@ import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import Animated, { Easing, useAnimatedProps, useSharedValue, withTiming } from 'react-native-reanimated';
 
 import Colors from '../../constants/Colors';
-import { HIT_TARGET_MIN, Mono, Radius, Spacing, Typography, tabularNums } from '../../constants/theme';
+import { HIT_TARGET_MIN, Radius, Spacing, tabularNums } from '../../constants/theme';
 import { useSessionStore } from '../../stores/sessionStore';
 
 Animated.addWhitelistedNativeProps({ text: true });
@@ -62,7 +62,11 @@ export function LiveHssHeader({ startedAt, onFinish }: LiveHssHeaderProps): Reac
 
   return (
     <View style={styles.header}>
-      <Text style={[styles.elapsed, tabularNums]}>{formatElapsed(elapsedSeconds)}</Text>
+      {/* Instrument HUD: every readout is a value with its mono label beneath it. */}
+      <View style={styles.readout}>
+        <Text style={[styles.elapsed, tabularNums]}>{formatElapsed(elapsedSeconds)}</Text>
+        <Text style={styles.readoutLabel}>ELAPSED</Text>
+      </View>
 
       <Pressable
         onPress={() => setBreakdownOpen(true)}
@@ -82,6 +86,7 @@ export function LiveHssHeader({ startedAt, onFinish }: LiveHssHeaderProps): Reac
           animatedProps={animatedProps as Partial<ComponentProps<typeof TextInput>>}
           style={[styles.hssValue, tabularNums]}
         />
+        <Text style={styles.readoutLabel}>SESSION HSS</Text>
       </Pressable>
 
       <Pressable
@@ -102,28 +107,44 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     backgroundColor: Colors.dark.surface,
     paddingHorizontal: Spacing.lg,
-    paddingVertical: Spacing.sm,
+    paddingVertical: Spacing.md,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.dark.border,
+  },
+  readout: {
+    minWidth: 64,
+    alignItems: 'flex-start',
+    gap: 2,
+  },
+  readoutLabel: {
+    fontFamily: 'JetBrainsMono_500Medium',
+    fontSize: 9,
+    letterSpacing: 1.4,
+    color: Colors.dark.mutedText,
   },
   elapsed: {
-    ...Mono,
+    fontFamily: 'JetBrainsMono_500Medium',
+    fontSize: 16,
     color: Colors.dark.text,
-    minWidth: 56,
   },
   hssTapArea: {
     flex: 1,
     alignItems: 'center',
     minHeight: HIT_TARGET_MIN,
     justifyContent: 'center',
+    gap: 2,
   },
   hssValue: {
-    ...Typography.display,
+    fontFamily: 'Archivo_900Black',
+    fontSize: 34,
+    lineHeight: 38,
     color: Colors.dark.accent,
     textAlign: 'center',
     padding: 0,
   },
   finishButton: {
-    minHeight: 48,
-    minWidth: 72,
+    minHeight: 44,
+    minWidth: 76,
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: Radius.md,
@@ -131,7 +152,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.lg,
   },
   finishLabel: {
-    ...Typography.body,
+    fontFamily: 'Archivo_500Medium',
+    fontSize: 14,
     color: Colors.dark.onAccent,
   },
 });
