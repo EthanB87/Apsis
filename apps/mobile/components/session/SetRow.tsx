@@ -1,29 +1,26 @@
 /**
  * apps/mobile/components/session/SetRow.tsx
  *
- * A single set's entry row (D-06/D-08/D-09): mono tabular-nums load/reps values flanked by
- * 38x38 -/+ steppers (44pt hit target with hitSlop), a tap-to-open numeric keypad on the
- * value itself (a plain TextInput — tapping it opens the OS keyboard, no custom modal), an
- * inline never-modal RPE 6-10 stepper pre-selected to the exercise's last-used RPE, a
- * leading neutral "W" warmup chip, and a trailing 44x44 checkmark — the row's primary
- * action — that commits/uncommits the set via `lib/commitSet.ts` (D-13
- * persist-then-recompute / D-09 uncheck-undoes).
+ * A single set's ledger row (D-06/D-08/D-09) — REDESIGNED under user-granted full creative
+ * control at the Plan 03-10 checkpoint ("completely overhaul the UI... disregard any design
+ * docs. The only thing I want to keep is the color palette"). DESIGN-SYSTEM.md's component
+ * specs (inline -/+ steppers, compact visuals) are superseded for this surface; the color
+ * palette remains binding.
  *
- * Layout (UAT Test 9 gap closure, Plan 03-10 — the plan's DELIBERATE two-line layout,
- * with USER-DIRECTED sizing from the on-device checkpoint: the tester asked for larger
- * steppers and full-row distribution, explicitly granting discretion to exceed
- * DESIGN-SYSTEM.md §5's compact stepper visuals; color tokens and the one-volt rule stay):
- *   line 1 (values): W chip · load stepper group · reps-or-duration stepper group — the two
- *     groups split the remaining width equally (flex), steppers at the group edges, value
- *     centered between them. ExerciseCard's mono column-header row mirrors this exact flex
- *     geometry so the unit labels sit over their columns;
- *   line 2 (actions): mono "RPE" caption + RPE stepper group spanning the left region,
- *     44x44 commit checkmark at the right edge;
- *   then effective-load / commit-error / warning annotations as explicit rows beneath.
- * These are explicit rows — never the wrap-on-overflow property. Every control still meets
- * the 44pt hit target (visual size + hitSlop). The container paints the card surface color
- * so the swipe-to-delete action panel behind it can never show through.
- * (See .planning/debug/session-logger-ui-spacing.md for the original overflow defect.)
+ * The design: one roomy tabular line per set — Strong/Hevy-class —
+ *   SET (tap toggles warmup "W") · KG/LB field · REPS-or-SEC field · RPE field · LOG check
+ * where every value is a tappable inset field opening the numeric keypad directly. No
+ * steppers: typing two digits beats tapping +/- eight times, and stepper furniture is what
+ * made every previous layout cramped. State is material: an uncommitted row renders raised
+ * steel instrument fields; committing a set flattens its fields to recorded ink (borderless,
+ * ash) and fills the LOG check volt — pending work is hot, recorded work recedes.
+ *
+ * Preserved behaviors (non-negotiable): per-set commit + lock (editable={!locked}, D-09),
+ * tap-to-type decimal loads incl. fractional lb 62.5 (loadText local-state pattern, CR-02),
+ * last-used RPE preselect + 6-10 clamp + molten at 9-10 (D-08), effective-load/commit-error/
+ * warning annotation rows, D-13 persist-then-recompute via lib/commitSet.ts, rest-timer
+ * start on commit (LIFT-05/D-25), 44pt touch targets, and no wrap-driven layout — every
+ * line here is an explicit row.
  */
 
 import { useMemo, useState } from 'react';
@@ -33,24 +30,25 @@ import { carryStressDetailed, estimateE1RM, estimateE1RMFromRepMaxTable, strengt
 import { kgToDisplayLbFractional, lbToKgExact, type Units } from '@apsis/shared';
 
 import Colors from '../../constants/Colors';
-import { Mono, Radius, Spacing, Typography, tabularNums } from '../../constants/theme';
+import { Radius, Spacing } from '../../constants/theme';
 import { computeEffectiveLoad } from '../../lib/effectiveLoad';
 import { commitSet, uncommitSet } from '../../lib/commitSet';
 import { useSessionStore, type SetDraft } from '../../stores/sessionStore';
 
 /**
- * Column geometry shared with ExerciseCard's column-header row — the header labels
- * (KG/LB · REPS/SEC) sit over their columns because both components use the same
- * leading chip width, gap, and equal-flex column split.
+ * Ledger grid geometry shared with ExerciseCard's column-header row: fixed SET/RPE/LOG
+ * column widths, equal-flex KG and REPS columns, and one shared gap. Both components build
+ * the same grid, so the header labels always sit over their columns.
  */
-export const SET_ROW_CHIP_WIDTH = 28;
+export const SET_ROW_SET_COL = 28;
+export const SET_ROW_RPE_COL = 52;
+export const SET_ROW_LOG_COL = 44;
+export const SET_ROW_GAP = Spacing.sm;
+export const SET_ROW_H_PADDING = Spacing.lg;
 
 const RPE_MIN = 6;
 const RPE_MAX = 10;
 const RPE_HEAT_THRESHOLD = 9;
-const WEIGHT_STEP_KG = 2.5;
-const WEIGHT_STEP_LB = 5;
-const DURATION_STEP_S = 5;
 const COMMIT_ERROR_MESSAGE = "Couldn't save that set. Nothing was lost — try the checkmark again.";
 
 function formatWeightValue(kg: number, units: Units): string {
@@ -70,18 +68,8 @@ function parseWeightInput(text: string, units: Units): number {
   return units === 'imperial' ? lbToKgExact(safe) : safe;
 }
 
-function stepWeight(kg: number, units: Units, direction: 1 | -1): number {
-  if (units === 'imperial') {
-    // Fractional-aware stepping: ±5 lb from 62.5 lands on 67.5/57.5 — a whole-lb round
-    // here would silently destroy an existing half-pound fraction.
-    const nextLb = Math.max(0, kgToDisplayLbFractional(kg) + direction * WEIGHT_STEP_LB);
-    return lbToKgExact(nextLb);
-  }
-  return Math.max(0, Math.round((kg + direction * WEIGHT_STEP_KG) * 10) / 10);
-}
-
-function stepRpe(rpe: number, direction: 1 | -1): number {
-  return Math.min(RPE_MAX, Math.max(RPE_MIN, rpe + direction));
+function clampRpe(value: number): number {
+  return Math.min(RPE_MAX, Math.max(RPE_MIN, value));
 }
 
 export interface SetRowProps {
@@ -110,8 +98,12 @@ export function SetRow({
   // While the load field is being typed into, keep the raw text locally so the controlled
   // value isn't re-formatted on every keystroke (formatting "62." back to "62" silently
   // drops the decimal point, turning an intended 62.5 into 625). The draft still receives
-  // the parsed kg value on every change; the formatted value re-syncs on blur/steppers.
+  // the parsed kg value on every change; the formatted value re-syncs on blur.
   const [loadText, setLoadText] = useState<string | null>(null);
+  // Same local-text pattern for RPE: typing "10" must not be clamped at the intermediate
+  // "1". The draft gets the clamped 6-10 value on blur; display falls back to the draft's
+  // preselected last-used RPE (D-08).
+  const [rpeText, setRpeText] = useState<string | null>(null);
 
   const isTimed = entryMode === 'timed';
   const isBodyweight = exerciseBwFactor != null;
@@ -170,6 +162,16 @@ export function SetRow({
     updateSetDraft(exerciseId, draft.id, fields);
   }
 
+  function commitRpeText(): void {
+    if (rpeText != null) {
+      const parsed = Number.parseInt(rpeText, 10);
+      if (Number.isFinite(parsed)) {
+        patch({ rpe: clampRpe(parsed) });
+      }
+    }
+    setRpeText(null);
+  }
+
   async function handleToggleCommit(): Promise<void> {
     if (!workoutId || committing) return;
     setCommitting(true);
@@ -208,9 +210,12 @@ export function SetRow({
     }
   }
 
+  const rpeHot = draft.rpe >= RPE_HEAT_THRESHOLD;
+
   return (
     <View style={styles.container}>
-      <View style={styles.valuesRow}>
+      <View style={styles.grid}>
+        {/* SET column — the set's ledger number; tapping toggles warmup (amber "W"). */}
         <Pressable
           onPress={() => patch({ isWarmup: !draft.isWarmup })}
           disabled={locked}
@@ -218,176 +223,92 @@ export function SetRow({
           accessibilityRole="button"
           accessibilityLabel="Warmup"
           accessibilityState={{ selected: draft.isWarmup, disabled: locked }}
-          style={[styles.warmupChip, draft.isWarmup && styles.warmupChipActive]}>
-          <Text style={styles.warmupChipLabel}>W</Text>
+          style={styles.setCell}>
+          <Text style={[styles.setCellLabel, draft.isWarmup && styles.setCellLabelWarmup]}>
+            {draft.isWarmup ? 'W' : String(draft.setNumber)}
+          </Text>
         </Pressable>
 
-        <View style={[styles.fieldGroup, styles.loadGroup]}>
-          <Pressable
-            onPress={() => {
-              setLoadText(null);
-              patch({ loadFieldKg: stepWeight(draft.loadFieldKg, units, -1), isBlank: false });
-            }}
-            disabled={locked}
-            hitSlop={4}
-            accessibilityRole="button"
-            accessibilityLabel="Decrease load"
-            style={styles.stepper}>
-            <Text style={styles.stepperLabel}>-</Text>
-          </Pressable>
+        {/* KG/LB column — tap-to-type decimal load. */}
+        <TextInput
+          value={loadText ?? (draft.isBlank ? '' : formatWeightValue(draft.loadFieldKg, units))}
+          placeholder="0"
+          placeholderTextColor={Colors.dark.mutedText}
+          onChangeText={(text) => {
+            const clean = text.replace(/[^0-9.]/g, '');
+            setLoadText(clean);
+            patch({ loadFieldKg: parseWeightInput(clean, units), isBlank: false });
+          }}
+          onBlur={() => setLoadText(null)}
+          keyboardType="decimal-pad"
+          autoFocus={draft.isBlank}
+          editable={!locked}
+          selectTextOnFocus
+          style={[styles.valueField, styles.flexField, locked && styles.valueFieldLocked]}
+          accessibilityLabel={isBodyweight ? 'Added load' : 'Load'}
+        />
+
+        {/* REPS or SEC column. */}
+        {isTimed ? (
           <TextInput
-            value={loadText ?? (draft.isBlank ? '' : formatWeightValue(draft.loadFieldKg, units))}
+            value={draft.isBlank ? '' : String(draft.durationS)}
             placeholder="0"
             placeholderTextColor={Colors.dark.mutedText}
             onChangeText={(text) => {
-              const clean = text.replace(/[^0-9.]/g, '');
-              setLoadText(clean);
-              patch({ loadFieldKg: parseWeightInput(clean, units), isBlank: false });
+              const parsed = Number.parseInt(text.replace(/[^0-9]/g, ''), 10);
+              patch({ durationS: Number.isFinite(parsed) ? parsed : 0, isBlank: false });
             }}
-            onBlur={() => setLoadText(null)}
-            keyboardType="decimal-pad"
-            autoFocus={draft.isBlank}
+            keyboardType="number-pad"
             editable={!locked}
             selectTextOnFocus
-            style={[styles.valueInput, tabularNums]}
-            accessibilityLabel={isBodyweight ? 'Added load' : 'Load'}
+            style={[styles.valueField, styles.flexField, locked && styles.valueFieldLocked]}
+            accessibilityLabel="Duration in seconds"
           />
-          <Pressable
-            onPress={() => {
-              setLoadText(null);
-              patch({ loadFieldKg: stepWeight(draft.loadFieldKg, units, 1), isBlank: false });
-            }}
-            disabled={locked}
-            hitSlop={4}
-            accessibilityRole="button"
-            accessibilityLabel="Increase load"
-            style={styles.stepper}>
-            <Text style={styles.stepperLabel}>+</Text>
-          </Pressable>
-        </View>
-
-        {isTimed ? (
-          <View style={[styles.fieldGroup, styles.valueGroup]}>
-            <Pressable
-              onPress={() =>
-                patch({ durationS: Math.max(0, draft.durationS - DURATION_STEP_S), isBlank: false })
-              }
-              disabled={locked}
-              hitSlop={4}
-              accessibilityRole="button"
-              accessibilityLabel="Decrease duration"
-              style={styles.stepper}>
-              <Text style={styles.stepperLabel}>-</Text>
-            </Pressable>
-            <TextInput
-              value={draft.isBlank ? '' : String(draft.durationS)}
-              placeholder="0"
-              placeholderTextColor={Colors.dark.mutedText}
-              onChangeText={(text) => {
-                const parsed = Number.parseInt(text.replace(/[^0-9]/g, ''), 10);
-                patch({ durationS: Number.isFinite(parsed) ? parsed : 0, isBlank: false });
-              }}
-              keyboardType="number-pad"
-              editable={!locked}
-              selectTextOnFocus
-              style={[styles.valueInput, tabularNums]}
-              accessibilityLabel="Duration in seconds"
-            />
-            <Pressable
-              onPress={() => patch({ durationS: draft.durationS + DURATION_STEP_S, isBlank: false })}
-              disabled={locked}
-              hitSlop={4}
-              accessibilityRole="button"
-              accessibilityLabel="Increase duration"
-              style={styles.stepper}>
-              <Text style={styles.stepperLabel}>+</Text>
-            </Pressable>
-          </View>
         ) : (
-          <View style={[styles.fieldGroup, styles.valueGroup]}>
-            <Pressable
-              onPress={() => patch({ reps: Math.max(0, draft.reps - 1), isBlank: false })}
-              disabled={locked}
-              hitSlop={4}
-              accessibilityRole="button"
-              accessibilityLabel="Decrease reps"
-              style={styles.stepper}>
-              <Text style={styles.stepperLabel}>-</Text>
-            </Pressable>
-            <TextInput
-              value={draft.isBlank ? '' : String(draft.reps)}
-              placeholder="0"
-              placeholderTextColor={Colors.dark.mutedText}
-              onChangeText={(text) => {
-                const parsed = Number.parseInt(text.replace(/[^0-9]/g, ''), 10);
-                patch({ reps: Number.isFinite(parsed) ? parsed : 0, isBlank: false });
-              }}
-              keyboardType="number-pad"
-              editable={!locked}
-              selectTextOnFocus
-              style={[styles.valueInput, tabularNums]}
-              accessibilityLabel="Reps"
-            />
-            <Pressable
-              onPress={() => patch({ reps: draft.reps + 1, isBlank: false })}
-              disabled={locked}
-              hitSlop={4}
-              accessibilityRole="button"
-              accessibilityLabel="Increase reps"
-              style={styles.stepper}>
-              <Text style={styles.stepperLabel}>+</Text>
-            </Pressable>
-          </View>
+          <TextInput
+            value={draft.isBlank ? '' : String(draft.reps)}
+            placeholder="0"
+            placeholderTextColor={Colors.dark.mutedText}
+            onChangeText={(text) => {
+              const parsed = Number.parseInt(text.replace(/[^0-9]/g, ''), 10);
+              patch({ reps: Number.isFinite(parsed) ? parsed : 0, isBlank: false });
+            }}
+            keyboardType="number-pad"
+            editable={!locked}
+            selectTextOnFocus
+            style={[styles.valueField, styles.flexField, locked && styles.valueFieldLocked]}
+            accessibilityLabel="Reps"
+          />
         )}
-      </View>
 
-      <View style={styles.actionsRow}>
-        <View
-          style={[styles.fieldGroup, styles.rpeGroup]}
-          accessibilityRole="adjustable"
+        {/* RPE column — keypad entry, clamped to 6-10 on blur, molten at 9-10 (D-08). */}
+        <TextInput
+          value={rpeText ?? String(draft.rpe)}
+          onChangeText={(text) => setRpeText(text.replace(/[^0-9]/g, '').slice(0, 2))}
+          onBlur={commitRpeText}
+          keyboardType="number-pad"
+          editable={!locked}
+          selectTextOnFocus
+          style={[
+            styles.valueField,
+            styles.rpeField,
+            locked && styles.valueFieldLocked,
+            rpeHot && rpeText == null && styles.valueFieldHot,
+          ]}
           accessibilityLabel="RPE"
-          accessibilityValue={{ min: RPE_MIN, max: RPE_MAX, now: draft.rpe }}>
-          <Text style={styles.rpeCaption}>RPE</Text>
-          <Pressable
-            onPress={() => patch({ rpe: stepRpe(draft.rpe, -1) })}
-            disabled={locked || draft.rpe <= RPE_MIN}
-            hitSlop={4}
-            accessibilityRole="button"
-            accessibilityLabel="Decrease RPE"
-            style={styles.stepper}>
-            <Text style={styles.stepperLabel}>-</Text>
-          </Pressable>
-          <Text
-            style={[
-              styles.rpeValue,
-              tabularNums,
-              draft.rpe >= RPE_HEAT_THRESHOLD && styles.rpeValueHeat,
-            ]}>
-            {draft.rpe}
-          </Text>
-          <Pressable
-            onPress={() => patch({ rpe: stepRpe(draft.rpe, 1) })}
-            disabled={locked || draft.rpe >= RPE_MAX}
-            hitSlop={4}
-            accessibilityRole="button"
-            accessibilityLabel="Increase RPE"
-            style={styles.stepper}>
-            <Text style={styles.stepperLabel}>+</Text>
-          </Pressable>
-        </View>
+        />
 
+        {/* LOG column — per-set commit: persists + locks the set, updates the live HSS. */}
         <Pressable
           onPress={handleToggleCommit}
           disabled={committing}
-          hitSlop={4}
           accessibilityRole="button"
           accessibilityLabel={draft.committed ? 'Uncommit set' : 'Commit set'}
           accessibilityState={{ checked: draft.committed, disabled: committing }}
-          style={styles.commitControl}>
-          <Text style={styles.commitCaption}>LOG</Text>
-          <View style={[styles.checkmark, draft.committed && styles.checkmarkChecked]}>
-            {draft.committed ? <Text style={styles.checkmarkGlyph}>✓</Text> : null}
-          </View>
+          style={[styles.logCheck, draft.committed && styles.logCheckCommitted]}>
+          <Text style={[styles.logCheckGlyph, draft.committed && styles.logCheckGlyphCommitted]}>
+            ✓
+          </Text>
         </Pressable>
       </View>
 
@@ -419,140 +340,97 @@ export function SetRow({
 
 const styles = StyleSheet.create({
   container: {
-    paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.sm,
-    gap: Spacing.sm,
+    paddingHorizontal: SET_ROW_H_PADDING,
+    paddingVertical: Spacing.xs + 2,
+    gap: Spacing.xs,
     // Opaque row surface (matches the card): without this the swipe-to-delete action
     // panel rendered behind the Swipeable content shows through the row.
     backgroundColor: Colors.dark.surface,
   },
-  valuesRow: {
+  grid: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: Spacing.sm,
+    gap: SET_ROW_GAP,
   },
-  actionsRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.sm,
-  },
-  warmupChip: {
-    width: SET_ROW_CHIP_WIDTH,
-    height: SET_ROW_CHIP_WIDTH,
-    borderRadius: 6,
+  setCell: {
+    width: SET_ROW_SET_COL,
+    height: 44,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: Colors.dark.border,
   },
-  // Chip visual is 28x28; hitSlop 8 brings the touchable area to the 44x44 minimum
-  // (DESIGN-SYSTEM.md §7 hard rule).
-  warmupChipActive: {
-    backgroundColor: Colors.dark.warning,
+  setCellLabel: {
+    fontFamily: 'JetBrainsMono_500Medium',
+    fontSize: 14,
+    color: Colors.dark.mutedText,
+    fontVariant: ['tabular-nums'],
   },
-  warmupChipLabel: {
-    ...Typography.label,
+  setCellLabelWarmup: {
+    color: Colors.dark.warning,
+  },
+  // The instrument field: inset steel, hairline edge, roomy mono value. Tapping it opens
+  // the numeric keypad directly — this IS the entry affordance (no steppers).
+  valueField: {
+    height: 44,
+    borderRadius: Radius.md,
+    borderWidth: 1,
+    borderColor: Colors.dark.border,
+    backgroundColor: Colors.dark.steel,
+    fontFamily: 'JetBrainsMono_500Medium',
+    fontSize: 18,
+    fontVariant: ['tabular-nums'],
+    color: Colors.dark.text,
+    textAlign: 'center',
+    paddingVertical: 0,
+    paddingHorizontal: Spacing.xs,
+  },
+  flexField: {
+    flex: 1,
+  },
+  rpeField: {
+    width: SET_ROW_RPE_COL,
+  },
+  // Committed = recorded ink: the field chrome flattens away and the value recedes to ash.
+  // Pending sets stay "hot" instruments; the ledger reads at a glance.
+  valueFieldLocked: {
+    backgroundColor: 'transparent',
+    borderColor: 'transparent',
     color: Colors.dark.mutedText,
   },
-  fieldGroup: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.xs,
+  valueFieldHot: {
+    color: Colors.dark.destructive,
   },
-  // The load and reps/duration groups split line 1's remaining width equally (user-directed
-  // full-row distribution); steppers sit at the group edges, the value TextInput flexes to
-  // fill the space between them. ExerciseCard's column-header labels mirror this flex split.
-  loadGroup: {
-    flex: 1,
-  },
-  valueGroup: {
-    flex: 1,
-  },
-  // The RPE group spans line 2's left region; the checkmark holds the right edge.
-  rpeGroup: {
-    flex: 1,
-  },
-  // 38x38 stepper visuals (user-directed sizing from the on-device checkpoint — thumb-first
-  // gym use; supersedes DESIGN-SYSTEM.md §5's compact visuals with the user's explicit
-  // permission). hitSlop={4} tops the touchable area up past the 44pt minimum.
-  stepper: {
-    width: 38,
-    height: 38,
-    borderRadius: Radius.sm,
+  logCheck: {
+    width: SET_ROW_LOG_COL,
+    height: 44,
+    borderRadius: Radius.md,
     borderWidth: 1,
     borderColor: Colors.dark.border,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: Colors.dark.steel,
   },
-  stepperLabel: {
-    fontFamily: 'Archivo_500Medium',
-    fontSize: 18,
-    lineHeight: 22,
-    color: Colors.dark.text,
-  },
-  valueInput: {
-    fontFamily: 'JetBrainsMono_500Medium',
-    fontSize: 17,
-    color: Colors.dark.text,
-    textAlign: 'center',
-    paddingVertical: 0,
-    paddingHorizontal: 0,
-    flex: 1,
-  },
-  rpeCaption: {
-    ...Mono,
-    color: Colors.dark.mutedText,
-  },
-  rpeValue: {
-    fontFamily: 'JetBrainsMono_500Medium',
-    fontSize: 17,
-    flex: 1,
-    textAlign: 'center',
-    color: Colors.dark.text,
-  },
-  rpeValueHeat: {
-    color: Colors.dark.destructive,
-  },
-  // Labeled per-set commit control (user checkpoint request): a static mono "LOG" caption
-  // sits inside the same Pressable as the 44x44 checkmark circle, so the caption is part of
-  // the touch target and there is no dead gap between them.
-  commitControl: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.xs,
-  },
-  commitCaption: {
-    ...Mono,
-    color: Colors.dark.mutedText,
-  },
-  // 44x44 commit checkmark — the row's primary action gets full hit-target presence.
-  checkmark: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    borderWidth: 2,
-    borderColor: Colors.dark.border,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  checkmarkChecked: {
+  logCheckCommitted: {
     backgroundColor: Colors.dark.accent,
     borderColor: Colors.dark.accent,
   },
-  checkmarkGlyph: {
-    color: Colors.dark.onAccent,
+  logCheckGlyph: {
     fontSize: 18,
     fontWeight: '700',
+    color: Colors.dark.border,
+  },
+  logCheckGlyphCommitted: {
+    color: Colors.dark.onAccent,
   },
   effectiveLoadLabel: {
-    ...Mono,
+    fontFamily: 'JetBrainsMono_400Regular',
+    fontSize: 11,
+    letterSpacing: 0.5,
     color: Colors.dark.mutedText,
-    width: '100%',
+    paddingLeft: SET_ROW_SET_COL + SET_ROW_GAP,
   },
   errorLabel: {
-    ...Typography.label,
+    fontFamily: 'Archivo_500Medium',
+    fontSize: 12,
     color: Colors.dark.destructive,
-    width: '100%',
   },
   warningBadge: {
     width: 20,
@@ -561,14 +439,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: Colors.dark.warning,
+    marginLeft: SET_ROW_SET_COL + SET_ROW_GAP,
   },
   warningBadgeGlyph: {
     fontSize: 12,
     color: Colors.dark.background,
   },
   warningMessage: {
-    ...Typography.label,
+    fontFamily: 'Archivo_400Regular',
+    fontSize: 12,
+    lineHeight: 17,
     color: Colors.dark.warning,
-    width: '100%',
   },
 });

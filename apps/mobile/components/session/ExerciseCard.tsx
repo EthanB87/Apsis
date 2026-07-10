@@ -1,18 +1,18 @@
 /**
  * apps/mobile/components/session/ExerciseCard.tsx
  *
- * A single exercise's card in the active-session scroll (D-22): a secondary-surface
- * container with a Heading name + Label last-session summary header, a mono uppercase
- * column-header row (units/entry-mode aware) labeling the set-row columns, its SetRows
- * stacked with hairline dividers, and a full-width "+ Add set" ghost row that clones the
- * previous set (D-11/LIFT-06). Swipe-left -> Delete (D-11) removes a set inline; if the set
- * was already committed, the persisted row is deleted and the session HSS recomputed BEFORE
- * the row leaves the in-memory list, so the live header never shows a stale total.
+ * A single exercise's card in the active-session scroll (D-22) — REDESIGNED with SetRow
+ * under user-granted full creative control at the Plan 03-10 checkpoint (palette-only
+ * constraint; DESIGN-SYSTEM.md component specs superseded for this surface).
  *
- * Header padding and the column-header row share SetRow's values-row left edge (both
- * Spacing.md), and the column labels reuse SetRow's exported fixed column widths so they
- * sit exactly over their columns — see .planning/debug/session-logger-ui-spacing.md for
- * the prior left-edge offset this closes (Plan 03-10).
+ * Hierarchy, top to bottom: exercise name (heavy Archivo, uppercase) with the last-session
+ * line (mono, ash) directly beneath it as its metadata; a mono column-header row (SET ·
+ * KG/LB · REPS-or-SEC · RPE · LOG) built from SetRow's exported grid constants so labels
+ * always sit over their columns; the set ledger rows; and a full-width "+ Add set" ghost
+ * row that clones the previous set (D-11/LIFT-06). Swipe-left -> Delete (D-11) removes a
+ * set inline; if the set was already committed, the persisted row is deleted and the
+ * session HSS recomputed BEFORE the row leaves the in-memory list, so the live header
+ * never shows a stale total.
  */
 
 import { Pressable, StyleSheet, Text, View } from 'react-native';
@@ -20,10 +20,17 @@ import Swipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
 import { db } from '@apsis/db';
 
 import Colors from '../../constants/Colors';
-import { HAIRLINE_WIDTH, HIT_TARGET_MIN, Mono, Radius, Spacing, Typography } from '../../constants/theme';
+import { HAIRLINE_WIDTH, HIT_TARGET_MIN, Spacing } from '../../constants/theme';
 import { uncommitSet } from '../../lib/commitSet';
 import { useSessionStore, type ExerciseCardState, type SetDraft } from '../../stores/sessionStore';
-import { SET_ROW_CHIP_WIDTH, SetRow } from './SetRow';
+import {
+  SET_ROW_GAP,
+  SET_ROW_H_PADDING,
+  SET_ROW_LOG_COL,
+  SET_ROW_RPE_COL,
+  SET_ROW_SET_COL,
+  SetRow,
+} from './SetRow';
 
 function DeleteAction({ onPress }: { onPress: () => void }): React.JSX.Element {
   return (
@@ -74,29 +81,31 @@ export function ExerciseCard({ exercise }: ExerciseCardProps): React.JSX.Element
         ) : null}
       </View>
 
+      {/* Column headers reuse SetRow's exact grid (same fixed columns, flex split, gap,
+          padding) so each label sits over its column at any width. */}
       <View style={styles.columnHeaderRow}>
-        <View style={styles.columnHeaderChipSpace} />
-        <Text style={[styles.columnHeader, styles.columnHeaderLoad]}>
+        <Text style={[styles.columnHeader, styles.columnHeaderSet]}>SET</Text>
+        <Text style={[styles.columnHeader, styles.columnHeaderFlex]}>
           {units === 'imperial' ? 'LB' : 'KG'}
         </Text>
-        <Text style={[styles.columnHeader, styles.columnHeaderReps]}>
+        <Text style={[styles.columnHeader, styles.columnHeaderFlex]}>
           {exercise.entryMode === 'timed' ? 'SEC' : 'REPS'}
         </Text>
+        <Text style={[styles.columnHeader, styles.columnHeaderRpe]}>RPE</Text>
+        <Text style={[styles.columnHeader, styles.columnHeaderLog]}>LOG</Text>
       </View>
 
-      {exercise.sets.map((set, index) => (
+      {exercise.sets.map((set) => (
         <Swipeable
           key={set.id}
           renderRightActions={() => <DeleteAction onPress={() => handleDelete(set)} />}
           overshootRight={false}>
-          <View style={index > 0 ? styles.setDivider : undefined}>
-            <SetRow
-              exerciseId={exercise.exerciseId}
-              exerciseBwFactor={exercise.bwFactor}
-              entryMode={exercise.entryMode}
-              set={set}
-            />
-          </View>
+          <SetRow
+            exerciseId={exercise.exerciseId}
+            exerciseBwFactor={exercise.bwFactor}
+            entryMode={exercise.entryMode}
+            set={set}
+          />
         </Swipeable>
       ))}
 
@@ -104,7 +113,7 @@ export function ExerciseCard({ exercise }: ExerciseCardProps): React.JSX.Element
         onPress={() => addSet(exercise.exerciseId)}
         accessibilityRole="button"
         accessibilityLabel="Add set"
-        style={styles.addSetRow}>
+        style={({ pressed }) => [styles.addSetRow, pressed && styles.addSetRowPressed]}>
         <Text style={styles.addSetLabel}>+ Add set</Text>
       </Pressable>
     </View>
@@ -114,68 +123,75 @@ export function ExerciseCard({ exercise }: ExerciseCardProps): React.JSX.Element
 const styles = StyleSheet.create({
   card: {
     backgroundColor: Colors.dark.surface,
-    borderRadius: Radius.lg,
+    borderRadius: 12,
+    borderWidth: HAIRLINE_WIDTH,
+    borderColor: Colors.dark.border,
     marginHorizontal: Spacing.lg,
-    marginBottom: Spacing.lg,
+    marginBottom: Spacing.md,
     overflow: 'hidden',
   },
   header: {
-    // Spacing.md matches SetRow's primary-row paddingHorizontal (Task 1) so the exercise
-    // name / summary shares the same left edge as the set-row content beneath it.
-    paddingHorizontal: Spacing.md,
-    paddingTop: Spacing.xl,
-    paddingBottom: Spacing.sm,
+    paddingHorizontal: SET_ROW_H_PADDING,
+    paddingTop: Spacing.lg,
+    paddingBottom: Spacing.md,
+    gap: Spacing.xs,
   },
   name: {
-    ...Typography.heading,
+    fontFamily: 'Archivo_800ExtraBold',
+    fontSize: 17,
+    lineHeight: 21,
+    letterSpacing: -0.2,
+    textTransform: 'uppercase',
     color: Colors.dark.text,
   },
   summary: {
-    ...Mono,
+    fontFamily: 'JetBrainsMono_400Regular',
+    fontSize: 11,
+    letterSpacing: 0.8,
+    textTransform: 'uppercase',
     color: Colors.dark.mutedText,
-    marginTop: Spacing.xs,
   },
-  // Mono uppercase column labels above the set rows. Structure EXACTLY mirrors SetRow's
-  // values-row geometry (same padding, same gap, same leading chip width, same equal-flex
-  // column split) so each label centers over its column. The RPE column lives on SetRow's
-  // second (actions) line and carries its own inline mono caption there, so it has no
-  // header label here.
   columnHeaderRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: Spacing.sm,
-    paddingHorizontal: Spacing.md,
+    gap: SET_ROW_GAP,
+    paddingHorizontal: SET_ROW_H_PADDING,
     paddingBottom: Spacing.xs,
   },
-  columnHeaderChipSpace: {
-    width: SET_ROW_CHIP_WIDTH,
-  },
   columnHeader: {
-    ...Mono,
+    fontFamily: 'JetBrainsMono_500Medium',
+    fontSize: 10,
+    letterSpacing: 1.2,
     color: Colors.dark.mutedText,
     textAlign: 'center',
   },
-  columnHeaderLoad: {
+  columnHeaderSet: {
+    width: SET_ROW_SET_COL,
+  },
+  columnHeaderFlex: {
     flex: 1,
   },
-  columnHeaderReps: {
-    flex: 1,
+  columnHeaderRpe: {
+    width: SET_ROW_RPE_COL,
   },
-  setDivider: {
-    borderTopWidth: HAIRLINE_WIDTH,
-    borderTopColor: Colors.dark.border,
+  columnHeaderLog: {
+    width: SET_ROW_LOG_COL,
   },
-  // Full-width ghost row (DESIGN-SYSTEM.md §5 Secondary/ghost: transparent fill, no inset
-  // margin box, no dashed border) separated from the set list by a top hairline divider.
+  // Full-width ghost row: transparent fill, hairline divider above, quiet bone label.
   addSetRow: {
     minHeight: HIT_TARGET_MIN,
     alignItems: 'center',
     justifyContent: 'center',
+    marginTop: Spacing.xs,
     borderTopWidth: HAIRLINE_WIDTH,
     borderTopColor: Colors.dark.border,
   },
+  addSetRowPressed: {
+    backgroundColor: Colors.dark.steel,
+  },
   addSetLabel: {
-    ...Typography.body,
+    fontFamily: 'Archivo_500Medium',
+    fontSize: 14,
     color: Colors.dark.text,
   },
   deleteAction: {
@@ -185,7 +201,8 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.dark.destructive,
   },
   deleteActionLabel: {
-    ...Typography.body,
+    fontFamily: 'Archivo_500Medium',
+    fontSize: 14,
     color: Colors.dark.text,
   },
 });
