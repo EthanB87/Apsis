@@ -1,37 +1,46 @@
 ---
 phase: 03-onboarding-lifting-logger
 verified: 2026-07-09T22:15:00Z
-status: human_needed
+status: passed
 score: 10/11 must-haves verified
 behavior_unverified: 1
 overrides_applied: 0
 behavior_unverified_items:
+
   - truth: "Completing a set starts a configurable auto-rest timer in a persistent banner that survives backgrounding via an OS local notification, with +30s/Skip and haptic+sound at zero (LIFT-05)"
     test: "On a physical iOS device: log a set and watch the banner countdown; tap +30s/Skip; background the app before expiry and confirm a local notification fires; return early and confirm it's cancelled; confirm haptic+sound at zero; confirm notification permission is requested on first timer use, not during onboarding"
     expected: "All six behaviors hold on a real device"
     why_human: "Haptics do not fire on the iOS simulator and background-notification delivery requires a physical device (per 03-07-PLAN.md's own on-device checkpoint, deferred to phase UAT with explicit user approval — 'Defer to phase UAT' response recorded in 03-07-SUMMARY.md and STATE.md)"
 human_verification:
+
   - test: "Perform the six on-device rest-timer/notification/haptics checks from 03-07-PLAN.md Task 3 on a physical iOS device"
     expected: "Banner counts down, +30s/Skip work, background notification fires and is cancelled on early return, haptic+sound fire at zero, permission requested on first timer use not onboarding"
     why_human: "Device-only (haptics/background notifications don't work in simulator); pre-approved deferral to phase UAT, not a gap"
+
   - test: "Confirm finding an exercise takes under 2 taps and logging a pre-filled set takes at most 3 taps (LIFT-01/LIFT-02)"
     expected: "Add-exercise -> tap result (2 taps) selects an exercise; a pre-filled set commits in 1 tap (checkmark), a from-scratch set in at most 3 (load, RPE already pre-selected, checkmark)"
     why_human: "Tap-count and perceived entry speed vs. Strong/Hevy is a UX judgment call, not a static-analysis check"
+
   - test: "Confirm the rest-timer banner renders as a persistent band pinned above the tab bar / below the sticky header (not a modal) and the live-HSS count-up animation is smooth"
     expected: "Banner and HSS animation match the UI-SPEC visually"
     why_human: "Visual layout and animation smoothness require on-device rendering"
+
   - test: "Type a decimal load value (e.g. '62.5') into the SetRow load field on a device keyboard (CR-02 fix)"
     expected: "The field accepts '62.5' and commits 62.5 kg, not 625"
     why_human: "Code-level fix confirmed (raw text held in local state until blur); real keyboard input behavior needs on-device confirmation per 03-REVIEW-FIX.md's own note"
+
   - test: "Kill the app mid-workout, relaunch, and tap Resume / Finish Now on the ResumePrompt (CR-03 fix)"
     expected: "Both buttons navigate to the session/finish screen instead of landing on the default tab with the workout un-resumed"
     why_human: "Navigation timing fix (deferred router.push via useEffect) needs on-device confirmation per 03-REVIEW-FIX.md's own note"
+
   - test: "Back-swipe out of an active session and tap Start Workout again (WR-03 fix)"
     expected: "Returns to the same open session instead of creating a second orphaned workout row"
     why_human: "Device-only navigation/back-swipe behavior per 03-REVIEW-FIX.md's own note"
+
   - test: "Walk through the full onboarding wizard (sex -> bodyweight -> units -> threshold-hr -> threshold-pace -> review) including both direct-entry and estimate-for-me paths, then Save"
     expected: "Progress dots advance, soft-validation warnings show but never block Continue, Save inserts the profile and the app transitions from onboarding to the tab shell without a relaunch"
     why_human: "Full-flow visual/interaction verification requires a running device or simulator (every Plan 04/05 SUMMARY explicitly deferred this to phase UAT)"
+
   - test: "Edit bodyweight in Settings, then log a new set — confirm only future effective-load uses the new value while past committed sets are unchanged; toggle units and confirm display flips without changing stored metric"
     expected: "Edits apply forward-only (D-05); units toggle is display-only"
     why_human: "Requires a running app + real DB state across two screens to observe (Plan 09's own deferred verification)"

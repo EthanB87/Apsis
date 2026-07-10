@@ -1,9 +1,9 @@
 ---
-status: diagnosed
+status: complete
 phase: 03-onboarding-lifting-logger
 source: [03-VERIFICATION.md]
 started: 2026-07-09T22:20:00Z
-updated: 2026-07-10T12:01:25Z
+updated: 2026-07-10T23:30:00Z
 ---
 
 ## Current Test
@@ -43,9 +43,8 @@ note: Retested 2026-07-10 after quick-task fixes 260709-r4z (keyboard-safe Wizar
 
 ### 9. Workout logging / add-set UI layout (reported during Test 7 retest)
 expected: Session screen and set-logging UI render cleanly with UI-SPEC spacing
-result: issue
-reported: "while the color is correct the UI when adding sets and logging a workout is a little broken and spaced weird"
-severity: minor
+result: pass
+note: Closed 2026-07-10 via gap-closure plans 03-11 (token conformance) + 03-10 (ledger redesign, approved on device after 8 checkpoint rounds). Root cause was SetRow width overflow + flexWrap (see .planning/debug/session-logger-ui-spacing.md). Final shipped design: tabular tap-to-type ledger rows per user's full-creative-control mandate (user superseded DESIGN-SYSTEM.md component specs for the logging surface; palette remains binding). Additional regressions found and fixed during checkpoint UAT: fractional-lb display, picker-sheet dismiss oscillation, stacked-screen rehydrate loop, rest-notification reschedule-on-background, finish-screen volume units.
 
 ### 8. Settings edits apply forward-only + units toggle (ONB-02 / ONB-04)
 expected: Edit bodyweight in Settings, log a new set — only future effective-load uses the new value, past committed sets unchanged; units toggle flips display without changing stored metric
@@ -54,8 +53,8 @@ result: pass
 ## Summary
 
 total: 9
-passed: 8
-issues: 1
+passed: 9
+issues: 0
 pending: 0
 skipped: 0
 blocked: 0
@@ -93,7 +92,7 @@ blocked: 0
   debug_session: ""
 
 - truth: "Session screen and set-logging UI render cleanly with UI-SPEC spacing"
-  status: diagnosed
+  status: resolved
   reason: "User reported: while the color is correct the UI when adding sets and logging a workout is a little broken and spaced weird"
   severity: minor
   test: 9
