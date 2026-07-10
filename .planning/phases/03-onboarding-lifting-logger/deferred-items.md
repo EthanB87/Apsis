@@ -16,3 +16,4 @@ Out-of-scope discoveries logged during plan execution (not fixed per SCOPE BOUND
     renames in the `styles` block; the erroring line 34 (`handleEditField`) is untouched, and
     `components/ExternalLink.tsx` has no diff at all from this plan's changes.
   - Not fixed here — out of scope for a token-rename/typography/tab-bar conformance plan.
+- [ ] Mobile app has no component/navigation test harness (@testing-library/react-native installed but unconfigured); the 03-10 stale-screen rehydrate regression (db30dd1) could not get an off-device regression test. Consider a minimal jest-expo or vitest RN setup in a future plan.
