@@ -48,9 +48,9 @@ Requirements for the v1.0 release. Each maps to exactly one roadmap phase.
 
 ### Run / Conditioning Logger
 
-- [ ] **RUN-01**: User can log a session with an activity type (Run / Erg / Conditioning)
+- [x] **RUN-01**: User can log a session with an activity type (Run / Erg / Conditioning)
 - [x] **RUN-02**: User enters distance + duration and pace auto-calculates live
-- [ ] **RUN-03**: User can optionally enter average HR
+- [x] **RUN-03**: User can optionally enter average HR
 - [x] **RUN-04**: Session date defaults to today and is editable
 - [x] **RUN-05**: User can add an optional free-text note / tag
 - [ ] **RUN-06**: Session HSS is shown on the finish screen
@@ -135,9 +135,9 @@ Which phase covers which requirement. Populated during roadmap creation.
 | LIFT-06 | Phase 03 | Complete |
 | LIFT-07 | Phase 03 | Complete |
 | LIFT-08 | Phase 03 | Complete |
-| RUN-01 | Phase 04 | Pending |
+| RUN-01 | Phase 04 | Complete |
 | RUN-02 | Phase 04 | Complete |
-| RUN-03 | Phase 04 | Pending |
+| RUN-03 | Phase 04 | Complete |
 | RUN-04 | Phase 04 | Complete |
 | RUN-05 | Phase 04 | Complete |
 | RUN-06 | Phase 04 | Pending |

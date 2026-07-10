@@ -6,14 +6,14 @@ current_phase: 04
 current_phase_name: run-logger-home-dashboard
 status: executing
 stopped_at: Completed 04-01-PLAN.md
-last_updated: "2026-07-10T21:03:24.843Z"
+last_updated: "2026-07-10T21:23:25.779Z"
 last_activity: 2026-07-10
 last_activity_desc: Phase 04 execution started
 progress:
   total_phases: 6
   completed_phases: 2
   total_plans: 25
-  completed_plans: 21
+  completed_plans: 22
   percent: 33
 ---
 
@@ -30,7 +30,7 @@ training-load number (HSS) and a readiness band — fully offline.
 ## Current Position
 
 Phase: 04 (run-logger-home-dashboard) — EXECUTING
-Plan: 5 of 8
+Plan: 6 of 8
 Status: Ready to execute
 Last activity: 2026-07-10 — Phase 04 execution started
 traceability filled; 100% of the 39 pending v1.0 requirements mapped to Phases 02–06.
@@ -81,6 +81,7 @@ Progress: [█████░░░░░] 50% (3/6 phases complete)
 | Phase 04 P02 | 4min | 2 tasks | 3 files |
 | Phase 04 P03 | 8min | 3 tasks | 4 files |
 | Phase 04 P04 | 12min | 3 tasks | 5 files |
+| Phase 04 P05 | 22min | 3 tasks | 8 files |
 
 ## Accumulated Context
 
@@ -148,6 +149,9 @@ Recent decisions affecting current work:
 - [Phase ?]: [Phase 04 P04]: HssRing branches home-vs-mini styling on size >= 200 rather than a separate boolean prop, matching the plan's exact two-values-only contract (200 | 84)
 - [Phase ?]: [Phase 04 P04]: Mini ring (84px) HYBRID STRESS sub-label placed below the ring, not inside, per 04-UI-SPEC.md's executor-discretion note for the 84px size only
 - [Phase ?]: [Phase 04 P04]: StatTiles tap-to-explain uses a Reanimated opacity cross-fade (~200ms) rather than RN LayoutAnimation, matching the project's existing Reanimated-only animation convention
+- [Phase 04 P05]: runEntryLogic.ts extracted from runEntry.ts (zero @apsis/db/native imports) so Task 1's tdd=true requirement could be honored under vitest -- @apsis/db's barrel eagerly opens the native op-sqlite JSI connection at module load, making the file itself unimportable under plain Node
+- [Phase 04 P05]: Added a minimal apps/mobile vitest harness (lib/** only) -- first test coverage apps/mobile has ever had; screens/components remain untested (documented STATE.md gap)
+- [Phase 04 P05]: dateToLocalDateStr(d) extracted from localDate.ts's todayLocalDate() so the run form's date-sheet serialization reuses the single local-date formatter (Pitfall 4)
 
 ### Pending Todos
 
@@ -185,6 +189,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-07-10T21:00:42.620Z
+Last session: 2026-07-10T21:22:45.589Z
 Stopped at: Completed 04-01-PLAN.md
 Resume file: None
