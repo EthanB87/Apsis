@@ -109,7 +109,7 @@ Plans:
   4. Each new set for an exercise pre-populates with that exercise's previous-session weight + reps, and the user can add or remove sets inline.
   5. Completing a set starts a configurable auto-rest timer in a persistent banner; the session HSS updates live as each set is logged; the user can save or discard the session (discard requires confirmation) and sees the session HSS on the finish screen.
 
-**Plans**: 9/9 plans complete
+**Plans**: 10/11 plans executed
 
 Plans:
 **Wave 1**
@@ -135,7 +135,7 @@ Plans:
 
 **Gap closure + design-contract conformance** *(UAT Test 9 set-row wrap + DESIGN-SYSTEM.md adoption; 03-11 executes FIRST — gap-closure Wave 1 — because 03-10 builds on the new spacing tokens)*
 
-- [ ] 03-11-PLAN.md — DESIGN-SYSTEM.md conformance (Wave 1): contract spacing scale (md=12) + largest-first token remap sweep, typography deltas (heading 22 / title 30, mono tracking, fontWeight cleanup), tab-bar + text-field-focus + segment conformance on existing Phase-3 surfaces only (ONB-01/ONB-02/LIFT-02)
+- [x] 03-11-PLAN.md — DESIGN-SYSTEM.md conformance (Wave 1): contract spacing scale (md=12) + largest-first token remap sweep, typography deltas (heading 22 / title 30, mono tracking, fontWeight cleanup), tab-bar + text-field-focus + segment conformance on existing Phase-3 surfaces only (ONB-01/ONB-02/LIFT-02)
 - [ ] 03-10-PLAN.md — Rebuild SetRow as a single-line row per DESIGN-SYSTEM.md (Wave 2): compact −/+ steppers kept for load/reps + RPE stepper replacing the 44px pills, hitSlop 44pt hit targets, mono column-header row, ExerciseCard alignment + full-width ghost add-set [on-device checkpoint] (LIFT-02/LIFT-03)
 
 **UI hint**: yes
@@ -201,7 +201,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 |-------|----------------|--------|-----------|
 | 01. Foundation | 4/4 | Complete | 2026-07-02 |
 | 02. HSS Engine | 6/6 | Complete    | 2026-07-08 |
-| 03. Onboarding & Lifting Logger | 9/9 | Complete   | 2026-07-09 |
+| 03. Onboarding & Lifting Logger | 10/11 | In Progress|  |
 | 04. Run Logger & Home Dashboard | 0/TBD | Not started | - |
 | 05. HealthKit Integration | 0/TBD | Not started | - |
 | 06. Polish & App Store Submission | 0/TBD | Not started | - |

@@ -2,19 +2,19 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-current_phase: 3
-current_phase_name: Onboarding & Lifting Logger
-status: verifying
-stopped_at: Completed 03-09-PLAN.md (final plan of Phase 03)
-last_updated: "2026-07-10T12:01:25Z"
+current_phase: 03
+current_phase_name: onboarding-lifting-logger
+status: executing
+stopped_at: Completed 03-11-PLAN.md (design-system conformance sweep)
+last_updated: "2026-07-10T13:01:34.146Z"
 last_activity: 2026-07-10
-last_activity_desc: Phase 03 UAT complete (8/9 passed); SetRow spacing gap diagnosed, fix plan 03-10 verified and ready
+last_activity_desc: Phase 03 execution started
 progress:
   total_phases: 6
-  completed_phases: 2
-  total_plans: 15
-  completed_plans: 15
-  percent: 33
+  completed_phases: 1
+  total_plans: 17
+  completed_plans: 16
+  percent: 17
 ---
 
 # Project State — Apsis
@@ -25,16 +25,16 @@ See: .planning/PROJECT.md (updated 2026-06-29)
 
 **Core value:** Log lifting + running in one app, instantly see one honest combined
 training-load number (HSS) and a readiness band — fully offline.
-**Current focus:** Phase 3 — Onboarding & Lifting Logger
+**Current focus:** Phase 03 — onboarding-lifting-logger
 the pure-TS HSS engine (the moat), which the engine's own `index.ts` explicitly defers to
 "Phase 2."
 
 ## Current Position
 
-Phase: 3 (Onboarding & Lifting Logger) — EXECUTING
-Plan: 9 of 9
-Status: Phase complete — ready for verification
-Last activity: 2026-07-09 — Phase 3 execution started
+Phase: 03 (onboarding-lifting-logger) — EXECUTING
+Plan: 2 of 11
+Status: Ready to execute
+Last activity: 2026-07-10 — Phase 03 execution started
 traceability filled; 100% of the 39 pending v1.0 requirements mapped to Phases 02–06.
 
 Progress: [██░░░░░░░░] 17% (1/6 phases complete)
@@ -76,6 +76,7 @@ Progress: [██░░░░░░░░] 17% (1/6 phases complete)
 | Phase 03 P07 | ~2min | 3 tasks | 5 files |
 | Phase 03 P08 | 15min | 2 tasks | 4 files |
 | Phase 03 P09 | 9min | 2 tasks | 4 files |
+| Phase 03 P11 | 20min | 3 tasks | 22 files |
 
 ## Accumulated Context
 
@@ -129,6 +130,8 @@ Recent decisions affecting current work:
 - [Phase ?]: [Phase 03 P08]: Per-set/per-exercise warning and stress attribution (breakdown sheet, set-row badges) computed by re-running strengthStressDetailed/carryStressDetailed locally on committed sets rather than piping attribution through sessionStore -- the engine's warnings[]/perSetStress carry no set id
 - [Phase ?]: [Phase 03 P09]: Settings profile editor stages ProfileReview row-taps into a local draft committed via one batched UPDATE (Save Changes), rather than per-field navigation routes -- matches ProfileReview's existing values/onEditField/onSubmit contract within the plan's declared _layout.tsx+index.tsx-only artifact scope
 - [Phase ?]: [Phase 03 P09]: useProfile.ts is a new update-in-place hook (parameterized UPDATE against user_profile only, never workout.hss/load_daily) rather than an edit to useSaveProfile.ts, which stays insert-only for onboarding
+- [Phase 03]: Ordered largest-first Spacing token rename (xxxl->xxxxl,xxl->xxxl,xl->xxl,lg->xl,md->lg) with a pre/post count-invariant guard across 20 consumer files — Mechanical rename must preserve every rendered value; count-invariant catches missed/double renames tsc cannot catch
+- [Phase 03]: Segmented-control active fill switches volt->bone whenever the same screen/modal already has a volt-filled primary CTA — Enforces DESIGN-SYSTEM.md's one-volt-per-screen hard rule on WizardStep Continue, ProfileReview Save changes, and modal Set button screens
 
 ### Pending Todos
 
@@ -160,6 +163,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-07-10T12:01:25Z
-Stopped at: Phase 03 UAT complete (8 passed, 1 diagnosed issue — SetRow wrap/spacing). Gap-closure plan 03-10 created, checker-verified. Next: /gsd-execute-phase 3 --gaps-only
+Last session: 2026-07-10T13:01:34.135Z
+Stopped at: Completed 03-11-PLAN.md (design-system conformance sweep)
 Resume file: None

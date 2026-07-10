@@ -261,3 +261,8 @@ None - no external service configuration required.
 ---
 *Phase: 03-onboarding-lifting-logger*
 *Completed: 2026-07-10*
+
+## Self-Check: PASSED
+
+All created/modified files and all four commit hashes (8ffcbcb, e2d765f, 8582b17, 0e55ee9)
+verified present on disk / in git log.
