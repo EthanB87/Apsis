@@ -645,6 +645,12 @@ export function sessionCountsByDate(db: QueryableDB) {
      validation) before building the rest of the recompute pipeline around it; falling back to a
      loop of single-row upserts is a safe, simple alternative if the batch form doesn't behave as
      expected.
+   - **RESOLVED (planning):** `04-03-PLAN.md` Task 2 adopts the safe fallback outright — a loop of
+     single-row `insert(loadDaily).values(row).onConflictDoUpdate(...)` calls whose `set` uses each
+     row's LITERAL values (`row.dayHss`, `row.atl`, …), never an `excluded.*` reference and never a
+     raw interpolated `sql` template. This sidesteps the unverified batch-`excluded` idiom entirely
+     while staying fully parameterized (T-1-01), so no on-device spike is needed before building the
+     rest of the pipeline.
 
 2. **Should the full-history `load_daily` recompute run synchronously inline with the save flow
    (blocking the finish-screen navigation briefly) or be kicked off fire-and-forget?**
@@ -655,6 +661,11 @@ export function sessionCountsByDate(db: QueryableDB) {
    - Recommendation: keep it synchronous/awaited for v1.0 (matches the existing commitSet
      precedent and guarantees Home is never stale immediately after Done), revisit only if
      on-device UAT shows a perceptible stall.
+   - **RESOLVED (planning):** `04-03-PLAN.md` Task 3 keeps the recompute synchronous — both
+     `finishWorkout` and `discardWorkout` `await recomputeLoadDaily(database)` inline after their
+     write (never fire-and-forget), matching the Phase 3 `commitSet`/`recomputeSessionHss`
+     precedent and guaranteeing Home is never stale immediately after Done. Revisit only if
+     on-device UAT surfaces a stall (tracked by Assumption A3).
 
 ## Environment Availability
 
