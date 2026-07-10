@@ -6,14 +6,14 @@ current_phase: 04
 current_phase_name: run-logger-home-dashboard
 status: executing
 stopped_at: Completed 04-01-PLAN.md
-last_updated: "2026-07-10T20:54:22.141Z"
+last_updated: "2026-07-10T21:03:24.843Z"
 last_activity: 2026-07-10
 last_activity_desc: Phase 04 execution started
 progress:
   total_phases: 6
   completed_phases: 2
   total_plans: 25
-  completed_plans: 20
+  completed_plans: 21
   percent: 33
 ---
 
@@ -30,7 +30,7 @@ training-load number (HSS) and a readiness band — fully offline.
 ## Current Position
 
 Phase: 04 (run-logger-home-dashboard) — EXECUTING
-Plan: 4 of 8
+Plan: 5 of 8
 Status: Ready to execute
 Last activity: 2026-07-10 — Phase 04 execution started
 traceability filled; 100% of the 39 pending v1.0 requirements mapped to Phases 02–06.
@@ -80,6 +80,7 @@ Progress: [█████░░░░░] 50% (3/6 phases complete)
 | Phase 04 P01 | 15min | 3 tasks | 12 files |
 | Phase 04 P02 | 4min | 2 tasks | 3 files |
 | Phase 04 P03 | 8min | 3 tasks | 4 files |
+| Phase 04 P04 | 12min | 3 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -144,6 +145,9 @@ Recent decisions affecting current work:
 - [Phase ?]: [Phase 04 P01]: computeLoadDailyUpsertRows never reads the wall clock -- today is always caller-supplied, matching the engine's own purity convention
 - [Phase 04]: [Phase 04 P02]: react-native-svg kept at expo-resolved 15.15.4 (not RESEARCH's 15.15.5) per Phase 03 SDK-56-line convention; Skia exact-pinned 2.6.9 after human legitimacy approval
 - [Phase 04]: [Phase 04 P02]: iOS native link deferred to EAS cloud build (Windows host cannot prebuild ios/) -- Metro export gate is the local linking verification, per Phase 1 precedent c723e11
+- [Phase ?]: [Phase 04 P04]: HssRing branches home-vs-mini styling on size >= 200 rather than a separate boolean prop, matching the plan's exact two-values-only contract (200 | 84)
+- [Phase ?]: [Phase 04 P04]: Mini ring (84px) HYBRID STRESS sub-label placed below the ring, not inside, per 04-UI-SPEC.md's executor-discretion note for the 84px size only
+- [Phase ?]: [Phase 04 P04]: StatTiles tap-to-explain uses a Reanimated opacity cross-fade (~200ms) rather than RN LayoutAnimation, matching the project's existing Reanimated-only animation convention
 
 ### Pending Todos
 
@@ -181,6 +185,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-07-10T20:53:56.499Z
+Last session: 2026-07-10T21:00:42.620Z
 Stopped at: Completed 04-01-PLAN.md
 Resume file: None
