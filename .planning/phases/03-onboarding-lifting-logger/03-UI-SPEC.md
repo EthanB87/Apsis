@@ -168,12 +168,33 @@ components locked by CONTEXT.md decisions. These notes give the planner/executor
 starting visual spec (Claude's discretion areas from CONTEXT.md, resolved here so there's no
 ambiguity left for implementation):
 
-- **Set row** (D-06/D-08/D-09): single horizontal row on Secondary surface, Body-size
-  tabular-nums weight/reps values flanked by 44×44px −/+ steppers, RPE segment control
-  (6·7·8·9·10, each pill ≥44×44px, Accent fill on selected) at the row's trailing edge, 44×44px
-  checkmark circle at the far trailing edge (outline `#2A2E35` when unchecked → Accent-filled
-  with a white check glyph when checked), small "W" chip (neutral fill) leading the row. Row
-  height accommodates all of this at ~56–64px tall with `md` (16px) horizontal padding.
+- **Set row** (D-06/D-08/D-09) — AS SHIPPED (Plan 03-10): a single tabular "ledger" line on
+  the card surface — `SET · KG/LB · REPS-or-SEC · RPE · LOG` — where every value is a
+  44px-tall tappable inset steel field (hairline `line` border, JetBrains Mono ~18
+  tabular-nums, centered) that opens the numeric keypad directly. There are NO −/+ steppers
+  and NO RPE pill segment. The SET cell shows the set number (mono ash) and toggles warmup
+  on tap (amber "W"). RPE is keypad-entered with a local-text pattern (typing "10" survives),
+  clamped 6–10 on blur, molten value at 9–10, last-used preselect (D-08 intact). The LOG
+  column is a 44×44 check (hairline outline → volt fill + void glyph when committed) under a
+  mono "LOG" column header. Committed state is a material change: the row's field chrome
+  flattens away (transparent, ash values) while the LOG check fills volt — pending sets read
+  as hot instruments, recorded sets recede to ink. Effective-load / commit-error / warning
+  annotations remain explicit rows beneath the line (never wrap artifacts; wrap-on-overflow
+  layout is banned). Mono column headers in ExerciseCard mirror the row's exported grid
+  constants so labels always sit over their columns. Load stays tap-to-type with decimal +
+  fractional-lb support (62.5 lb round-trips exactly via `kgToDisplayLbFractional`). The
+  session HUD header shows labeled mono readouts (ELAPSED / SESSION HSS) with the volt
+  count-up number and Finish button.
+  > **Superseded twice, in order:** (1) by DESIGN-SYSTEM.md (root, d8df06a) via Plan 03-10
+  > (UAT Test 9 gap closure) — the contract's stepper pattern replaced this bullet's
+  > 44px-visual steppers and five-pill RPE row, which made a single-line row geometrically
+  > impossible (~690px intrinsic width; see .planning/debug/session-logger-ui-spacing.md);
+  > then (2) by explicit USER DIRECTION at Plan 03-10's on-device checkpoint ("completely
+  > overhaul the UI — take full control and disregard any design docs. The only thing I want
+  > to keep is the color palette"), which superseded DESIGN-SYSTEM.md's COMPONENT specs
+  > (steppers included) for the logging surface. DESIGN-SYSTEM.md's §1 color palette remains
+  > binding; its component/sizing specs do NOT govern the session-logging surface. The
+  > ledger design above is the approved, shipped source of truth for this surface.
 - **Exercise card** (D-22): Secondary-surface rounded container (`lg`=24px corner radius is
   reasonable, exact radius is executor discretion), Heading-size exercise name + Label-size
   last-session summary in the card header, set rows stacked with hairline dividers, "+ Add set"
