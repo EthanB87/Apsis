@@ -166,9 +166,16 @@ export default function RunEntryScreen(): React.JSX.Element {
   }
 
   function handleDateChange(event: DateTimePickerEvent, date?: Date): void {
-    setShowDatePicker(Platform.OS === 'ios');
+    if (Platform.OS === 'android') {
+      // Android's dialog is self-dismissing; unmount on every change (set or dismissed)
+      // so a subsequent tap remounts a fresh dialog instead of reopening a stale one.
+      setShowDatePicker(false);
+    }
     if (event.type === 'dismissed' || !date) return;
     setSelectedDate(date);
+    if (Platform.OS === 'ios' && event.type === 'set') {
+      setShowDatePicker(false);
+    }
   }
 
   async function handleSave(): Promise<void> {
@@ -280,7 +287,7 @@ export default function RunEntryScreen(): React.JSX.Element {
 
               {/* 6. Date row (D-13) — quiet mono TODAY, tap opens the native date sheet. */}
               <Pressable
-                onPress={() => setShowDatePicker(true)}
+                onPress={() => setShowDatePicker((open) => !open)}
                 accessibilityRole="button"
                 accessibilityLabel="Session date"
                 style={styles.dateRow}>
