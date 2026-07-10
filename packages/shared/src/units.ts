@@ -65,7 +65,8 @@ export function paceSecPerMiToSecPerKm(secPerMi: number): number {
  * ProfileReview row, and Settings all share this so pace formatting never drifts).
  */
 export function formatPaceMinSec(totalSec: number): string {
-  const minutes = Math.floor(totalSec / 60);
-  const seconds = Math.round(totalSec % 60);
+  const rounded = Math.round(totalSec);
+  const minutes = Math.floor(rounded / 60);
+  const seconds = rounded % 60;
   return `${minutes}:${String(seconds).padStart(2, '0')}`;
 }
