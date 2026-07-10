@@ -41,7 +41,7 @@ Requirements for the v1.0 release. Each maps to exactly one roadmap phase.
 - [x] **LIFT-02**: User can log a set (load, reps, RPE, warmup flag) in ≤ 3 taps
 - [x] **LIFT-03**: Each set pre-populates with the previous-session weight + reps for that exercise
 - [x] **LIFT-04**: RPE entry is a persistent quick-row (6–10), last value pre-selected, never behind a modal
-- [ ] **LIFT-05**: Auto-rest timer starts on set completion (configurable, persistent banner)
+- [x] **LIFT-05**: Auto-rest timer starts on set completion (configurable, persistent banner)
 - [x] **LIFT-06**: User can add and remove sets inline
 - [x] **LIFT-07**: User can save or discard a session (discard confirmed); session HSS shown on finish
 - [x] **LIFT-08**: Session HSS updates live as each set is logged (differentiator)
@@ -131,7 +131,7 @@ Which phase covers which requirement. Populated during roadmap creation.
 | LIFT-02 | Phase 03 | Complete |
 | LIFT-03 | Phase 03 | Complete |
 | LIFT-04 | Phase 03 | Complete |
-| LIFT-05 | Phase 03 | Pending |
+| LIFT-05 | Phase 03 | Complete |
 | LIFT-06 | Phase 03 | Complete |
 | LIFT-07 | Phase 03 | Complete |
 | LIFT-08 | Phase 03 | Complete |
