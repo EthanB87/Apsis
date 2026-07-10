@@ -11,7 +11,7 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { ElementRef } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Keyboard, Pressable, StyleSheet, Text, View } from 'react-native';
 import BottomSheet, { BottomSheetSectionList, BottomSheetTextInput } from '@gorhom/bottom-sheet';
 import { db, STARTER_EXERCISES, recentExerciseIds } from '@apsis/db';
 
@@ -67,14 +67,30 @@ export function ExercisePickerSheet({
   const [recentIds, setRecentIds] = useState<string[]>([]);
   const searchInputRef = useRef<ElementRef<typeof BottomSheetTextInput>>(null);
   const sheetRef = useRef<BottomSheet>(null);
+  // Idempotency guard: once a selection has fired for this open cycle, further onSelect
+  // fires (double-tap through the touch overlay, a re-render mid-close animation) are
+  // no-ops. Reset when the sheet opens again.
+  const selectionMadeRef = useRef(false);
 
-  // `index` is only the sheet's INITIAL snap position — flipping the prop to -1 does NOT
-  // close an already-open sheet, which is why selecting an exercise left the sheet up until
-  // the user swiped it away. Drive open/close imperatively through the ref instead.
+  // SINGLE source of truth for sheet position: this effect, driving the ref imperatively.
+  // The `index` prop stays a constant -1 (initial closed) and never participates in
+  // open/close again — the previous wiring had TWO owners (a visible-derived `index` prop
+  // AND the imperative ref calls) whose feedback through onClose/keyboard events could
+  // re-open a closing sheet and oscillate. Before closing, blur the search field and
+  // dismiss the keyboard ourselves so no keyboard-driven sheet behavior fires mid-close.
+  const wasVisibleRef = useRef(false);
   useEffect(() => {
     if (visible) {
+      selectionMadeRef.current = false;
+      wasVisibleRef.current = true;
       sheetRef.current?.snapToIndex(0);
-    } else {
+    } else if (wasVisibleRef.current) {
+      // Only run the close path for a genuine open -> closed transition — on first mount
+      // (sheet mounts hidden alongside the session screen) a blanket Keyboard.dismiss()
+      // here would kill whatever keypad the user has open elsewhere on the screen.
+      wasVisibleRef.current = false;
+      searchInputRef.current?.blur();
+      Keyboard.dismiss();
       sheetRef.current?.close();
     }
   }, [visible]);
@@ -93,6 +109,12 @@ export function ExercisePickerSheet({
     const focusTimer = setTimeout(() => searchInputRef.current?.focus(), 300);
     return () => clearTimeout(focusTimer);
   }, [visible]);
+
+  function handleSelect(exercise: LoggableExercise): void {
+    if (selectionMadeRef.current) return;
+    selectionMadeRef.current = true;
+    onSelect(toAddExerciseInput(exercise));
+  }
 
   const { sections, isEmpty } = useMemo(() => {
     const query = search.trim().toLowerCase();
@@ -134,12 +156,19 @@ export function ExercisePickerSheet({
   return (
     <BottomSheet
       ref={sheetRef}
-      index={visible ? 0 : -1}
+      // Constant: initial-closed only. Open/close is owned exclusively by the visible
+      // effect above — deriving this from `visible` was the second (fighting) owner.
+      index={-1}
       snapPoints={['85%']}
       enablePanDownToClose
       onClose={onClose}
       keyboardBehavior="extend"
-      keyboardBlurBehavior="restore"
+      // Deliberately NOT "restore": restore snaps the sheet back to its previous position
+      // whenever the keyboard hides, and the newly-added blank SetRow auto-focuses the OS
+      // keypad right as this sheet is closing — restore turned that keyboard transition
+      // into a sheet re-open, which the close path then fought (the open/close loop the
+      // user hit). With no blur behavior the sheet position never reacts to keyboards.
+      keyboardBlurBehavior="none"
       backgroundStyle={styles.background}
       handleIndicatorStyle={styles.handleIndicator}>
       <View style={styles.searchRow}>
@@ -173,7 +202,7 @@ export function ExercisePickerSheet({
           )}
           renderItem={({ item }) => (
             <Pressable
-              onPress={() => onSelect(toAddExerciseInput(item))}
+              onPress={() => handleSelect(item)}
               accessibilityRole="button"
               accessibilityLabel={item.name}
               style={({ pressed }) => [styles.row, pressed && styles.rowPressed]}>
