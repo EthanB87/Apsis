@@ -62,6 +62,9 @@ export const workout = sqliteTable('workout', {
   localDate: text('local_date').notNull(),
   type: text('type', { enum: ['strength', 'endurance', 'hybrid'] }).notNull(),
   title: text('title'),
+  /** Free-text session note (RUN-05); workout-level so CONDITIONING sessions with no
+   * endurance_segment still carry a note (RESEARCH Assumption A4). */
+  note: text('note'),
   /** Session HSS written by the engine after all sets/segments logged */
   hss: real('hss').default(0),
   createdAt: integer('created_at', { mode: 'timestamp' }).default(sql`(unixepoch())`),

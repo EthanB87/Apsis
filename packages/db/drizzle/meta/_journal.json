@@ -15,6 +15,13 @@
       "when": 1783626932319,
       "tag": "0001_long_firebrand",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1783715430398,
+      "tag": "0002_careful_sue_storm",
+      "breakpoints": true
     }
   ]
 }
