@@ -7,13 +7,22 @@
  * these two functions — never a locale/UTC-based alternative.
  */
 
+/**
+ * Local (not UTC) YYYY-MM-DD serialization of an arbitrary `Date` (04-05: the run form's date
+ * sheet needs this for whatever day the user picks, not just "today" — extracted here rather
+ * than duplicated inline so there is still exactly one local-date formatter, per this file's
+ * Pitfall 4 single-source-of-truth rule).
+ */
+export function dateToLocalDateStr(d: Date): string {
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
 /** Local (not UTC) YYYY-MM-DD — day boundaries must reflect the athlete's own calendar day. */
 export function todayLocalDate(): string {
-  const now = new Date();
-  const year = now.getFullYear();
-  const month = String(now.getMonth() + 1).padStart(2, '0');
-  const day = String(now.getDate()).padStart(2, '0');
-  return `${year}-${month}-${day}`;
+  return dateToLocalDateStr(new Date());
 }
 
 /**
