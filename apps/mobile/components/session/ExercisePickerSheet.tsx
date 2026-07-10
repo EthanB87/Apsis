@@ -66,6 +66,18 @@ export function ExercisePickerSheet({
   const [searchFocused, setSearchFocused] = useState(false);
   const [recentIds, setRecentIds] = useState<string[]>([]);
   const searchInputRef = useRef<ElementRef<typeof BottomSheetTextInput>>(null);
+  const sheetRef = useRef<BottomSheet>(null);
+
+  // `index` is only the sheet's INITIAL snap position — flipping the prop to -1 does NOT
+  // close an already-open sheet, which is why selecting an exercise left the sheet up until
+  // the user swiped it away. Drive open/close imperatively through the ref instead.
+  useEffect(() => {
+    if (visible) {
+      sheetRef.current?.snapToIndex(0);
+    } else {
+      sheetRef.current?.close();
+    }
+  }, [visible]);
 
   useEffect(() => {
     if (!visible) {
@@ -121,6 +133,7 @@ export function ExercisePickerSheet({
 
   return (
     <BottomSheet
+      ref={sheetRef}
       index={visible ? 0 : -1}
       snapPoints={['85%']}
       enablePanDownToClose
