@@ -123,6 +123,12 @@ importers:
 
   packages/db:
     dependencies:
+      '@apsis/engine':
+        specifier: workspace:*
+        version: link:../engine
+      '@apsis/shared':
+        specifier: workspace:*
+        version: link:../shared
       '@op-engineering/op-sqlite':
         specifier: 16.2.2
         version: 16.2.2(react-native@0.86.0(@babel/core@7.29.7)(@types/react@19.2.17)(react@19.2.7))(react@19.2.7)

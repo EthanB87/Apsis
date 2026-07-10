@@ -15,7 +15,7 @@
 
 import { and, desc, eq, isNotNull, isNull, sql } from 'drizzle-orm';
 import type { BaseSQLiteDatabase } from 'drizzle-orm/sqlite-core';
-import { strengthSet, workout } from './schema';
+import { loadDaily, strengthSet, workout } from './schema';
 
 /**
  * Accepts any drizzle SQLite db instance sharing the base query-builder API — the real
@@ -122,4 +122,52 @@ export function openWorkout(db: QueryableDB) {
  */
 export function softDeleteWorkout(db: QueryableDB, workoutId: string, deletedAt: Date) {
   return db.update(workout).set({ deletedAt }).where(eq(workout.id, workoutId));
+}
+
+// ---------------------------------------------------------------------------
+// Home trend + History (HOME-03/04/05/06)
+// ---------------------------------------------------------------------------
+
+/**
+ * The 28 most recent `load_daily` rows, most recent first (caller reverses to chronological
+ * order for chart rendering). `load_daily` rows carry no soft-delete flag of their own — they
+ * are the recompute output derived from finished, non-deleted workouts only (see
+ * `computeLoadDailyUpsertRows`), so no additional filter is needed here.
+ */
+export function last28DaysTrend(db: QueryableDB) {
+  return db.select().from(loadDaily).orderBy(desc(loadDaily.localDate)).limit(28);
+}
+
+/**
+ * Per-day session counts across active (finished, non-deleted) workouts — feeds the
+ * History/Home calendar's multi-session-day indicator (HOME-05/06). The only `sql` fragment
+ * is the `count(*)` aggregate — no user-supplied value is interpolated (T-04-01).
+ */
+export function sessionCountsByDate(db: QueryableDB) {
+  return db
+    .select({
+      localDate: workout.localDate,
+      sessionCount: sql<number>`count(*)`.as('sessionCount'),
+    })
+    .from(workout)
+    .where(and(isNotNull(workout.finishedAt), isNull(workout.deletedAt)))
+    .groupBy(workout.localDate);
+}
+
+/**
+ * Per-session rows for the History list, most recent day first then most recent session
+ * within a day — the per-day expansion History renders under each calendar entry (HOME-05).
+ */
+export function dayGroupedSessions(db: QueryableDB) {
+  return db
+    .select({
+      id: workout.id,
+      localDate: workout.localDate,
+      type: workout.type,
+      title: workout.title,
+      hss: workout.hss,
+    })
+    .from(workout)
+    .where(and(isNotNull(workout.finishedAt), activeWorkoutFilter))
+    .orderBy(desc(workout.localDate), desc(workout.createdAt));
 }

@@ -8,6 +8,8 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@apsis/engine": "workspace:*",
+    "@apsis/shared": "workspace:*",
     "drizzle-orm": "0.45.2"
   },
   "peerDependencies": {
