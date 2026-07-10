@@ -15,10 +15,11 @@ const steel = '#1F2329'; // steel — raised surface, inactive track
 const accent = '#C6F23D'; // volt — Accent (10%) — primary CTAs, live HSS number, active tab, "go/ready"
 const onAccent = '#0B0C0E'; // void — label color for volt-filled CTAs (never bone-on-volt)
 const destructive = '#FF5A1F'; // molten — alert/heat accent: overreaching, red-zone readiness, "stop"
-const warning = '#A8B545'; // muted yellow-green — amber/caution readiness (never pure volt)
+const warning = '#CDBE4A'; // amber — amber/caution readiness (never pure volt)
 const text = '#F2F1EC'; // bone — primary text on all dark surfaces
 const mutedText = '#8A9098'; // ash — secondary/muted text, metadata, placeholders
 const border = '#2A2F36'; // line — hairline dividers, card edges
+const accentPressed = '#A9D32B'; // volt pressed state — primary CTA press feedback (Design System v1)
 
 const darkPalette = {
   text,
@@ -28,6 +29,7 @@ const darkPalette = {
   steel,
   tint: accent,
   accent,
+  accentPressed,
   onAccent,
   destructive,
   warning,

@@ -32,12 +32,20 @@ export const HIT_TARGET_MIN = 44;
 /** Hairline divider width between set rows / card edges (UI-SPEC exception, not a spacing token). */
 export const HAIRLINE_WIDTH = 2;
 
-/** Corner radius tokens — sharp, not pillowy (design brief: ~6-10px on cards/buttons). */
+/**
+ * Corner radius tokens — sharp, not pillowy (design brief: ~6-10px on cards/buttons).
+ * Mapping (Design System v1): sm(6)=buttons/inputs/chips/segments, md(8)=cards/rows,
+ * lg(10)=sheets, pill(100)=readiness pills/progress bars.
+ */
 export const Radius = {
   sm: 6,
   md: 8,
   lg: 10,
+  pill: 100,
 } as const;
+
+/** Disabled control treatment (Design System v1): steel bg + ash label + this opacity. */
+export const DISABLED_OPACITY = 0.7;
 
 type TypographyRole = Pick<
   TextStyle,
@@ -45,7 +53,7 @@ type TypographyRole = Pick<
 >;
 
 /** Typography roles — display/heading carry the heavy Archivo family, ALL CAPS, tight tracking. */
-export const Typography: Record<'body' | 'label' | 'heading' | 'display', TypographyRole> = {
+export const Typography: Record<'body' | 'label' | 'heading' | 'display' | 'title', TypographyRole> = {
   body: { fontFamily: 'Archivo_400Regular', fontSize: 16, fontWeight: '400', lineHeight: 24 },
   label: { fontFamily: 'Archivo_500Medium', fontSize: 13, fontWeight: '400', lineHeight: 17 },
   heading: {
@@ -61,6 +69,15 @@ export const Typography: Record<'body' | 'label' | 'heading' | 'display', Typogr
     fontSize: 40,
     fontWeight: '600',
     lineHeight: 44,
+    textTransform: 'uppercase',
+    letterSpacing: -0.5,
+  },
+  /** Screen-header heavy title (Design System v1) — pairs with the `Kicker` mono line above it. */
+  title: {
+    fontFamily: 'Archivo_900Black',
+    fontSize: 29,
+    fontWeight: '600',
+    lineHeight: 32,
     textTransform: 'uppercase',
     letterSpacing: -0.5,
   },
@@ -84,4 +101,15 @@ export const Mono: TypographyRole = {
  */
 export const tabularNums: Pick<TextStyle, 'fontVariant'> = {
   fontVariant: ['tabular-nums'],
+};
+
+/**
+ * Mono kicker line that sits above a `Typography.title` (Design System v1 screen header).
+ * Color is applied by the consumer (typically `Colors.dark.mutedText`).
+ */
+export const Kicker: TypographyRole = {
+  fontFamily: 'JetBrainsMono_500Medium',
+  fontSize: 11,
+  letterSpacing: 1.8,
+  textTransform: 'uppercase',
 };
