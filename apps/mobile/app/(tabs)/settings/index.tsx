@@ -101,6 +101,9 @@ export default function SettingsScreen(): React.JSX.Element {
   const [numericText, setNumericText] = useState('');
   const [paceMinText, setPaceMinText] = useState('');
   const [paceSecText, setPaceSecText] = useState('');
+  const [focusedField, setFocusedField] = useState<
+    'bodyweight' | 'thresholdHr' | 'paceMin' | 'paceSec' | null
+  >(null);
 
   // Seed the local edit draft from the loaded profile row exactly once — subsequent
   // profile updates (e.g. after Save Changes) are applied optimistically to `draft`
@@ -350,9 +353,11 @@ export default function SettingsScreen(): React.JSX.Element {
                 <Text style={styles.modalTitle}>Bodyweight</Text>
                 <View style={styles.modalInputRow}>
                   <TextInput
-                    style={styles.modalInput}
+                    style={[styles.modalInput, focusedField === 'bodyweight' && styles.modalInputFocused]}
                     value={numericText}
                     onChangeText={(next) => setNumericText(next.replace(/[^0-9.]/g, ''))}
+                    onFocus={() => setFocusedField('bodyweight')}
+                    onBlur={() => setFocusedField(null)}
                     keyboardType="decimal-pad"
                     placeholder="0"
                     placeholderTextColor={Colors.dark.mutedText}
@@ -373,9 +378,11 @@ export default function SettingsScreen(): React.JSX.Element {
                 <Text style={styles.modalTitle}>Threshold heart rate</Text>
                 <View style={styles.modalInputRow}>
                   <TextInput
-                    style={styles.modalInput}
+                    style={[styles.modalInput, focusedField === 'thresholdHr' && styles.modalInputFocused]}
                     value={numericText}
                     onChangeText={(next) => setNumericText(next.replace(/[^0-9]/g, ''))}
+                    onFocus={() => setFocusedField('thresholdHr')}
+                    onBlur={() => setFocusedField(null)}
                     keyboardType="number-pad"
                     placeholder="0"
                     placeholderTextColor={Colors.dark.mutedText}
@@ -396,9 +403,11 @@ export default function SettingsScreen(): React.JSX.Element {
                 <Text style={styles.modalTitle}>Threshold pace</Text>
                 <View style={styles.modalInputRow}>
                   <TextInput
-                    style={styles.modalPaceInput}
+                    style={[styles.modalPaceInput, focusedField === 'paceMin' && styles.modalInputFocused]}
                     value={paceMinText}
                     onChangeText={(next) => setPaceMinText(next.replace(/[^0-9]/g, ''))}
+                    onFocus={() => setFocusedField('paceMin')}
+                    onBlur={() => setFocusedField(null)}
                     keyboardType="number-pad"
                     placeholder="0"
                     placeholderTextColor={Colors.dark.mutedText}
@@ -407,9 +416,11 @@ export default function SettingsScreen(): React.JSX.Element {
                   />
                   <Text style={styles.modalColon}>:</Text>
                   <TextInput
-                    style={styles.modalPaceInput}
+                    style={[styles.modalPaceInput, focusedField === 'paceSec' && styles.modalInputFocused]}
                     value={paceSecText}
                     onChangeText={(next) => setPaceSecText(next.replace(/[^0-9]/g, ''))}
+                    onFocus={() => setFocusedField('paceSec')}
+                    onBlur={() => setFocusedField(null)}
                     keyboardType="number-pad"
                     placeholder="00"
                     placeholderTextColor={Colors.dark.mutedText}
@@ -557,7 +568,7 @@ const styles = StyleSheet.create({
     borderRadius: Radius.sm,
     borderWidth: 1,
     borderColor: Colors.dark.border,
-    backgroundColor: Colors.dark.surface,
+    backgroundColor: Colors.dark.steel,
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: Spacing.sm,
@@ -568,9 +579,11 @@ const styles = StyleSheet.create({
     minWidth: HIT_TARGET_MIN + 24,
     paddingHorizontal: Spacing.lg,
   },
+  // Bone active-fill (not volt): ProfileReview's "Save changes" button above is already
+  // the one volt-filled element on this screen (DESIGN-SYSTEM.md §7 one-volt-per-screen rule).
   choiceButtonSelected: {
-    borderColor: Colors.dark.accent,
-    backgroundColor: Colors.dark.accent,
+    borderColor: Colors.dark.text,
+    backgroundColor: Colors.dark.text,
   },
   choiceLabel: {
     ...Typography.body,
@@ -627,6 +640,10 @@ const styles = StyleSheet.create({
     minWidth: 100,
     textAlign: 'center',
     paddingVertical: Spacing.sm,
+    borderWidth: 1,
+    borderColor: Colors.dark.border,
+    borderRadius: Radius.sm,
+    backgroundColor: Colors.dark.background,
   },
   modalPaceInput: {
     ...Typography.display,
@@ -635,6 +652,13 @@ const styles = StyleSheet.create({
     minWidth: 64,
     textAlign: 'center',
     paddingVertical: Spacing.sm,
+    borderWidth: 1,
+    borderColor: Colors.dark.border,
+    borderRadius: Radius.sm,
+    backgroundColor: Colors.dark.background,
+  },
+  modalInputFocused: {
+    borderColor: Colors.dark.accent,
   },
   modalColon: {
     ...Typography.display,
@@ -659,13 +683,15 @@ const styles = StyleSheet.create({
     borderRadius: Radius.sm,
     borderWidth: 1,
     borderColor: Colors.dark.border,
-    backgroundColor: Colors.dark.background,
+    backgroundColor: Colors.dark.steel,
     alignItems: 'center',
     justifyContent: 'center',
   },
+  // Bone active-fill (not volt): this modal's own "Set" action (modalActionPrimary) is
+  // already the one volt-filled element in this view (DESIGN-SYSTEM.md §7).
   sexOptionSelected: {
-    borderColor: Colors.dark.accent,
-    backgroundColor: Colors.dark.accent,
+    borderColor: Colors.dark.text,
+    backgroundColor: Colors.dark.text,
   },
   sexOptionLabel: {
     ...Typography.body,

@@ -64,13 +64,15 @@ const styles = StyleSheet.create({
     borderRadius: Radius.sm,
     borderWidth: 1,
     borderColor: Colors.dark.border,
-    backgroundColor: Colors.dark.surface,
+    backgroundColor: Colors.dark.steel,
     alignItems: 'center',
     justifyContent: 'center',
   },
+  // Bone active-fill (not volt): the WizardStep "Continue" button below is already the
+  // one volt-filled element on this screen (DESIGN-SYSTEM.md §7 one-volt-per-screen rule).
   optionSelected: {
-    borderColor: Colors.dark.accent,
-    backgroundColor: Colors.dark.accent,
+    borderColor: Colors.dark.text,
+    backgroundColor: Colors.dark.text,
   },
   optionLabel: {
     ...Typography.body,

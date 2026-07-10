@@ -14,7 +14,7 @@ import { kgToDisplayLb, lbToKgExact } from '@apsis/shared';
 import { WizardStep } from '../../components/onboarding/WizardStep';
 import { useOnboardingDraft } from '../../lib/onboardingDraft';
 import Colors from '../../constants/Colors';
-import { Spacing, Typography, tabularNums } from '../../constants/theme';
+import { Radius, Spacing, Typography, tabularNums } from '../../constants/theme';
 
 const MIN_PLAUSIBLE_KG = 30;
 const MAX_PLAUSIBLE_KG = 250;
@@ -35,6 +35,7 @@ export default function BodyweightStep(): React.JSX.Element {
         : String(Math.round(bodyweightKg * 10) / 10)
       : '';
   const [text, setText] = useState(seededText);
+  const [focused, setFocused] = useState(false);
 
   const parsed = Number(text);
   const isValidNumber = text.trim().length > 0 && Number.isFinite(parsed) && parsed > 0;
@@ -66,9 +67,11 @@ export default function BodyweightStep(): React.JSX.Element {
       nextDisabled={!isValidNumber}>
       <View style={styles.inputRow}>
         <TextInput
-          style={styles.input}
+          style={[styles.input, focused && styles.inputFocused]}
           value={text}
           onChangeText={handleChangeText}
+          onFocus={() => setFocused(true)}
+          onBlur={() => setFocused(false)}
           keyboardType="decimal-pad"
           placeholder="0"
           placeholderTextColor={Colors.dark.mutedText}
@@ -101,6 +104,13 @@ const styles = StyleSheet.create({
     minWidth: 120,
     textAlign: 'center',
     paddingVertical: Spacing.sm,
+    borderWidth: 1,
+    borderColor: Colors.dark.border,
+    borderRadius: Radius.sm,
+    backgroundColor: Colors.dark.surface,
+  },
+  inputFocused: {
+    borderColor: Colors.dark.accent,
   },
   unitLabel: {
     ...Typography.heading,

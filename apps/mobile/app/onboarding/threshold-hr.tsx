@@ -35,6 +35,7 @@ export default function ThresholdHrStep(): React.JSX.Element {
   );
   const [maxHrText, setMaxHrText] = useState('');
   const [ageText, setAgeText] = useState('');
+  const [focusedField, setFocusedField] = useState<'direct' | 'maxHr' | 'age' | null>(null);
 
   const directParsed = Number(directText);
   const directValid = directText.trim().length > 0 && Number.isFinite(directParsed) && directParsed > 0;
@@ -85,9 +86,11 @@ export default function ThresholdHrStep(): React.JSX.Element {
       {mode === 'direct' ? (
         <View style={styles.inputRow}>
           <TextInput
-            style={styles.input}
+            style={[styles.input, focusedField === 'direct' && styles.inputFocused]}
             value={directText}
             onChangeText={stripToDigits(setDirectText)}
+            onFocus={() => setFocusedField('direct')}
+            onBlur={() => setFocusedField(null)}
             keyboardType="number-pad"
             placeholder="0"
             placeholderTextColor={Colors.dark.mutedText}
@@ -113,9 +116,11 @@ export default function ThresholdHrStep(): React.JSX.Element {
           {estimateSource === 'maxHr' ? (
             <View style={styles.inputRow}>
               <TextInput
-                style={styles.input}
+                style={[styles.input, focusedField === 'maxHr' && styles.inputFocused]}
                 value={maxHrText}
                 onChangeText={stripToDigits(setMaxHrText)}
+                onFocus={() => setFocusedField('maxHr')}
+                onBlur={() => setFocusedField(null)}
                 keyboardType="number-pad"
                 placeholder="0"
                 placeholderTextColor={Colors.dark.mutedText}
@@ -126,9 +131,11 @@ export default function ThresholdHrStep(): React.JSX.Element {
           ) : (
             <View style={styles.inputRow}>
               <TextInput
-                style={styles.input}
+                style={[styles.input, focusedField === 'age' && styles.inputFocused]}
                 value={ageText}
                 onChangeText={stripToDigits(setAgeText)}
+                onFocus={() => setFocusedField('age')}
+                onBlur={() => setFocusedField(null)}
                 keyboardType="number-pad"
                 placeholder="0"
                 placeholderTextColor={Colors.dark.mutedText}
@@ -186,15 +193,17 @@ const styles = StyleSheet.create({
     borderRadius: Radius.sm,
     borderWidth: 1,
     borderColor: Colors.dark.border,
-    backgroundColor: Colors.dark.surface,
+    backgroundColor: Colors.dark.steel,
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: Spacing.sm,
     paddingVertical: Spacing.sm,
   },
+  // Bone active-fill (not volt): the WizardStep "Continue" button below is already the
+  // one volt-filled element on this screen (DESIGN-SYSTEM.md §7 one-volt-per-screen rule).
   modeButtonSelected: {
-    borderColor: Colors.dark.accent,
-    backgroundColor: Colors.dark.accent,
+    borderColor: Colors.dark.text,
+    backgroundColor: Colors.dark.text,
   },
   modeButtonLabel: {
     ...Typography.label,
@@ -218,6 +227,13 @@ const styles = StyleSheet.create({
     minWidth: 120,
     textAlign: 'center',
     paddingVertical: Spacing.sm,
+    borderWidth: 1,
+    borderColor: Colors.dark.border,
+    borderRadius: Radius.sm,
+    backgroundColor: Colors.dark.surface,
+  },
+  inputFocused: {
+    borderColor: Colors.dark.accent,
   },
   unitLabel: {
     ...Typography.heading,

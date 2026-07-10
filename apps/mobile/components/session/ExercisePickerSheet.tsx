@@ -63,6 +63,7 @@ export function ExercisePickerSheet({
   onSelect,
 }: ExercisePickerSheetProps): React.JSX.Element {
   const [search, setSearch] = useState('');
+  const [searchFocused, setSearchFocused] = useState(false);
   const [recentIds, setRecentIds] = useState<string[]>([]);
   const searchInputRef = useRef<ElementRef<typeof BottomSheetTextInput>>(null);
 
@@ -133,9 +134,11 @@ export function ExercisePickerSheet({
           ref={searchInputRef}
           value={search}
           onChangeText={setSearch}
+          onFocus={() => setSearchFocused(true)}
+          onBlur={() => setSearchFocused(false)}
           placeholder="Search exercises"
           placeholderTextColor={Colors.dark.mutedText}
-          style={styles.searchInput}
+          style={[styles.searchInput, searchFocused && styles.searchInputFocused]}
           accessibilityLabel="Search exercises"
           autoCorrect={false}
         />
@@ -187,8 +190,13 @@ const styles = StyleSheet.create({
     color: Colors.dark.text,
     backgroundColor: Colors.dark.background,
     borderRadius: Radius.md,
+    borderWidth: 1,
+    borderColor: Colors.dark.border,
     paddingHorizontal: Spacing.lg,
     minHeight: HIT_TARGET_MIN,
+  },
+  searchInputFocused: {
+    borderColor: Colors.dark.accent,
   },
   listContent: {
     paddingBottom: Spacing.xxl,

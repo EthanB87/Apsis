@@ -59,6 +59,9 @@ export default function ThresholdPaceStep(): React.JSX.Element {
   const [finishHr, setFinishHr] = useState('');
   const [finishMin, setFinishMin] = useState('');
   const [finishSec, setFinishSec] = useState('');
+  const [focusedField, setFocusedField] = useState<
+    'directMin' | 'directSec' | 'finishHr' | 'finishMin' | 'finishSec' | null
+  >(null);
 
   const directMinVal = directMin.trim().length > 0 ? Number(directMin) : NaN;
   const directSecVal = directSec.trim().length > 0 ? Number(directSec) : 0;
@@ -124,9 +127,11 @@ export default function ThresholdPaceStep(): React.JSX.Element {
       {mode === 'direct' ? (
         <View style={styles.inputRow}>
           <TextInput
-            style={styles.paceInput}
+            style={[styles.paceInput, focusedField === 'directMin' && styles.paceInputFocused]}
             value={directMin}
             onChangeText={stripToDigits(setDirectMin)}
+            onFocus={() => setFocusedField('directMin')}
+            onBlur={() => setFocusedField(null)}
             keyboardType="number-pad"
             placeholder="0"
             placeholderTextColor={Colors.dark.mutedText}
@@ -135,9 +140,11 @@ export default function ThresholdPaceStep(): React.JSX.Element {
           />
           <Text style={styles.colon}>:</Text>
           <TextInput
-            style={styles.paceInput}
+            style={[styles.paceInput, focusedField === 'directSec' && styles.paceInputFocused]}
             value={directSec}
             onChangeText={stripToDigits(setDirectSec)}
+            onFocus={() => setFocusedField('directSec')}
+            onBlur={() => setFocusedField(null)}
             keyboardType="number-pad"
             placeholder="00"
             placeholderTextColor={Colors.dark.mutedText}
@@ -160,9 +167,11 @@ export default function ThresholdPaceStep(): React.JSX.Element {
           <Text style={styles.subLabel}>Finish time</Text>
           <View style={styles.inputRow}>
             <TextInput
-              style={styles.paceInput}
+              style={[styles.paceInput, focusedField === 'finishHr' && styles.paceInputFocused]}
               value={finishHr}
               onChangeText={stripToDigits(setFinishHr)}
+              onFocus={() => setFocusedField('finishHr')}
+              onBlur={() => setFocusedField(null)}
               keyboardType="number-pad"
               placeholder="0"
               placeholderTextColor={Colors.dark.mutedText}
@@ -170,9 +179,11 @@ export default function ThresholdPaceStep(): React.JSX.Element {
             />
             <Text style={styles.colon}>:</Text>
             <TextInput
-              style={styles.paceInput}
+              style={[styles.paceInput, focusedField === 'finishMin' && styles.paceInputFocused]}
               value={finishMin}
               onChangeText={stripToDigits(setFinishMin)}
+              onFocus={() => setFocusedField('finishMin')}
+              onBlur={() => setFocusedField(null)}
               keyboardType="number-pad"
               placeholder="00"
               placeholderTextColor={Colors.dark.mutedText}
@@ -180,9 +191,11 @@ export default function ThresholdPaceStep(): React.JSX.Element {
             />
             <Text style={styles.colon}>:</Text>
             <TextInput
-              style={styles.paceInput}
+              style={[styles.paceInput, focusedField === 'finishSec' && styles.paceInputFocused]}
               value={finishSec}
               onChangeText={stripToDigits(setFinishSec)}
+              onFocus={() => setFocusedField('finishSec')}
+              onBlur={() => setFocusedField(null)}
               keyboardType="number-pad"
               placeholder="00"
               placeholderTextColor={Colors.dark.mutedText}
@@ -242,15 +255,17 @@ const styles = StyleSheet.create({
     borderRadius: Radius.sm,
     borderWidth: 1,
     borderColor: Colors.dark.border,
-    backgroundColor: Colors.dark.surface,
+    backgroundColor: Colors.dark.steel,
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: Spacing.sm,
     paddingVertical: Spacing.sm,
   },
+  // Bone active-fill (not volt): the WizardStep "Continue" button below is already the
+  // one volt-filled element on this screen (DESIGN-SYSTEM.md §7 one-volt-per-screen rule).
   modeButtonSelected: {
-    borderColor: Colors.dark.accent,
-    backgroundColor: Colors.dark.accent,
+    borderColor: Colors.dark.text,
+    backgroundColor: Colors.dark.text,
   },
   modeButtonLabel: {
     ...Typography.label,
@@ -280,6 +295,13 @@ const styles = StyleSheet.create({
     minWidth: 64,
     textAlign: 'center',
     paddingVertical: Spacing.sm,
+    borderWidth: 1,
+    borderColor: Colors.dark.border,
+    borderRadius: Radius.sm,
+    backgroundColor: Colors.dark.surface,
+  },
+  paceInputFocused: {
+    borderColor: Colors.dark.accent,
   },
   colon: {
     ...Typography.display,

@@ -12,17 +12,19 @@ export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme].accent,
+        tabBarActiveTintColor: Colors[colorScheme].tabIconSelected,
         tabBarInactiveTintColor: Colors[colorScheme].tabIconDefault,
         tabBarStyle: {
-          backgroundColor: Colors[colorScheme].surface,
+          backgroundColor: Colors[colorScheme].background,
           borderTopColor: Colors[colorScheme].border,
           borderTopWidth: 1,
+          elevation: 0,
+          shadowOpacity: 0,
         },
         tabBarLabelStyle: {
           fontFamily: 'JetBrainsMono_500Medium',
           fontSize: 9,
-          letterSpacing: 1,
+          letterSpacing: 1.8,
           textTransform: 'uppercase',
         },
         // Disable the static render of the header on web
