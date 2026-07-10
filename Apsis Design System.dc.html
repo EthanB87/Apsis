@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Expanded:wght@500;600;700;800;900&family=Archivo:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  *{ margin:0; padding:0; box-sizing:border-box; }
+  html{ scroll-behavior:smooth; }
+  body{ background:#0B0C0E; -webkit-font-smoothing:antialiased; }
+  ::selection{ background:#C6F23D; color:#0B0C0E; }
+  @keyframes orbit{ from{ transform:rotate(0); } to{ transform:rotate(360deg); } }
+  @keyframes pulse{ 0%,100%{ opacity:1; } 50%{ opacity:.35; } }
+  @keyframes ringfill{ from{ stroke-dashoffset:502; } to{ stroke-dashoffset:160; } }
+  @keyframes ringfill44{ from{ stroke-dashoffset:289; } to{ stroke-dashoffset:118; } }
+  @keyframes caret{ 0%,49%{ opacity:1; } 50%,100%{ opacity:0; } }
+</style>
+</helmet>
+
+<div style="background:#0B0C0E; color:#F2F1EC; font-family:'Archivo',sans-serif; line-height:1.55; min-height:100vh; padding:clamp(20px,4vw,56px); background-image:radial-gradient(circle at 50% -8%, rgba(198,242,61,.06), transparent 52%);">
+<div style="max-width:1120px; margin:0 auto;">
+
+  <!-- ============ MASTHEAD ============ -->
+  <section style="display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:clamp(40px,8vw,90px) 0 clamp(30px,5vw,56px);">
+    <svg width="150" height="150" viewBox="0 0 200 200" fill="none" style="margin-bottom:26px;">
+      <g transform="rotate(-30 100 100)">
+        <ellipse cx="100" cy="100" rx="66" ry="37" stroke="#F2F1EC" stroke-width="7"/>
+        <ellipse cx="100" cy="100" rx="52" ry="28" stroke="#F2F1EC" stroke-width="2.4" opacity=".55"/>
+        <ellipse cx="100" cy="100" rx="11" ry="6.5" fill="#0B0C0E" stroke="#F2F1EC" stroke-width="2.6"/>
+      </g>
+      <g style="animation:orbit 6s linear infinite; transform-box:fill-box; transform-origin:100px 100px;">
+        <g transform="translate(152 60)">
+          <circle cx="0" cy="-11" r="5" fill="#C6F23D"/>
+          <path d="M 0 -7 L -1 3 M -1 3 L -7 9 M -1 3 L 6 7 M 0 -3 L -6 -1 M 0 -3 L 7 -5 M -7 9 L -9 16 M 6 7 L 11 13" stroke="#C6F23D" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        </g>
+      </g>
+    </svg>
+    <div style="font-family:'Archivo Expanded',sans-serif; font-weight:900; font-size:clamp(54px,13vw,128px); letter-spacing:-.02em; line-height:.86; text-transform:uppercase;">APSIS<span style="color:#C6F23D;">.</span></div>
+    <div style="font-family:'JetBrains Mono',monospace; font-size:clamp(11px,2vw,13px); letter-spacing:.34em; text-transform:uppercase; color:#8A9098; margin-top:22px;">LIFT <span style="color:#C6F23D;">/</span> RUN <span style="color:#C6F23D;">/</span> ONE SCORE</div>
+    <div style="font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.24em; text-transform:uppercase; color:#2A2F36; margin-top:34px; border:1px solid #2A2F36; border-radius:100px; padding:8px 18px;">DESIGN SYSTEM &nbsp;·&nbsp; FOUNDATIONS &amp; COMPONENTS &nbsp;·&nbsp; V1</div>
+  </section>
+
+  <!-- ============ GROUP LABEL ============ -->
+  <div style="display:flex; align-items:center; gap:18px; margin:clamp(30px,5vw,52px) 0 clamp(28px,4vw,40px);">
+    <div style="font-family:'Archivo Expanded',sans-serif; font-weight:800; font-size:clamp(28px,5vw,52px); text-transform:uppercase; letter-spacing:-.02em; line-height:1; color:#1F2329; -webkit-text-stroke:1px #2A2F36;">FOUNDATIONS</div>
+    <div style="flex:1; height:1px; background:#2A2F36;"></div>
+  </div>
+
+  <!-- ---- 01 PALETTE ---- -->
+  <section style="margin-bottom:clamp(48px,8vw,84px);">
+    <div style="font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.3em; text-transform:uppercase; color:#C6F23D; font-weight:500; margin-bottom:14px;">▸ 01 / COLOUR</div>
+    <h2 style="font-family:'Archivo Expanded',sans-serif; font-weight:800; font-size:clamp(24px,4vw,38px); text-transform:uppercase; letter-spacing:-.01em; line-height:.95; margin-bottom:6px;">The palette</h2>
+    <p style="color:#8A9098; font-size:14px; margin-bottom:26px; max-width:60ch;">Black is the canvas; <span style="color:#C6F23D;">volt</span> is the signal. One accent draws the eye to exactly what matters — usually the score or the primary action. Molten is reserved for heat: overreaching, warnings, stop.</p>
+    <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(155px,1fr)); gap:12px;">
+      <div style="border-radius:8px; overflow:hidden; border:1px solid #2A2F36; background:#15171A;"><div style="height:96px; background:#0B0C0E; border-bottom:1px solid #2A2F36;"></div><div style="padding:12px 13px;"><div style="font-weight:600; font-size:13px;">Void</div><div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#C6F23D; margin-top:2px;">#0B0C0E</div><div style="font-size:11px; color:#8A9098; margin-top:5px; line-height:1.4;">Primary background</div></div></div>
+      <div style="border-radius:8px; overflow:hidden; border:1px solid #2A2F36; background:#15171A;"><div style="height:96px; background:#15171A;"></div><div style="padding:12px 13px;"><div style="font-weight:600; font-size:13px;">Carbon</div><div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#C6F23D; margin-top:2px;">#15171A</div><div style="font-size:11px; color:#8A9098; margin-top:5px; line-height:1.4;">Card / surface</div></div></div>
+      <div style="border-radius:8px; overflow:hidden; border:1px solid #2A2F36; background:#15171A;"><div style="height:96px; background:#1F2329;"></div><div style="padding:12px 13px;"><div style="font-weight:600; font-size:13px;">Steel</div><div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#C6F23D; margin-top:2px;">#1F2329</div><div style="font-size:11px; color:#8A9098; margin-top:5px; line-height:1.4;">Raised / inactive track</div></div></div>
+      <div style="border-radius:8px; overflow:hidden; border:1px solid #2A2F36; background:#15171A;"><div style="height:96px; background:#2A2F36;"></div><div style="padding:12px 13px;"><div style="font-weight:600; font-size:13px;">Line</div><div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#C6F23D; margin-top:2px;">#2A2F36</div><div style="font-size:11px; color:#8A9098; margin-top:5px; line-height:1.4;">Hairline borders</div></div></div>
+      <div style="border-radius:8px; overflow:hidden; border:1px solid #2A2F36; background:#15171A;"><div style="height:96px; background:#C6F23D;"></div><div style="padding:12px 13px;"><div style="font-weight:600; font-size:13px;">Volt <span style="font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:.12em; color:#0B0C0E; background:#C6F23D; padding:2px 6px; border-radius:3px; margin-left:4px;">ACCENT</span></div><div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#C6F23D; margin-top:4px;">#C6F23D</div><div style="font-size:11px; color:#8A9098; margin-top:5px; line-height:1.4;">HSS, CTAs, go/ready, PRs</div></div></div>
+      <div style="border-radius:8px; overflow:hidden; border:1px solid #2A2F36; background:#15171A;"><div style="height:96px; background:#FF5A1F;"></div><div style="padding:12px 13px;"><div style="font-weight:600; font-size:13px;">Molten</div><div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#C6F23D; margin-top:2px;">#FF5A1F</div><div style="font-size:11px; color:#8A9098; margin-top:5px; line-height:1.4;">Alert / heat / stop</div></div></div>
+      <div style="border-radius:8px; overflow:hidden; border:1px solid #2A2F36; background:#15171A;"><div style="height:96px; background:#8A9098;"></div><div style="padding:12px 13px;"><div style="font-weight:600; font-size:13px;">Ash</div><div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#C6F23D; margin-top:2px;">#8A9098</div><div style="font-size:11px; color:#8A9098; margin-top:5px; line-height:1.4;">Secondary / metadata</div></div></div>
+      <div style="border-radius:8px; overflow:hidden; border:1px solid #2A2F36; background:#15171A;"><div style="height:96px; background:#F2F1EC; border-bottom:1px solid #2A2F36;"></div><div style="padding:12px 13px;"><div style="font-weight:600; font-size:13px;">Bone</div><div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#C6F23D; margin-top:2px;">#F2F1EC</div><div style="font-size:11px; color:#8A9098; margin-top:5px; line-height:1.4;">Primary text / off-white</div></div></div>
+    </div>
+    <!-- readiness mapping -->
+    <div style="margin-top:14px; display:flex; flex-wrap:wrap; gap:10px; align-items:center; background:#15171A; border:1px solid #2A2F36; border-radius:8px; padding:16px 18px;">
+      <div style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.2em; color:#8A9098; text-transform:uppercase; margin-right:8px;">READINESS MAPS TO COLOUR</div>
+      <div style="display:flex; align-items:center; gap:8px; font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.1em; color:#F2F1EC;"><span style="width:9px; height:9px; border-radius:50%; background:#C6F23D;"></span>READY · VOLT</div>
+      <div style="color:#2A2F36;">/</div>
+      <div style="display:flex; align-items:center; gap:8px; font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.1em; color:#F2F1EC;"><span style="width:9px; height:9px; border-radius:50%; background:#CDBE4A;"></span>CAUTION · AMBER</div>
+      <div style="color:#2A2F36;">/</div>
+      <div style="display:flex; align-items:center; gap:8px; font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.1em; color:#F2F1EC;"><span style="width:9px; height:9px; border-radius:50%; background:#FF5A1F;"></span>OVERREACHING · MOLTEN</div>
+    </div>
+  </section>
+
+  <!-- ---- 02 TYPE ---- -->
+  <section style="margin-bottom:clamp(48px,8vw,84px);">
+    <div style="font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.3em; text-transform:uppercase; color:#C6F23D; font-weight:500; margin-bottom:14px;">▸ 02 / TYPOGRAPHY</div>
+    <h2 style="font-family:'Archivo Expanded',sans-serif; font-weight:800; font-size:clamp(24px,4vw,38px); text-transform:uppercase; letter-spacing:-.01em; line-height:.95; margin-bottom:6px;">Three voices</h2>
+    <p style="color:#8A9098; font-size:14px; margin-bottom:26px; max-width:60ch;"><span style="color:#F2F1EC;">Archivo Expanded</span> for display &amp; big numbers. <span style="color:#F2F1EC;">Archivo</span> for UI &amp; body. <span style="color:#F2F1EC;">JetBrains Mono</span> for data — numbers must read like instrument telemetry.</p>
+
+    <div style="display:grid; grid-template-columns:1fr; gap:14px;">
+      <!-- display -->
+      <div style="background:#15171A; border:1px solid #2A2F36; border-radius:8px; padding:clamp(22px,4vw,34px); position:relative; overflow:hidden;">
+        <div style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.2em; text-transform:uppercase; color:#C6F23D; margin-bottom:18px;">DISPLAY — ARCHIVO EXPANDED · 800–900 · UPPERCASE · -0.01em</div>
+        <div style="font-family:'Archivo Expanded',sans-serif; font-weight:900; font-size:clamp(40px,8vw,84px); line-height:.88; text-transform:uppercase; letter-spacing:-.02em;">REFUSE TO<br><span style="color:#C6F23D;">CHOOSE.</span></div>
+        <div style="display:flex; flex-wrap:wrap; gap:26px; margin-top:26px; align-items:baseline;">
+          <div style="font-family:'Archivo Expanded',sans-serif; font-weight:900; font-size:40px; letter-spacing:-.02em; text-transform:uppercase;">68<span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#8A9098; letter-spacing:.1em; margin-left:8px;">HSS / HERO</span></div>
+          <div style="font-family:'Archivo Expanded',sans-serif; font-weight:800; font-size:30px; letter-spacing:-.01em; text-transform:uppercase;">TITLE<span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#8A9098; letter-spacing:.1em; margin-left:8px;">30 / H2</span></div>
+          <div style="font-family:'Archivo Expanded',sans-serif; font-weight:800; font-size:22px; letter-spacing:-.01em; text-transform:uppercase;">SECTION<span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#8A9098; letter-spacing:.1em; margin-left:8px;">22 / H3</span></div>
+        </div>
+      </div>
+      <!-- body -->
+      <div style="background:#15171A; border:1px solid #2A2F36; border-radius:8px; padding:clamp(22px,4vw,34px);">
+        <div style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.2em; text-transform:uppercase; color:#C6F23D; margin-bottom:18px;">BODY / UI — ARCHIVO · 400–600</div>
+        <p style="font-size:17px; max-width:60ch; color:#F2F1EC;">Apsis logs lifting and running in one place and computes a single Hybrid Stress Score, so you know how hard you actually trained — and whether to push or recover today.</p>
+        <div style="display:flex; gap:28px; flex-wrap:wrap; margin-top:20px;">
+          <span style="font-size:16px; font-weight:400;">Regular 400</span>
+          <span style="font-size:16px; font-weight:500;">Medium 500</span>
+          <span style="font-size:16px; font-weight:600;">Semibold 600</span>
+          <span style="font-size:16px; font-weight:700;">Bold 700</span>
+        </div>
+      </div>
+      <!-- mono -->
+      <div style="background:#15171A; border:1px solid #2A2F36; border-radius:8px; padding:clamp(22px,4vw,34px);">
+        <div style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.2em; text-transform:uppercase; color:#C6F23D; margin-bottom:18px;">DATA / TELEMETRY — JETBRAINS MONO · 400–500 · WIDE TRACKING</div>
+        <div style="font-family:'JetBrains Mono',monospace; font-size:clamp(13px,2.4vw,16px); color:#C6F23D; letter-spacing:.06em;">HSS 68 · ATL 41 · CTL 55 · READY ▸ TRAIN</div>
+        <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:18px;">
+          <span style="font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.18em; color:#8A9098; text-transform:uppercase; border:1px solid #2A2F36; border-radius:4px; padding:5px 10px;">TUE · 05:42</span>
+          <span style="font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.18em; color:#8A9098; text-transform:uppercase; border:1px solid #2A2F36; border-radius:4px; padding:5px 10px;">5:30 /KM</span>
+          <span style="font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.18em; color:#8A9098; text-transform:uppercase; border:1px solid #2A2F36; border-radius:4px; padding:5px 10px;">RPE 8 · ×5</span>
+          <span style="font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.18em; color:#8A9098; text-transform:uppercase; border:1px solid #2A2F36; border-radius:4px; padding:5px 10px;">6.2 KM</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ---- 03 SPACING & RADIUS ---- -->
+  <section style="margin-bottom:clamp(48px,8vw,84px);">
+    <div style="font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.3em; text-transform:uppercase; color:#C6F23D; font-weight:500; margin-bottom:14px;">▸ 03 / SPACE &amp; SHAPE</div>
+    <h2 style="font-family:'Archivo Expanded',sans-serif; font-weight:800; font-size:clamp(24px,4vw,38px); text-transform:uppercase; letter-spacing:-.01em; line-height:.95; margin-bottom:6px;">Spacing &amp; radius</h2>
+    <p style="color:#8A9098; font-size:14px; margin-bottom:26px; max-width:60ch;">A 4px base step. Corners stay small and sharp (6–10px) — crisp, not pillowy. Hairline borders over heavy shadows.</p>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px;" >
+      <div style="background:#15171A; border:1px solid #2A2F36; border-radius:8px; padding:24px;">
+        <div style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.2em; text-transform:uppercase; color:#8A9098; margin-bottom:18px;">SPACING SCALE — BASE 4</div>
+        <div style="display:flex; flex-direction:column; gap:11px;">
+          <div style="display:flex; align-items:center; gap:14px;"><div style="height:11px; width:4px; background:#C6F23D;"></div><span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#8A9098;">04 · xs</span></div>
+          <div style="display:flex; align-items:center; gap:14px;"><div style="height:11px; width:8px; background:#C6F23D;"></div><span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#8A9098;">08 · sm</span></div>
+          <div style="display:flex; align-items:center; gap:14px;"><div style="height:11px; width:12px; background:#C6F23D;"></div><span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#8A9098;">12 · md</span></div>
+          <div style="display:flex; align-items:center; gap:14px;"><div style="height:11px; width:16px; background:#C6F23D;"></div><span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#8A9098;">16 · lg</span></div>
+          <div style="display:flex; align-items:center; gap:14px;"><div style="height:11px; width:24px; background:#C6F23D;"></div><span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#8A9098;">24 · xl</span></div>
+          <div style="display:flex; align-items:center; gap:14px;"><div style="height:11px; width:32px; background:#C6F23D;"></div><span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#8A9098;">32 · 2xl</span></div>
+          <div style="display:flex; align-items:center; gap:14px;"><div style="height:11px; width:48px; background:#C6F23D;"></div><span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#8A9098;">48 · 3xl</span></div>
+          <div style="display:flex; align-items:center; gap:14px;"><div style="height:11px; width:64px; background:#C6F23D;"></div><span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#8A9098;">64 · 4xl</span></div>
+        </div>
+      </div>
+      <div style="background:#15171A; border:1px solid #2A2F36; border-radius:8px; padding:24px;">
+        <div style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.2em; text-transform:uppercase; color:#8A9098; margin-bottom:18px;">CORNER RADIUS</div>
+        <div style="display:flex; gap:18px; flex-wrap:wrap;">
+          <div style="display:flex; flex-direction:column; align-items:center; gap:9px;"><div style="width:58px; height:58px; background:#1F2329; border:1px solid #2A2F36; border-radius:6px;"></div><span style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#8A9098;">6 · btn</span></div>
+          <div style="display:flex; flex-direction:column; align-items:center; gap:9px;"><div style="width:58px; height:58px; background:#1F2329; border:1px solid #2A2F36; border-radius:8px;"></div><span style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#8A9098;">8 · card</span></div>
+          <div style="display:flex; flex-direction:column; align-items:center; gap:9px;"><div style="width:58px; height:58px; background:#1F2329; border:1px solid #2A2F36; border-radius:10px;"></div><span style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#8A9098;">10 · sheet</span></div>
+          <div style="display:flex; flex-direction:column; align-items:center; gap:9px;"><div style="width:58px; height:58px; background:#1F2329; border:1px solid #2A2F36; border-radius:100px;"></div><span style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#8A9098;">pill</span></div>
+        </div>
+        <div style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.2em; text-transform:uppercase; color:#8A9098; margin:24px 0 14px;">ELEVATION</div>
+        <div style="display:flex; gap:18px; flex-wrap:wrap; align-items:flex-end;">
+          <div style="display:flex; flex-direction:column; align-items:center; gap:9px;"><div style="width:74px; height:50px; background:#15171A; border:1px solid #2A2F36; border-radius:8px;"></div><span style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#8A9098;">hairline</span></div>
+          <div style="display:flex; flex-direction:column; align-items:center; gap:9px;"><div style="width:74px; height:50px; background:#15171A; border:1px solid #2A2F36; border-radius:8px; box-shadow:0 18px 40px rgba(0,0,0,.6);"></div><span style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#8A9098;">deep</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ---- 04 LOGO ---- -->
+  <section style="margin-bottom:clamp(48px,8vw,84px);">
+    <div style="font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.3em; text-transform:uppercase; color:#C6F23D; font-weight:500; margin-bottom:14px;">▸ 04 / THE MARK</div>
+    <h2 style="font-family:'Archivo Expanded',sans-serif; font-weight:800; font-size:clamp(24px,4vw,38px); text-transform:uppercase; letter-spacing:-.01em; line-height:.95; margin-bottom:6px;">Plate-orbit · Build A</h2>
+    <p style="color:#8A9098; font-size:14px; margin-bottom:26px; max-width:60ch;">A barbell plate in tilted perspective is the orbit; a volt runner laps it. Plate = strength, runner = endurance, tilt = motion. Plate stays bone (or black on light); the runner is always volt.</p>
+    <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); gap:14px;">
+      <div style="background:#15171A; border:1px solid #2A2F36; border-radius:8px; min-height:178px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:18px; padding:30px 20px;">
+        <svg width="92" height="92" viewBox="0 0 200 200" fill="none">
+          <g transform="rotate(-30 100 100)"><ellipse cx="100" cy="100" rx="66" ry="37" stroke="#F2F1EC" stroke-width="7"/><ellipse cx="100" cy="100" rx="52" ry="28" stroke="#F2F1EC" stroke-width="2.4" opacity=".55"/><ellipse cx="100" cy="100" rx="11" ry="6.5" fill="#0B0C0E" stroke="#F2F1EC" stroke-width="2.6"/></g>
+          <g transform="translate(152 60)"><circle cx="0" cy="-11" r="5" fill="#C6F23D"/><path d="M 0 -7 L -1 3 M -1 3 L -7 9 M -1 3 L 6 7 M 0 -3 L -6 -1 M 0 -3 L 7 -5 M -7 9 L -9 16 M 6 7 L 11 13" stroke="#C6F23D" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/></g>
+        </svg>
+        <div style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.2em; text-transform:uppercase; color:#8A9098;">Primary · on void</div>
+      </div>
+      <div style="background:#15171A; border:1px solid #2A2F36; border-radius:8px; min-height:178px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:18px; padding:30px 20px;">
+        <div style="display:flex; align-items:center; gap:13px;">
+          <svg width="48" height="48" viewBox="0 0 200 200" fill="none"><g transform="rotate(-30 100 100)"><ellipse cx="100" cy="100" rx="66" ry="37" stroke="#F2F1EC" stroke-width="9"/><ellipse cx="100" cy="100" rx="12" ry="7" fill="#15171A" stroke="#F2F1EC" stroke-width="3.4"/></g><g transform="translate(152 60)"><circle cx="0" cy="-11" r="7" fill="#C6F23D"/><path d="M 0 -6 L -1 4 M -1 4 L -8 11 M -1 4 L 8 9 M 0 -1 L -7 -1 M 0 -1 L 9 -4 M -8 11 L -11 19 M 8 9 L 13 16" stroke="#C6F23D" stroke-width="4.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/></g></svg>
+          <span style="font-family:'Archivo Expanded',sans-serif; font-weight:900; font-size:30px; text-transform:uppercase; letter-spacing:-.01em;">APSIS</span>
+        </div>
+        <div style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.2em; text-transform:uppercase; color:#8A9098;">Horizontal lockup</div>
+      </div>
+      <div style="background:#C6F23D; border:1px solid #C6F23D; border-radius:8px; min-height:178px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:18px; padding:30px 20px;">
+        <div style="display:flex; align-items:center; gap:13px;">
+          <svg width="48" height="48" viewBox="0 0 200 200" fill="none"><g transform="rotate(-30 100 100)"><ellipse cx="100" cy="100" rx="66" ry="37" stroke="#0B0C0E" stroke-width="9"/><ellipse cx="100" cy="100" rx="12" ry="7" fill="#C6F23D" stroke="#0B0C0E" stroke-width="3.4"/></g><g transform="translate(152 60)"><circle cx="0" cy="-11" r="7" fill="#0B0C0E"/><path d="M 0 -6 L -1 4 M -1 4 L -8 11 M -1 4 L 8 9 M 0 -1 L -7 -1 M 0 -1 L 9 -4 M -8 11 L -11 19 M 8 9 L 13 16" stroke="#0B0C0E" stroke-width="4.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/></g></svg>
+          <span style="font-family:'Archivo Expanded',sans-serif; font-weight:900; font-size:30px; text-transform:uppercase; letter-spacing:-.01em; color:#0B0C0E;">APSIS</span>
+        </div>
+        <div style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.2em; text-transform:uppercase; color:#0B0C0E; opacity:.6;">Reversed · on volt</div>
+      </div>
+      <div style="background:#F2F1EC; border:1px solid #F2F1EC; border-radius:8px; min-height:178px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:18px; padding:30px 20px;">
+        <svg width="92" height="92" viewBox="0 0 200 200" fill="none"><g transform="rotate(-30 100 100)"><ellipse cx="100" cy="100" rx="66" ry="37" stroke="#0B0C0E" stroke-width="7"/><ellipse cx="100" cy="100" rx="52" ry="28" stroke="#0B0C0E" stroke-width="2.4" opacity=".55"/><ellipse cx="100" cy="100" rx="11" ry="6.5" fill="#F2F1EC" stroke="#0B0C0E" stroke-width="2.6"/></g><g transform="translate(152 60)"><circle cx="0" cy="-11" r="5" fill="#0B0C0E"/><path d="M 0 -7 L -1 3 M -1 3 L -7 9 M -1 3 L 6 7 M 0 -3 L -6 -1 M 0 -3 L 7 -5 M -7 9 L -9 16 M 6 7 L 11 13" stroke="#0B0C0E" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/></g></svg>
+        <div style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.2em; text-transform:uppercase; color:#0B0C0E; opacity:.6;">Mono · on bone</div>
+      </div>
+    </div>
+
+    <!-- shrink ladder / app icon -->
+    <div style="background:#15171A; border:1px solid #2A2F36; border-radius:8px; padding:28px; margin-top:14px;">
+      <div style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.2em; text-transform:uppercase; color:#8A9098; margin-bottom:22px;">APP ICON · SHRINK LADDER — full plate → drop bevel → stride glyph</div>
+      <div style="display:flex; gap:26px; align-items:flex-end; flex-wrap:wrap;">
+        <div style="display:flex; flex-direction:column; align-items:center; gap:12px;">
+          <div style="width:112px; height:112px; border-radius:25px; background:#0B0C0E; display:flex; align-items:center; justify-content:center; box-shadow:0 10px 30px rgba(0,0,0,.5); border:1px solid #2A2F36;">
+            <svg width="78" height="78" viewBox="0 0 200 200" fill="none"><g transform="rotate(-30 100 100)"><ellipse cx="100" cy="100" rx="64" ry="36" stroke="#F2F1EC" stroke-width="8"/><ellipse cx="100" cy="100" rx="11" ry="6.5" fill="#0B0C0E" stroke="#F2F1EC" stroke-width="3"/></g><g transform="translate(150 60)"><circle cx="0" cy="-11" r="6" fill="#C6F23D"/><path d="M 0 -6 L -1 4 M -1 4 L -8 11 M -1 4 L 8 9 M 0 -1 L -7 -1 M 0 -1 L 9 -4 M -8 11 L -11 19 M 8 9 L 13 16" stroke="#C6F23D" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none"/></g></svg>
+          </div>
+          <span style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.14em; color:#8A9098;">180 · FULL</span>
+        </div>
+        <div style="display:flex; flex-direction:column; align-items:center; gap:12px;">
+          <div style="width:60px; height:60px; border-radius:14px; background:#0B0C0E; display:flex; align-items:center; justify-content:center; box-shadow:0 8px 22px rgba(0,0,0,.5); border:1px solid #2A2F36;">
+            <svg width="40" height="40" viewBox="0 0 200 200" fill="none"><g transform="rotate(-30 100 100)"><ellipse cx="100" cy="100" rx="64" ry="36" stroke="#F2F1EC" stroke-width="12"/><ellipse cx="100" cy="100" rx="12" ry="7" fill="#0B0C0E" stroke="#F2F1EC" stroke-width="5"/></g><g transform="translate(150 60)"><path d="M -10 8 L 0 -12 L 3 -2 L 14 -7 L 3 13 L 0 3 Z" fill="#C6F23D"/></g></svg>
+          </div>
+          <span style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.14em; color:#8A9098;">60 · GLYPH</span>
+        </div>
+        <div style="display:flex; flex-direction:column; align-items:center; gap:12px;">
+          <div style="width:38px; height:38px; border-radius:9px; background:#0B0C0E; display:flex; align-items:center; justify-content:center; border:1px solid #2A2F36;">
+            <svg width="26" height="26" viewBox="0 0 200 200" fill="none"><g transform="rotate(-30 100 100)"><ellipse cx="100" cy="100" rx="64" ry="36" stroke="#F2F1EC" stroke-width="15"/><ellipse cx="100" cy="100" rx="13" ry="8" fill="#0B0C0E" stroke="#F2F1EC" stroke-width="7"/></g><path d="M -10 8 L 0 -12 L 3 -2 L 14 -7 L 3 13 L 0 3 Z" fill="#C6F23D" transform="translate(150 60) scale(1.3)"/></svg>
+          </div>
+          <span style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.14em; color:#8A9098;">38 · MIN</span>
+        </div>
+        <div style="display:flex; flex-direction:column; align-items:center; gap:12px;">
+          <div style="width:60px; height:60px; border-radius:14px; background:#C6F23D; display:flex; align-items:center; justify-content:center; box-shadow:0 8px 22px rgba(0,0,0,.5);">
+            <svg width="40" height="40" viewBox="0 0 200 200" fill="none"><g transform="rotate(-30 100 100)"><ellipse cx="100" cy="100" rx="64" ry="36" stroke="#0B0C0E" stroke-width="12"/><ellipse cx="100" cy="100" rx="12" ry="7" fill="#C6F23D" stroke="#0B0C0E" stroke-width="5"/></g><g transform="translate(150 60)"><path d="M -10 8 L 0 -12 L 3 -2 L 14 -7 L 3 13 L 0 3 Z" fill="#0B0C0E"/></g></svg>
+          </div>
+          <span style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.14em; color:#8A9098;">ALT · VOLT</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ GROUP LABEL ============ -->
+  <div style="display:flex; align-items:center; gap:18px; margin:clamp(40px,6vw,68px) 0 clamp(28px,4vw,40px);">
+    <div style="font-family:'Archivo Expanded',sans-serif; font-weight:800; font-size:clamp(28px,5vw,52px); text-transform:uppercase; letter-spacing:-.02em; line-height:1; color:#1F2329; -webkit-text-stroke:1px #2A2F36;">COMPONENTS</div>
+    <div style="flex:1; height:1px; background:#2A2F36;"></div>
+  </div>
+
+  <!-- ---- 05 BUTTONS ---- -->
+  <section style="margin-bottom:clamp(48px,8vw,84px);">
+    <div style="font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.3em; text-transform:uppercase; color:#C6F23D; font-weight:500; margin-bottom:14px;">▸ 05 / ACTIONS</div>
+    <h2 style="font-family:'Archivo Expanded',sans-serif; font-weight:800; font-size:clamp(24px,4vw,38px); text-transform:uppercase; letter-spacing:-.01em; line-height:.95; margin-bottom:6px;">Buttons</h2>
+    <p style="color:#8A9098; font-size:14px; margin-bottom:26px; max-width:60ch;">Volt fill for the one primary action per view. Ghost outline for secondary. Min 44px hit target.</p>
+    <div style="background:#15171A; border:1px solid #2A2F36; border-radius:8px; padding:30px;">
+      <div style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.2em; text-transform:uppercase; color:#8A9098; margin-bottom:18px;">PRIMARY — DEFAULT / PRESSED / DISABLED</div>
+      <div style="display:flex; gap:16px; flex-wrap:wrap; align-items:center;">
+        <button style="font-family:'Archivo',sans-serif; font-weight:600; font-size:15px; background:#C6F23D; color:#0B0C0E; border:none; border-radius:6px; padding:14px 28px; cursor:pointer; min-height:48px;" style-hover="background:#D4FF4A;">Log a lift</button>
+        <button style="font-family:'Archivo',sans-serif; font-weight:600; font-size:15px; background:#A9D32B; color:#0B0C0E; border:none; border-radius:6px; padding:14px 28px; cursor:pointer; min-height:48px; transform:translateY(1px);">Log a lift</button>
+        <button style="font-family:'Archivo',sans-serif; font-weight:600; font-size:15px; background:#1F2329; color:#8A9098; border:none; border-radius:6px; padding:14px 28px; min-height:48px; cursor:not-allowed; opacity:.7;">Log a lift</button>
+      </div>
+      <div style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.2em; text-transform:uppercase; color:#8A9098; margin:30px 0 18px;">SECONDARY · GHOST &nbsp;/&nbsp; ICON</div>
+      <div style="display:flex; gap:16px; flex-wrap:wrap; align-items:center;">
+        <button style="font-family:'Archivo',sans-serif; font-weight:600; font-size:15px; background:transparent; color:#C6F23D; border:1px solid #C6F23D; border-radius:6px; padding:13px 27px; cursor:pointer; min-height:48px;" style-hover="background:rgba(198,242,61,.1);">Add set</button>
+        <button style="font-family:'Archivo',sans-serif; font-weight:600; font-size:15px; background:transparent; color:#8A9098; border:1px solid #2A2F36; border-radius:6px; padding:13px 27px; cursor:pointer; min-height:48px;" style-hover="border-color:#8A9098; color:#F2F1EC;">Cancel</button>
+        <button aria-label="add" style="width:48px; height:48px; display:flex; align-items:center; justify-content:center; background:#1F2329; color:#C6F23D; border:1px solid #2A2F36; border-radius:6px; cursor:pointer;" style-hover="border-color:#C6F23D;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg></button>
+        <button aria-label="more" style="width:48px; height:48px; display:flex; align-items:center; justify-content:center; background:#1F2329; color:#8A9098; border:1px solid #2A2F36; border-radius:6px; cursor:pointer;" style-hover="border-color:#8A9098; color:#F2F1EC;"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg></button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ---- 06 HSS RING + READINESS ---- -->
+  <section style="margin-bottom:clamp(48px,8vw,84px);">
+    <div style="font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.3em; text-transform:uppercase; color:#C6F23D; font-weight:500; margin-bottom:14px;">▸ 06 / THE HERO METRIC</div>
+    <h2 style="font-family:'Archivo Expanded',sans-serif; font-weight:800; font-size:clamp(24px,4vw,38px); text-transform:uppercase; letter-spacing:-.01em; line-height:.95; margin-bottom:6px;">HSS ring &amp; readiness</h2>
+    <p style="color:#8A9098; font-size:14px; margin-bottom:26px; max-width:60ch;">One score, big, in volt, inside a progress ring that fills on load. A status light beneath maps readiness to colour.</p>
+    <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:14px; align-items:stretch;">
+      <!-- big ring -->
+      <div style="background:#15171A; border:1px solid #2A2F36; border-radius:8px; padding:34px; display:flex; flex-direction:column; align-items:center; justify-content:center; position:relative; overflow:hidden;">
+        <div style="position:absolute; top:50%; left:50%; width:240px; height:240px; transform:translate(-50%,-58%); background:radial-gradient(circle, rgba(198,242,61,.14), transparent 64%); pointer-events:none;"></div>
+        <div style="width:200px; height:200px; position:relative;">
+          <svg viewBox="0 0 184 184" width="200" height="200">
+            <circle cx="92" cy="92" r="80" fill="none" stroke="#1F2329" stroke-width="11"/>
+            <circle cx="92" cy="92" r="80" fill="none" stroke="#C6F23D" stroke-width="11" stroke-linecap="round" stroke-dasharray="502" stroke-dashoffset="160" transform="rotate(-90 92 92)" style="animation:ringfill 1.5s cubic-bezier(.2,.8,.2,1) forwards;"/>
+          </svg>
+          <div style="position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center;">
+            <div style="font-family:'Archivo Expanded',sans-serif; font-size:66px; font-weight:900; color:#C6F23D; line-height:1; letter-spacing:-.03em;">{{ hss }}</div>
+            <div style="font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:.26em; text-transform:uppercase; color:#8A9098; margin-top:8px;">HYBRID STRESS</div>
+          </div>
+        </div>
+        <div style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.2em; text-transform:uppercase; color:#8A9098; margin-top:22px;">HSS RING · 200PX</div>
+      </div>
+      <!-- session ring + readiness states -->
+      <div style="display:flex; flex-direction:column; gap:14px;">
+        <div style="background:#15171A; border:1px solid #2A2F36; border-radius:8px; padding:24px; display:flex; align-items:center; gap:20px;">
+          <div style="width:84px; height:84px; position:relative; flex-shrink:0;">
+            <svg viewBox="0 0 92 92" width="84" height="84">
+              <circle cx="46" cy="46" r="38" fill="none" stroke="#1F2329" stroke-width="7"/>
+              <circle cx="46" cy="46" r="38" fill="none" stroke="#C6F23D" stroke-width="7" stroke-linecap="round" stroke-dasharray="239" stroke-dashoffset="118" transform="rotate(-90 46 46)" style="animation:ringfill44 1.5s cubic-bezier(.2,.8,.2,1) forwards;"/>
+            </svg>
+            <div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-family:'Archivo Expanded',sans-serif; font-size:26px; font-weight:900; color:#C6F23D; letter-spacing:-.03em;">42</div>
+          </div>
+          <div>
+            <div style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.2em; text-transform:uppercase; color:#8A9098; margin-bottom:5px;">SESSION RING · 84PX</div>
+            <div style="font-weight:600; font-size:15px;">Squat session</div>
+            <div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#8A9098; margin-top:3px;">LOWER · 6 LIFTS · RPE 8</div>
+          </div>
+        </div>
+        <!-- readiness pills -->
+        <div style="background:#15171A; border:1px solid #2A2F36; border-radius:8px; padding:24px; display:flex; flex-direction:column; gap:13px;">
+          <div style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.2em; text-transform:uppercase; color:#8A9098; margin-bottom:3px;">READINESS · STATUS LIGHT</div>
+          <div style="display:flex; align-items:center; gap:11px; background:rgba(198,242,61,.08); border:1px solid rgba(198,242,61,.4); border-radius:100px; padding:11px 18px;"><span style="width:10px; height:10px; border-radius:50%; background:#C6F23D; animation:pulse 2.4s ease-in-out infinite; box-shadow:0 0 10px #C6F23D;"></span><span style="font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:.14em; color:#C6F23D; font-weight:700;">PRIMED</span><span style="font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:.14em; color:#8A9098;">· GREEN LIGHT</span></div>
+          <div style="display:flex; align-items:center; gap:11px; background:rgba(205,190,74,.08); border:1px solid rgba(205,190,74,.4); border-radius:100px; padding:11px 18px;"><span style="width:10px; height:10px; border-radius:50%; background:#CDBE4A;"></span><span style="font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:.14em; color:#CDBE4A; font-weight:700;">CAUTION</span><span style="font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:.14em; color:#8A9098;">· HOLD STEADY</span></div>
+          <div style="display:flex; align-items:center; gap:11px; background:rgba(255,90,31,.08); border:1px solid rgba(255,90,31,.4); border-radius:100px; padding:11px 18px;"><span style="width:10px; height:10px; border-radius:50%; background:#FF5A1F;"></span><span style="font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:.14em; color:#FF5A1F; font-weight:700;">OVERREACHING</span><span style="font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:.14em; color:#8A9098;">· RED ZONE</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ---- 07 STAT TILES + SESSION ROWS ---- -->
+  <section style="margin-bottom:clamp(48px,8vw,84px);">
+    <div style="font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.3em; text-transform:uppercase; color:#C6F23D; font-weight:500; margin-bottom:14px;">▸ 07 / DATA BLOCKS</div>
+    <h2 style="font-family:'Archivo Expanded',sans-serif; font-weight:800; font-size:clamp(24px,4vw,38px); text-transform:uppercase; letter-spacing:-.01em; line-height:.95; margin-bottom:6px;">Stat tiles &amp; session rows</h2>
+    <p style="color:#8A9098; font-size:14px; margin-bottom:26px; max-width:60ch;">Big Archivo-Expanded number, mono label. The session row carries a title, a mono metadata line, and the session HSS on the right.</p>
+    <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px; margin-bottom:14px;">
+      <div style="background:#15171A; border:1px solid #2A2F36; border-radius:8px; padding:22px;"><div style="font-family:'Archivo Expanded',sans-serif; font-weight:800; font-size:34px; letter-spacing:-.02em; line-height:1;">12.4<span style="font-size:16px; color:#8A9098; margin-left:3px;">t</span></div><div style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.18em; text-transform:uppercase; color:#8A9098; margin-top:9px;">TONNAGE · WK</div></div>
+      <div style="background:#15171A; border:1px solid #2A2F36; border-radius:8px; padding:22px;"><div style="font-family:'Archivo Expanded',sans-serif; font-weight:800; font-size:34px; letter-spacing:-.02em; line-height:1;">38.6<span style="font-size:16px; color:#8A9098; margin-left:3px;">km</span></div><div style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.18em; text-transform:uppercase; color:#8A9098; margin-top:9px;">MILEAGE · WK</div></div>
+      <div style="background:#15171A; border:1px solid #2A2F36; border-radius:8px; padding:22px;"><div style="font-family:'Archivo Expanded',sans-serif; font-weight:800; font-size:34px; letter-spacing:-.02em; line-height:1; color:#C6F23D;">41</div><div style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.18em; text-transform:uppercase; color:#8A9098; margin-top:9px;">ATL · ACUTE</div></div>
+      <div style="background:#15171A; border:1px solid #2A2F36; border-radius:8px; padding:22px;"><div style="font-family:'Archivo Expanded',sans-serif; font-weight:800; font-size:34px; letter-spacing:-.02em; line-height:1;">55</div><div style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.18em; text-transform:uppercase; color:#8A9098; margin-top:9px;">CTL · CHRONIC</div></div>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:10px;">
+      <div style="background:#15171A; border:1px solid #2A2F36; border-radius:8px; padding:16px 18px; display:flex; justify-content:space-between; align-items:center;"><div><div style="font-weight:600; font-size:15px;">Squat session</div><div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#8A9098; margin-top:3px;">LOWER · 6 LIFTS · RPE 8</div></div><div style="font-family:'Archivo Expanded',sans-serif; font-size:24px; font-weight:800; color:#C6F23D;">42</div></div>
+      <div style="background:#15171A; border:1px solid #2A2F36; border-radius:8px; padding:16px 18px; display:flex; justify-content:space-between; align-items:center;"><div><div style="font-weight:600; font-size:15px;">Zone 2 run</div><div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#8A9098; margin-top:3px;">6.2 KM · 5:30 /KM · 142 BPM</div></div><div style="font-family:'Archivo Expanded',sans-serif; font-size:24px; font-weight:800;">26</div></div>
+      <div style="background:#15171A; border:1px solid #2A2F36; border-radius:8px; padding:16px 18px; display:flex; justify-content:space-between; align-items:center;"><div><div style="font-weight:600; font-size:15px;">Tempo intervals</div><div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#8A9098; margin-top:3px;">8 × 400M · 3:48 /KM</div></div><div style="font-family:'Archivo Expanded',sans-serif; font-size:24px; font-weight:800;">33</div></div>
+    </div>
+  </section>
+
+  <!-- ---- 08 INPUTS ---- -->
+  <section style="margin-bottom:clamp(48px,8vw,84px);">
+    <div style="font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.3em; text-transform:uppercase; color:#C6F23D; font-weight:500; margin-bottom:14px;">▸ 08 / INPUT</div>
+    <h2 style="font-family:'Archivo Expanded',sans-serif; font-weight:800; font-size:clamp(24px,4vw,38px); text-transform:uppercase; letter-spacing:-.01em; line-height:.95; margin-bottom:6px;">Fields, steppers, chips</h2>
+    <p style="color:#8A9098; font-size:14px; margin-bottom:26px; max-width:60ch;">Logging must feel faster than the incumbents. Steppers and segmented controls below are live — tap them.</p>
+    <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:14px;">
+      <!-- field + segmented -->
+      <div style="background:#15171A; border:1px solid #2A2F36; border-radius:8px; padding:26px;">
+        <div style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.2em; text-transform:uppercase; color:#8A9098; margin-bottom:16px;">TEXT FIELD</div>
+        <label style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.16em; text-transform:uppercase; color:#8A9098; display:block; margin-bottom:8px;">EXERCISE</label>
+        <div style="display:flex; align-items:center; background:#0B0C0E; border:1px solid #C6F23D; border-radius:6px; padding:13px 15px; margin-bottom:18px;"><span style="font-size:15px; color:#F2F1EC;">Back squat</span><span style="width:2px; height:18px; background:#C6F23D; margin-left:2px; animation:caret 1s step-end infinite;"></span></div>
+        <label style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.16em; text-transform:uppercase; color:#8A9098; display:block; margin-bottom:8px;">DEFAULT</label>
+        <div style="display:flex; align-items:center; background:#0B0C0E; border:1px solid #2A2F36; border-radius:6px; padding:13px 15px;"><span style="font-size:15px; color:#8A9098;">Search exercise…</span></div>
+
+        <div style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.2em; text-transform:uppercase; color:#8A9098; margin:26px 0 14px;">SEGMENTED CONTROL</div>
+        <div style="display:flex; gap:4px; background:#0B0C0E; border:1px solid #2A2F36; border-radius:8px; padding:4px;">
+          <button onClick="{{ seg0 }}" style="{{ seg0Style }}">LIFT</button>
+          <button onClick="{{ seg1 }}" style="{{ seg1Style }}">RUN</button>
+          <button onClick="{{ seg2 }}" style="{{ seg2Style }}">NOTE</button>
+        </div>
+      </div>
+      <!-- stepper + chips -->
+      <div style="background:#15171A; border:1px solid #2A2F36; border-radius:8px; padding:26px;">
+        <div style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.2em; text-transform:uppercase; color:#8A9098; margin-bottom:16px;">STEPPER · LOAD / REPS / RPE</div>
+        <div style="display:flex; gap:12px;">
+          <div style="flex:1; background:#0B0C0E; border:1px solid #2A2F36; border-radius:8px; padding:14px;">
+            <div style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.16em; text-transform:uppercase; color:#8A9098; text-align:center; margin-bottom:10px;">LOAD KG</div>
+            <div style="font-family:'Archivo Expanded',sans-serif; font-weight:800; font-size:30px; text-align:center; letter-spacing:-.02em;">140</div>
+          </div>
+          <div style="flex:1.3; background:#0B0C0E; border:1px solid #2A2F36; border-radius:8px; padding:14px;">
+            <div style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.16em; text-transform:uppercase; color:#8A9098; text-align:center; margin-bottom:10px;">REPS</div>
+            <div style="display:flex; align-items:center; justify-content:space-between; gap:6px;">
+              <button onClick="{{ dec }}" aria-label="minus" style="width:38px; height:38px; flex-shrink:0; background:#1F2329; border:1px solid #2A2F36; border-radius:6px; color:#F2F1EC; cursor:pointer; display:flex; align-items:center; justify-content:center;" style-hover="border-color:#C6F23D; color:#C6F23D;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 12h14" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg></button>
+              <span style="font-family:'Archivo Expanded',sans-serif; font-weight:800; font-size:30px; letter-spacing:-.02em; min-width:38px; text-align:center;">{{ reps }}</span>
+              <button onClick="{{ inc }}" aria-label="plus" style="width:38px; height:38px; flex-shrink:0; background:#1F2329; border:1px solid #2A2F36; border-radius:6px; color:#F2F1EC; cursor:pointer; display:flex; align-items:center; justify-content:center;" style-hover="border-color:#C6F23D; color:#C6F23D;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg></button>
+            </div>
+          </div>
+          <div style="flex:1; background:#0B0C0E; border:1px solid #2A2F36; border-radius:8px; padding:14px;">
+            <div style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.16em; text-transform:uppercase; color:#8A9098; text-align:center; margin-bottom:10px;">RPE</div>
+            <div style="font-family:'Archivo Expanded',sans-serif; font-weight:800; font-size:30px; text-align:center; letter-spacing:-.02em; color:#C6F23D;">8</div>
+          </div>
+        </div>
+
+        <div style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.2em; text-transform:uppercase; color:#8A9098; margin:26px 0 14px;">RUN-TYPE CHIPS</div>
+        <div style="display:flex; gap:9px; flex-wrap:wrap;">
+          <button onClick="{{ chipZ2 }}" style="{{ chipZ2Style }}">Z2</button>
+          <button onClick="{{ chipTempo }}" style="{{ chipTempoStyle }}">TEMPO</button>
+          <button onClick="{{ chipInt }}" style="{{ chipIntStyle }}">INTERVALS</button>
+          <button onClick="{{ chipLong }}" style="{{ chipLongStyle }}">LONG</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ---- 09 TAB BAR + CHART ---- -->
+  <section style="margin-bottom:clamp(40px,6vw,64px);">
+    <div style="font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.3em; text-transform:uppercase; color:#C6F23D; font-weight:500; margin-bottom:14px;">▸ 09 / NAVIGATION &amp; TRENDS</div>
+    <h2 style="font-family:'Archivo Expanded',sans-serif; font-weight:800; font-size:clamp(24px,4vw,38px); text-transform:uppercase; letter-spacing:-.01em; line-height:.95; margin-bottom:6px;">Tab bar &amp; load trend</h2>
+    <p style="color:#8A9098; font-size:14px; margin-bottom:26px; max-width:60ch;">The plate mark anchors the home tab. The load chart styles acute vs chronic as telemetry — mono axes, volt line, steel gridlines.</p>
+
+    <!-- chart -->
+    <div style="background:#15171A; border:1px solid #2A2F36; border-radius:8px; padding:26px; margin-bottom:14px;">
+      <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:12px; margin-bottom:18px;">
+        <div style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.2em; text-transform:uppercase; color:#8A9098;">LOAD TREND · 6 WK</div>
+        <div style="display:flex; gap:16px;">
+          <div style="display:flex; align-items:center; gap:7px; font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.12em; color:#8A9098; text-transform:uppercase;"><span style="width:14px; height:2px; background:#C6F23D;"></span>CTL · CHRONIC</div>
+          <div style="display:flex; align-items:center; gap:7px; font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.12em; color:#8A9098; text-transform:uppercase;"><span style="width:14px; height:2px; background:#FF5A1F;"></span>ATL · ACUTE</div>
+        </div>
+      </div>
+      <svg viewBox="0 0 600 220" width="100%" height="auto" preserveAspectRatio="none" style="display:block;">
+        <line x1="0" y1="20" x2="600" y2="20" stroke="#1F2329" stroke-width="1"/>
+        <line x1="0" y1="70" x2="600" y2="70" stroke="#1F2329" stroke-width="1"/>
+        <line x1="0" y1="120" x2="600" y2="120" stroke="#1F2329" stroke-width="1"/>
+        <line x1="0" y1="170" x2="600" y2="170" stroke="#1F2329" stroke-width="1"/>
+        <defs><linearGradient id="ctlfill" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#C6F23D" stop-opacity=".18"/><stop offset="1" stop-color="#C6F23D" stop-opacity="0"/></linearGradient></defs>
+        <path d="M0 150 L100 138 L200 120 L300 110 L400 92 L500 80 L600 72 L600 200 L0 200 Z" fill="url(#ctlfill)"/>
+        <path d="M0 150 L100 138 L200 120 L300 110 L400 92 L500 80 L600 72" fill="none" stroke="#C6F23D" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M0 160 L100 120 L200 150 L300 78 L400 132 L500 60 L600 96" fill="none" stroke="#FF5A1F" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="1 0"/>
+        <circle cx="600" cy="72" r="4" fill="#C6F23D"/>
+        <circle cx="600" cy="96" r="4" fill="#FF5A1F"/>
+      </svg>
+      <div style="display:flex; justify-content:space-between; margin-top:10px;">
+        <span style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.1em; color:#8A9098;">W-5</span>
+        <span style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.1em; color:#8A9098;">W-4</span>
+        <span style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.1em; color:#8A9098;">W-3</span>
+        <span style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.1em; color:#8A9098;">W-2</span>
+        <span style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.1em; color:#8A9098;">W-1</span>
+        <span style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.1em; color:#C6F23D;">NOW</span>
+      </div>
+    </div>
+
+    <!-- tab bar -->
+    <div style="background:#15171A; border:1px solid #2A2F36; border-radius:8px; padding:26px;">
+      <div style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.2em; text-transform:uppercase; color:#8A9098; margin-bottom:18px;">BOTTOM NAV</div>
+      <div style="background:#0B0C0E; border:1px solid #2A2F36; border-radius:14px; padding:12px 8px 14px; display:flex; justify-content:space-around; align-items:flex-end;">
+        <div style="display:flex; flex-direction:column; align-items:center; gap:6px;">
+          <svg width="26" height="26" viewBox="0 0 200 200" fill="none"><g transform="rotate(-30 100 100)"><ellipse cx="100" cy="100" rx="64" ry="36" stroke="#C6F23D" stroke-width="12"/><ellipse cx="100" cy="100" rx="12" ry="7" fill="#0B0C0E" stroke="#C6F23D" stroke-width="5"/></g><g transform="translate(150 60)"><path d="M -10 8 L 0 -12 L 3 -2 L 14 -7 L 3 13 L 0 3 Z" fill="#C6F23D"/></g></svg>
+          <span style="font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:.1em; color:#C6F23D;">TODAY</span>
+        </div>
+        <div style="display:flex; flex-direction:column; align-items:center; gap:6px;">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#8A9098" stroke-width="2" stroke-linecap="round"><path d="M6 7v10M18 7v10M4 12h16M2 10v4M22 10v4"/></svg>
+          <span style="font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:.1em; color:#8A9098;">LOG</span>
+        </div>
+        <div style="display:flex; flex-direction:column; align-items:center; gap:6px;">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#8A9098" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 16l5-5 4 3 6-7"/></svg>
+          <span style="font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:.1em; color:#8A9098;">TRENDS</span>
+        </div>
+        <div style="display:flex; flex-direction:column; align-items:center; gap:6px;">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#8A9098" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8v4l3 2"/><circle cx="12" cy="12" r="9"/></svg>
+          <span style="font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:.1em; color:#8A9098;">HISTORY</span>
+        </div>
+        <div style="display:flex; flex-direction:column; align-items:center; gap:6px;">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#8A9098" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>
+          <span style="font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:.1em; color:#8A9098;">PROFILE</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ GROUP LABEL ============ -->
+  <div style="display:flex; align-items:center; gap:18px; margin:clamp(40px,6vw,68px) 0 clamp(28px,4vw,40px);">
+    <div style="font-family:'Archivo Expanded',sans-serif; font-weight:800; font-size:clamp(28px,5vw,52px); text-transform:uppercase; letter-spacing:-.02em; line-height:1; color:#1F2329; -webkit-text-stroke:1px #2A2F36;">SCREENS</div>
+    <div style="flex:1; height:1px; background:#2A2F36;"></div>
+  </div>
+
+  <!-- ---- HOME / TODAY · 3 VARIATIONS ---- -->
+  <section style="margin-bottom:clamp(40px,6vw,64px);">
+    <div style="font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.3em; text-transform:uppercase; color:#C6F23D; font-weight:500; margin-bottom:14px;">▸ HOME / TODAY · HERO HUD</div>
+    <p style="color:#8A9098; font-size:14px; margin-bottom:30px; max-width:60ch;">The hero screen — greeting, the big HSS ring that fills and counts up on load, the readiness status light, and the day’s logged sessions as rows.</p>
+    <div style="display:flex; flex-wrap:wrap; gap:30px;">
+
+      <!-- HOME A · RING -->
+      <div style="display:flex; flex-direction:column; gap:14px;">
+        <div style="display:flex; align-items:center; gap:9px;"><span style="font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:.14em; color:#0B0C0E; background:#C6F23D; padding:3px 8px; border-radius:3px; font-weight:700;">HOME</span><span style="font-family:'Archivo Expanded',sans-serif; font-weight:700; font-size:14px; text-transform:uppercase; letter-spacing:-.01em;">Home / Today</span></div>
+        <x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" dark="{{ true }}" hint-size="402px,874px">
+          <div style="min-height:100%; background:#0B0C0E; background-image:radial-gradient(circle at 50% 9%, rgba(198,242,61,.10), transparent 46%); display:flex; flex-direction:column; color:#F2F1EC; font-family:'Archivo',sans-serif;">
+            <div style="flex:1; padding:60px 20px 16px;">
+              <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:14px;">
+                <div><div style="font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.16em; color:#8A9098; text-transform:uppercase;">TUE · 05:42</div><div style="font-family:'Archivo Expanded',sans-serif; font-weight:900; font-size:29px; text-transform:uppercase; letter-spacing:-.02em; margin-top:4px;">LET'S WORK</div></div>
+                <svg width="38" height="38" viewBox="0 0 200 200" fill="none"><g transform="rotate(-30 100 100)"><ellipse cx="100" cy="100" rx="64" ry="36" stroke="#F2F1EC" stroke-width="11"/><ellipse cx="100" cy="100" rx="12" ry="7" fill="#0B0C0E" stroke="#F2F1EC" stroke-width="5"/></g><g transform="translate(150 60)"><path d="M -10 8 L 0 -12 L 3 -2 L 14 -7 L 3 13 L 0 3 Z" fill="#C6F23D"/></g></svg>
+              </div>
+              <div style="width:188px; height:188px; position:relative; margin:10px auto 0;">
+                <svg viewBox="0 0 184 184" width="188" height="188"><circle cx="92" cy="92" r="80" fill="none" stroke="#1F2329" stroke-width="11"/><circle cx="92" cy="92" r="80" fill="none" stroke="#C6F23D" stroke-width="11" stroke-linecap="round" stroke-dasharray="502" stroke-dashoffset="160" transform="rotate(-90 92 92)" style="animation:ringfill 1.5s cubic-bezier(.2,.8,.2,1) forwards;"/></svg>
+                <div style="position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center;"><div style="font-family:'Archivo Expanded',sans-serif; font-size:60px; font-weight:900; color:#C6F23D; line-height:1; letter-spacing:-.03em;">{{ hss }}</div><div style="font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:.24em; text-transform:uppercase; color:#8A9098; margin-top:6px;">HYBRID STRESS</div></div>
+              </div>
+              <div style="display:flex; align-items:center; justify-content:center; gap:9px; background:rgba(198,242,61,.08); border:1px solid rgba(198,242,61,.4); border-radius:100px; padding:12px; margin:22px 0 24px;"><span style="width:9px; height:9px; border-radius:50%; background:#C6F23D; box-shadow:0 0 10px #C6F23D; animation:pulse 2.4s ease-in-out infinite;"></span><span style="font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:.14em; color:#C6F23D; font-weight:700;">PRIMED</span><span style="font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:.14em; color:#8A9098;">· GREEN LIGHT</span></div>
+              <div style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.2em; text-transform:uppercase; color:#8A9098; margin-bottom:10px;">TODAY · 2 SESSIONS</div>
+              <div style="display:flex; flex-direction:column; gap:9px;">
+                <div style="background:#15171A; border:1px solid #2A2F36; border-radius:8px; padding:14px 15px; display:flex; justify-content:space-between; align-items:center;"><div><div style="font-weight:600; font-size:14px;">Squat session</div><div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#8A9098; margin-top:3px; letter-spacing:.04em;">LOWER · 6 LIFTS · RPE 8</div></div><div style="font-family:'Archivo Expanded',sans-serif; font-size:22px; font-weight:800; color:#C6F23D;">42</div></div>
+                <div style="background:#15171A; border:1px solid #2A2F36; border-radius:8px; padding:14px 15px; display:flex; justify-content:space-between; align-items:center;"><div><div style="font-weight:600; font-size:14px;">Zone 2 run</div><div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#8A9098; margin-top:3px; letter-spacing:.04em;">6.2 KM · 5:30 /KM</div></div><div style="font-family:'Archivo Expanded',sans-serif; font-size:22px; font-weight:800;">26</div></div>
+              </div>
+            </div>
+            <dc-import name="ApsisTabBar" active="today" hint-size="100%,74px"></dc-import>
+          </div>
+        </x-import>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ---- THE FLOW · 5 SCREENS ---- -->
+  <section style="margin-bottom:clamp(40px,6vw,64px);">
+    <div style="font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.3em; text-transform:uppercase; color:#C6F23D; font-weight:500; margin-bottom:14px;">▸ THE FLOW · LOG · TRENDS · DETAIL · PAYWALL</div>
+    <p style="color:#8A9098; font-size:14px; margin-bottom:30px; max-width:60ch;">Every screen is built from the components above — same rings, rows, tiles, steppers and chips.</p>
+    <div style="display:flex; flex-wrap:wrap; gap:30px;">
+
+      <!-- LOG A LIFT -->
+      <div style="display:flex; flex-direction:column; gap:14px;">
+        <div style="display:flex; align-items:center; gap:9px;"><span style="font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:.14em; color:#8A9098; border:1px solid #2A2F36; padding:3px 8px; border-radius:3px;">01</span><span style="font-family:'Archivo Expanded',sans-serif; font-weight:700; font-size:14px; text-transform:uppercase; letter-spacing:-.01em;">Log a lift</span></div>
+        <x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" dark="{{ true }}" hint-size="402px,874px">
+          <div style="min-height:100%; background:#0B0C0E; display:flex; flex-direction:column; color:#F2F1EC; font-family:'Archivo',sans-serif;">
+            <div style="flex:1; padding:60px 20px 16px;">
+              <div style="margin-bottom:16px;"><div style="font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.16em; color:#8A9098; text-transform:uppercase;">NEW · 05:48</div><div style="font-family:'Archivo Expanded',sans-serif; font-weight:900; font-size:29px; text-transform:uppercase; letter-spacing:-.02em; margin-top:4px;">LOG A LIFT</div></div>
+              <div style="display:flex; gap:4px; background:#15171A; border:1px solid #2A2F36; border-radius:8px; padding:4px; margin-bottom:16px;">
+                <div style="flex:1; text-align:center; padding:10px 0; border-radius:6px; background:#C6F23D; color:#0B0C0E; font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.14em; font-weight:700;">LIFT</div>
+                <div style="flex:1; text-align:center; padding:10px 0; color:#8A9098; font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.14em;">RUN</div>
+                <div style="flex:1; text-align:center; padding:10px 0; color:#8A9098; font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.14em;">NOTE</div>
+              </div>
+              <div style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.16em; text-transform:uppercase; color:#8A9098; margin-bottom:8px;">EXERCISE</div>
+              <div style="display:flex; align-items:center; background:#0B0C0E; border:1px solid #C6F23D; border-radius:8px; padding:14px 15px; margin-bottom:18px;"><span style="font-size:16px;">Back squat</span><span style="width:2px; height:18px; background:#C6F23D; margin-left:3px; animation:caret 1s step-end infinite;"></span></div>
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;"><span style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.2em; text-transform:uppercase; color:#8A9098;">SETS</span><span style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.14em; color:#8A9098;">3 LOGGED</span></div>
+              <div style="display:flex; flex-direction:column; gap:8px; margin-bottom:14px;">
+                <div style="background:#15171A; border:1px solid #2A2F36; border-radius:8px; padding:12px 14px; display:flex; align-items:center; gap:6px;"><span style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#8A9098; letter-spacing:.1em; width:40px;">SET 01</span><div style="flex:1; display:flex; gap:6px;"><div style="flex:1; text-align:center;"><span style="font-family:'Archivo Expanded',sans-serif; font-weight:800; font-size:19px;">140</span><span style="font-family:'JetBrains Mono',monospace; font-size:9px; color:#8A9098; margin-left:2px;">KG</span></div><div style="flex:1; text-align:center;"><span style="font-family:'Archivo Expanded',sans-serif; font-weight:800; font-size:19px;">5</span><span style="font-family:'JetBrains Mono',monospace; font-size:9px; color:#8A9098; margin-left:2px;">REP</span></div><div style="flex:1; text-align:center;"><span style="font-family:'Archivo Expanded',sans-serif; font-weight:800; font-size:19px; color:#C6F23D;">8</span><span style="font-family:'JetBrains Mono',monospace; font-size:9px; color:#8A9098; margin-left:2px;">RPE</span></div></div></div>
+                <div style="background:#15171A; border:1px solid #2A2F36; border-radius:8px; padding:12px 14px; display:flex; align-items:center; gap:6px;"><span style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#8A9098; letter-spacing:.1em; width:40px;">SET 02</span><div style="flex:1; display:flex; gap:6px;"><div style="flex:1; text-align:center;"><span style="font-family:'Archivo Expanded',sans-serif; font-weight:800; font-size:19px;">145</span><span style="font-family:'JetBrains Mono',monospace; font-size:9px; color:#8A9098; margin-left:2px;">KG</span></div><div style="flex:1; text-align:center;"><span style="font-family:'Archivo Expanded',sans-serif; font-weight:800; font-size:19px;">5</span><span style="font-family:'JetBrains Mono',monospace; font-size:9px; color:#8A9098; margin-left:2px;">REP</span></div><div style="flex:1; text-align:center;"><span style="font-family:'Archivo Expanded',sans-serif; font-weight:800; font-size:19px; color:#C6F23D;">8</span><span style="font-family:'JetBrains Mono',monospace; font-size:9px; color:#8A9098; margin-left:2px;">RPE</span></div></div></div>
+                <div style="background:#15171A; border:1px solid #2A2F36; border-radius:8px; padding:12px 14px; display:flex; align-items:center; gap:6px;"><span style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#8A9098; letter-spacing:.1em; width:40px;">SET 03</span><div style="flex:1; display:flex; gap:6px;"><div style="flex:1; text-align:center;"><span style="font-family:'Archivo Expanded',sans-serif; font-weight:800; font-size:19px;">145</span><span style="font-family:'JetBrains Mono',monospace; font-size:9px; color:#8A9098; margin-left:2px;">KG</span></div><div style="flex:1; text-align:center;"><span style="font-family:'Archivo Expanded',sans-serif; font-weight:800; font-size:19px;">4</span><span style="font-family:'JetBrains Mono',monospace; font-size:9px; color:#8A9098; margin-left:2px;">REP</span></div><div style="flex:1; text-align:center;"><span style="font-family:'Archivo Expanded',sans-serif; font-weight:800; font-size:19px; color:#FF5A1F;">9</span><span style="font-family:'JetBrains Mono',monospace; font-size:9px; color:#8A9098; margin-left:2px;">RPE</span></div></div></div>
+              </div>
+              <button style="width:100%; background:transparent; border:1px dashed #2A2F36; color:#C6F23D; border-radius:8px; padding:13px; font-family:'Archivo',sans-serif; font-weight:600; font-size:14px; cursor:pointer; margin-bottom:16px;">+ Add set</button>
+              <div style="background:#15171A; border:1px solid #2A2F36; border-radius:8px; padding:16px 18px; display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;"><div><div style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.2em; text-transform:uppercase; color:#8A9098;">SESSION STRESS</div><div style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.1em; color:#8A9098; margin-top:4px;">PROJECTED HSS</div></div><div style="font-family:'Archivo Expanded',sans-serif; font-weight:900; font-size:36px; color:#C6F23D; letter-spacing:-.02em;">+42</div></div>
+              <button style="width:100%; background:#C6F23D; color:#0B0C0E; border:none; border-radius:8px; padding:16px; font-family:'Archivo',sans-serif; font-weight:600; font-size:16px; cursor:pointer;">Save session</button>
+            </div>
+            <dc-import name="ApsisTabBar" active="log" hint-size="100%,74px"></dc-import>
+          </div>
+        </x-import>
+      </div>
+
+      <!-- LOG A RUN -->
+      <div style="display:flex; flex-direction:column; gap:14px;">
+        <div style="display:flex; align-items:center; gap:9px;"><span style="font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:.14em; color:#8A9098; border:1px solid #2A2F36; padding:3px 8px; border-radius:3px;">02</span><span style="font-family:'Archivo Expanded',sans-serif; font-weight:700; font-size:14px; text-transform:uppercase; letter-spacing:-.01em;">Log a run</span></div>
+        <x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" dark="{{ true }}" hint-size="402px,874px">
+          <div style="min-height:100%; background:#0B0C0E; display:flex; flex-direction:column; color:#F2F1EC; font-family:'Archivo',sans-serif;">
+            <div style="flex:1; padding:60px 20px 16px;">
+              <div style="margin-bottom:16px;"><div style="font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.16em; color:#8A9098; text-transform:uppercase;">NEW · 18:12</div><div style="font-family:'Archivo Expanded',sans-serif; font-weight:900; font-size:29px; text-transform:uppercase; letter-spacing:-.02em; margin-top:4px;">LOG A RUN</div></div>
+              <div style="display:flex; gap:4px; background:#15171A; border:1px solid #2A2F36; border-radius:8px; padding:4px; margin-bottom:16px;">
+                <div style="flex:1; text-align:center; padding:10px 0; color:#8A9098; font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.14em;">LIFT</div>
+                <div style="flex:1; text-align:center; padding:10px 0; border-radius:6px; background:#C6F23D; color:#0B0C0E; font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.14em; font-weight:700;">RUN</div>
+                <div style="flex:1; text-align:center; padding:10px 0; color:#8A9098; font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.14em;">NOTE</div>
+              </div>
+              <div style="display:flex; gap:10px; margin-bottom:11px;">
+                <div style="flex:1; background:#15171A; border:1px solid #2A2F36; border-radius:8px; padding:16px;"><div style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.16em; text-transform:uppercase; color:#8A9098;">DISTANCE</div><div style="font-family:'Archivo Expanded',sans-serif; font-weight:800; font-size:30px; margin-top:8px; letter-spacing:-.02em;">6.2<span style="font-size:14px; color:#8A9098; margin-left:3px;">km</span></div></div>
+                <div style="flex:1; background:#15171A; border:1px solid #2A2F36; border-radius:8px; padding:16px;"><div style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.16em; text-transform:uppercase; color:#8A9098;">DURATION</div><div style="font-family:'Archivo Expanded',sans-serif; font-weight:800; font-size:30px; margin-top:8px; letter-spacing:-.02em;">34:10</div></div>
+              </div>
+              <div style="background:#15171A; border:1px solid #2A2F36; border-radius:8px; padding:16px; display:flex; justify-content:space-between; align-items:center; margin-bottom:11px;"><div style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.16em; text-transform:uppercase; color:#8A9098;">AVG PACE</div><div style="font-family:'Archivo Expanded',sans-serif; font-weight:800; font-size:26px; color:#C6F23D; letter-spacing:-.02em;">5:30<span style="font-family:'JetBrains Mono',monospace; font-size:12px; color:#8A9098; margin-left:4px;">/KM</span></div></div>
+              <div style="background:#15171A; border:1px solid #2A2F36; border-radius:8px; padding:16px; display:flex; justify-content:space-between; align-items:center; margin-bottom:18px;"><div style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.16em; text-transform:uppercase; color:#8A9098;">AVG HR</div><div style="font-family:'Archivo Expanded',sans-serif; font-weight:800; font-size:26px; letter-spacing:-.02em;">142<span style="font-family:'JetBrains Mono',monospace; font-size:12px; color:#8A9098; margin-left:4px;">BPM</span></div></div>
+              <div style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.2em; text-transform:uppercase; color:#8A9098; margin-bottom:10px;">RUN TYPE</div>
+              <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:18px;">
+                <div style="padding:9px 16px; border-radius:6px; font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.1em; background:rgba(198,242,61,.12); color:#C6F23D; border:1px solid #C6F23D;">Z2</div>
+                <div style="padding:9px 16px; border-radius:6px; font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.1em; background:#15171A; color:#8A9098; border:1px solid #2A2F36;">TEMPO</div>
+                <div style="padding:9px 16px; border-radius:6px; font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.1em; background:#15171A; color:#8A9098; border:1px solid #2A2F36;">INTERVALS</div>
+                <div style="padding:9px 16px; border-radius:6px; font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.1em; background:#15171A; color:#8A9098; border:1px solid #2A2F36;">LONG</div>
+              </div>
+              <div style="background:#15171A; border:1px solid #2A2F36; border-radius:8px; padding:16px 18px; display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;"><div><div style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.2em; text-transform:uppercase; color:#8A9098;">SESSION STRESS</div><div style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.1em; color:#8A9098; margin-top:4px;">PROJECTED HSS</div></div><div style="font-family:'Archivo Expanded',sans-serif; font-weight:900; font-size:36px; color:#C6F23D; letter-spacing:-.02em;">+26</div></div>
+              <button style="width:100%; background:#C6F23D; color:#0B0C0E; border:none; border-radius:8px; padding:16px; font-family:'Archivo',sans-serif; font-weight:600; font-size:16px; cursor:pointer;">Save run</button>
+            </div>
+            <dc-import name="ApsisTabBar" active="log" hint-size="100%,74px"></dc-import>
+          </div>
+        </x-import>
+      </div>
+
+      <!-- TRENDS -->
+      <div style="display:flex; flex-direction:column; gap:14px;">
+        <div style="display:flex; align-items:center; gap:9px;"><span style="font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:.14em; color:#8A9098; border:1px solid #2A2F36; padding:3px 8px; border-radius:3px;">03</span><span style="font-family:'Archivo Expanded',sans-serif; font-weight:700; font-size:14px; text-transform:uppercase; letter-spacing:-.01em;">Trends / load</span></div>
+        <x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" dark="{{ true }}" hint-size="402px,874px">
+          <div style="min-height:100%; background:#0B0C0E; display:flex; flex-direction:column; color:#F2F1EC; font-family:'Archivo',sans-serif;">
+            <div style="flex:1; padding:60px 20px 16px;">
+              <div style="margin-bottom:18px;"><div style="font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.16em; color:#8A9098; text-transform:uppercase;">LOAD</div><div style="font-family:'Archivo Expanded',sans-serif; font-weight:900; font-size:29px; text-transform:uppercase; letter-spacing:-.02em; margin-top:4px;">TRENDS</div></div>
+              <div style="background:#15171A; border:1px solid #2A2F36; border-radius:10px; padding:20px 18px; margin-bottom:12px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;"><span style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.2em; text-transform:uppercase; color:#8A9098;">ACUTE vs CHRONIC</span><span style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.1em; color:#C6F23D;">6 WK</span></div>
+                <svg viewBox="0 0 320 150" width="100%" height="auto" style="display:block;">
+                  <line x1="0" y1="20" x2="320" y2="20" stroke="#1F2329" stroke-width="1"/><line x1="0" y1="60" x2="320" y2="60" stroke="#1F2329" stroke-width="1"/><line x1="0" y1="100" x2="320" y2="100" stroke="#1F2329" stroke-width="1"/><line x1="0" y1="140" x2="320" y2="140" stroke="#1F2329" stroke-width="1"/>
+                  <defs><linearGradient id="ctlfill2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#C6F23D" stop-opacity=".18"/><stop offset="1" stop-color="#C6F23D" stop-opacity="0"/></linearGradient></defs>
+                  <path d="M0 112 L53 104 L107 92 L160 84 L213 70 L267 60 L320 54 L320 150 L0 150 Z" fill="url(#ctlfill2)"/>
+                  <path d="M0 112 L53 104 L107 92 L160 84 L213 70 L267 60 L320 54" fill="none" stroke="#C6F23D" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M0 120 L53 90 L107 116 L160 58 L213 100 L267 44 L320 74" fill="none" stroke="#FF5A1F" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  <circle cx="320" cy="54" r="4" fill="#C6F23D"/><circle cx="320" cy="74" r="4" fill="#FF5A1F"/>
+                </svg>
+                <div style="display:flex; gap:16px; margin-top:12px;"><div style="display:flex; align-items:center; gap:7px; font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:.1em; color:#8A9098; text-transform:uppercase;"><span style="width:14px; height:2px; background:#C6F23D;"></span>CTL · CHRONIC</div><div style="display:flex; align-items:center; gap:7px; font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:.1em; color:#8A9098; text-transform:uppercase;"><span style="width:14px; height:2px; background:#FF5A1F;"></span>ATL · ACUTE</div></div>
+              </div>
+              <div style="background:#15171A; border:1px solid #2A2F36; border-radius:10px; padding:18px; margin-bottom:12px;">
+                <div style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.2em; text-transform:uppercase; color:#8A9098; margin-bottom:12px;">READINESS · 14 DAYS</div>
+                <div style="display:flex; gap:4px;">
+                  <div style="flex:1; height:34px; border-radius:3px; background:#C6F23D;"></div><div style="flex:1; height:34px; border-radius:3px; background:#C6F23D;"></div><div style="flex:1; height:34px; border-radius:3px; background:#CDBE4A;"></div><div style="flex:1; height:34px; border-radius:3px; background:#C6F23D;"></div><div style="flex:1; height:34px; border-radius:3px; background:#C6F23D;"></div><div style="flex:1; height:34px; border-radius:3px; background:#FF5A1F;"></div><div style="flex:1; height:34px; border-radius:3px; background:#CDBE4A;"></div><div style="flex:1; height:34px; border-radius:3px; background:#C6F23D;"></div><div style="flex:1; height:34px; border-radius:3px; background:#C6F23D;"></div><div style="flex:1; height:34px; border-radius:3px; background:#C6F23D;"></div><div style="flex:1; height:34px; border-radius:3px; background:#CDBE4A;"></div><div style="flex:1; height:34px; border-radius:3px; background:#C6F23D;"></div><div style="flex:1; height:34px; border-radius:3px; background:#C6F23D;"></div><div style="flex:1; height:34px; border-radius:3px; background:#C6F23D;"></div>
+                </div>
+              </div>
+              <div style="display:flex; gap:11px;">
+                <div style="flex:1; background:#15171A; border:1px solid #2A2F36; border-radius:10px; padding:16px;"><div style="font-family:'Archivo Expanded',sans-serif; font-weight:800; font-size:28px; letter-spacing:-.02em; color:#C6F23D; line-height:1;">41</div><div style="font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:.16em; text-transform:uppercase; color:#8A9098; margin-top:7px;">ATL</div></div>
+                <div style="flex:1; background:#15171A; border:1px solid #2A2F36; border-radius:10px; padding:16px;"><div style="font-family:'Archivo Expanded',sans-serif; font-weight:800; font-size:28px; letter-spacing:-.02em; line-height:1;">55</div><div style="font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:.16em; text-transform:uppercase; color:#8A9098; margin-top:7px;">CTL</div></div>
+                <div style="flex:1; background:#15171A; border:1px solid #2A2F36; border-radius:10px; padding:16px;"><div style="font-family:'Archivo Expanded',sans-serif; font-weight:800; font-size:28px; letter-spacing:-.02em; line-height:1;">.74</div><div style="font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:.16em; text-transform:uppercase; color:#8A9098; margin-top:7px;">RATIO</div></div>
+              </div>
+            </div>
+            <dc-import name="ApsisTabBar" active="trends" hint-size="100%,74px"></dc-import>
+          </div>
+        </x-import>
+      </div>
+
+      <!-- SESSION DETAIL -->
+      <div style="display:flex; flex-direction:column; gap:14px;">
+        <div style="display:flex; align-items:center; gap:9px;"><span style="font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:.14em; color:#8A9098; border:1px solid #2A2F36; padding:3px 8px; border-radius:3px;">04</span><span style="font-family:'Archivo Expanded',sans-serif; font-weight:700; font-size:14px; text-transform:uppercase; letter-spacing:-.01em;">Session detail</span></div>
+        <x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" dark="{{ true }}" hint-size="402px,874px">
+          <div style="min-height:100%; background:#0B0C0E; background-image:radial-gradient(circle at 50% 6%, rgba(198,242,61,.07), transparent 42%); display:flex; flex-direction:column; color:#F2F1EC; font-family:'Archivo',sans-serif; padding:60px 20px 40px;">
+            <div style="display:flex; align-items:center; gap:12px; margin-bottom:18px;">
+              <div style="width:38px; height:38px; border-radius:8px; background:#15171A; border:1px solid #2A2F36; display:flex; align-items:center; justify-content:center; cursor:pointer; flex-shrink:0;"><svg width="9" height="16" viewBox="0 0 9 16" fill="none"><path d="M7 1L1 8l6 7" stroke="#8A9098" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+              <div style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.14em; color:#8A9098; text-transform:uppercase;">TUE · 05:42 · 52 MIN</div>
+            </div>
+            <div style="font-family:'Archivo Expanded',sans-serif; font-weight:900; font-size:29px; text-transform:uppercase; letter-spacing:-.02em; line-height:.95;">SQUAT SESSION</div>
+            <div style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.14em; text-transform:uppercase; color:#8A9098; margin-top:7px;">LOWER · 6 LIFTS · RPE 8</div>
+            <div style="display:flex; justify-content:center; margin:22px 0 24px;">
+              <div style="width:130px; height:130px; position:relative;"><svg viewBox="0 0 184 184" width="130" height="130"><circle cx="92" cy="92" r="80" fill="none" stroke="#1F2329" stroke-width="12"/><circle cx="92" cy="92" r="80" fill="none" stroke="#C6F23D" stroke-width="12" stroke-linecap="round" stroke-dasharray="502" stroke-dashoffset="291" transform="rotate(-90 92 92)"/></svg><div style="position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center;"><div style="font-family:'Archivo Expanded',sans-serif; font-size:44px; font-weight:900; color:#C6F23D; line-height:1; letter-spacing:-.03em;">42</div><div style="font-family:'JetBrains Mono',monospace; font-size:8px; letter-spacing:.2em; text-transform:uppercase; color:#8A9098; margin-top:5px;">SESSION HSS</div></div></div>
+            </div>
+            <div style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.2em; text-transform:uppercase; color:#8A9098; margin-bottom:10px;">BREAKDOWN</div>
+            <div style="display:flex; flex-direction:column; gap:8px; margin-bottom:14px;">
+              <div style="background:#15171A; border:1px solid #2A2F36; border-radius:8px; padding:13px 15px; display:flex; justify-content:space-between; align-items:center;"><div><div style="font-weight:600; font-size:14px;">Back squat</div><div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#8A9098; margin-top:3px; letter-spacing:.04em;">3 SETS · 145 KG · RPE 8</div></div><div style="font-family:'Archivo Expanded',sans-serif; font-weight:800; font-size:18px;">19</div></div>
+              <div style="background:#15171A; border:1px solid #2A2F36; border-radius:8px; padding:13px 15px; display:flex; justify-content:space-between; align-items:center;"><div><div style="font-weight:600; font-size:14px;">Romanian deadlift</div><div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#8A9098; margin-top:3px; letter-spacing:.04em;">3 SETS · 100 KG · RPE 7</div></div><div style="font-family:'Archivo Expanded',sans-serif; font-weight:800; font-size:18px;">14</div></div>
+              <div style="background:#15171A; border:1px solid #2A2F36; border-radius:8px; padding:13px 15px; display:flex; justify-content:space-between; align-items:center;"><div><div style="font-weight:600; font-size:14px;">Leg press</div><div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#8A9098; margin-top:3px; letter-spacing:.04em;">2 SETS · 220 KG · RPE 8</div></div><div style="font-family:'Archivo Expanded',sans-serif; font-weight:800; font-size:18px;">9</div></div>
+            </div>
+            <div style="background:#15171A; border:1px solid #2A2F36; border-radius:8px; padding:18px;">
+              <div style="display:flex; justify-content:space-between; align-items:baseline;"><span style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.2em; text-transform:uppercase; color:#8A9098;">CONTRIBUTION TO DAY</span><span style="font-family:'Archivo Expanded',sans-serif; font-weight:800; font-size:16px; color:#C6F23D;">42 / 68</span></div>
+              <div style="height:8px; background:#1F2329; border-radius:100px; margin-top:12px; overflow:hidden;"><div style="height:100%; width:62%; background:#C6F23D; border-radius:100px;"></div></div>
+            </div>
+          </div>
+        </x-import>
+      </div>
+
+      <!-- PAYWALL -->
+      <div style="display:flex; flex-direction:column; gap:14px;">
+        <div style="display:flex; align-items:center; gap:9px;"><span style="font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:.14em; color:#8A9098; border:1px solid #2A2F36; padding:3px 8px; border-radius:3px;">05</span><span style="font-family:'Archivo Expanded',sans-serif; font-weight:700; font-size:14px; text-transform:uppercase; letter-spacing:-.01em;">Onboarding paywall</span></div>
+        <x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" dark="{{ true }}" hint-size="402px,874px">
+          <div style="min-height:100%; background:#0B0C0E; background-image:radial-gradient(circle at 50% 16%, rgba(198,242,61,.13), transparent 50%); display:flex; flex-direction:column; color:#F2F1EC; font-family:'Archivo',sans-serif; padding:66px 24px 40px;">
+            <div style="display:flex; justify-content:center; margin-bottom:26px;">
+              <svg width="68" height="68" viewBox="0 0 200 200" fill="none"><g transform="rotate(-30 100 100)"><ellipse cx="100" cy="100" rx="66" ry="37" stroke="#F2F1EC" stroke-width="7"/><ellipse cx="100" cy="100" rx="52" ry="28" stroke="#F2F1EC" stroke-width="2.4" opacity=".55"/><ellipse cx="100" cy="100" rx="11" ry="6.5" fill="#0B0C0E" stroke="#F2F1EC" stroke-width="2.6"/></g><g style="animation:orbit 6s linear infinite; transform-box:fill-box; transform-origin:100px 100px;"><g transform="translate(152 60)"><circle cx="0" cy="-11" r="5" fill="#C6F23D"/><path d="M 0 -7 L -1 3 M -1 3 L -7 9 M -1 3 L 6 7 M 0 -3 L -6 -1 M 0 -3 L 7 -5 M -7 9 L -9 16 M 6 7 L 11 13" stroke="#C6F23D" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/></g></g></svg>
+            </div>
+            <div style="font-family:'Archivo Expanded',sans-serif; font-weight:900; font-size:42px; line-height:.9; text-transform:uppercase; letter-spacing:-.02em; text-align:center;">REFUSE TO<br><span style="color:#C6F23D;">CHOOSE.</span></div>
+            <div style="font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.18em; text-transform:uppercase; color:#8A9098; text-align:center; margin-top:16px;">ONE SCORE · LIFTING + RUNNING</div>
+            <div style="display:flex; flex-direction:column; gap:16px; margin:34px 0;">
+              <div style="display:flex; gap:13px; align-items:flex-start;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" style="flex-shrink:0; margin-top:1px;"><path d="M20 6L9 17l-5-5" stroke="#C6F23D" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg><div><div style="font-weight:600; font-size:15px;">Unified Hybrid Stress Score</div><div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#8A9098; margin-top:3px; letter-spacing:.06em;">ONE NUMBER FOR LIFT + RUN</div></div></div>
+              <div style="display:flex; gap:13px; align-items:flex-start;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" style="flex-shrink:0; margin-top:1px;"><path d="M20 6L9 17l-5-5" stroke="#C6F23D" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg><div><div style="font-weight:600; font-size:15px;">Daily readiness verdict</div><div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#8A9098; margin-top:3px; letter-spacing:.06em;">PUSH OR RECOVER — DECIDED</div></div></div>
+              <div style="display:flex; gap:13px; align-items:flex-start;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" style="flex-shrink:0; margin-top:1px;"><path d="M20 6L9 17l-5-5" stroke="#C6F23D" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg><div><div style="font-weight:600; font-size:15px;">Acute vs chronic load</div><div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#8A9098; margin-top:3px; letter-spacing:.06em;">TRAIN HARD WITHOUT BREAKING</div></div></div>
+            </div>
+            <div style="flex:1;"></div>
+            <div style="background:#15171A; border:1px solid #C6F23D; border-radius:10px; padding:20px; margin-bottom:14px; position:relative;">
+              <div style="position:absolute; top:-10px; left:20px; background:#C6F23D; color:#0B0C0E; font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:.14em; font-weight:700; padding:3px 9px; border-radius:3px;">7 DAYS FREE</div>
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-top:6px;"><div><div style="font-family:'Archivo Expanded',sans-serif; font-weight:800; font-size:22px; letter-spacing:-.01em;">ANNUAL</div><div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#8A9098; margin-top:3px; letter-spacing:.1em;">BILLED YEARLY</div></div><div style="text-align:right;"><div style="font-family:'Archivo Expanded',sans-serif; font-weight:800; font-size:22px; color:#C6F23D; letter-spacing:-.01em;">$59.99</div><div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#8A9098; margin-top:3px; letter-spacing:.1em;">≈ $5 / MO</div></div></div>
+            </div>
+            <button style="width:100%; background:#C6F23D; color:#0B0C0E; border:none; border-radius:8px; padding:16px; font-family:'Archivo',sans-serif; font-weight:600; font-size:16px; cursor:pointer;">Start free trial</button>
+            <div style="font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:.14em; color:#8A9098; text-align:center; margin-top:16px;">RESTORE · TERMS · PRIVACY</div>
+          </div>
+        </x-import>
+      </div>
+
+    </div>
+  </section>
+
+  <div style="font-family:'JetBrains Mono',monospace; text-align:center; color:#2A2F36; font-size:11px; letter-spacing:.16em; padding:20px 0 8px;">APSIS // DESIGN SYSTEM // FOUNDATIONS · COMPONENTS · SCREENS // V1</div>
+
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { hss: 0, reps: 8, seg: 0, chips: { Z2: true } };
+
+  componentDidMount() {
+    const start = performance.now();
+    const dur = 1500;
+    const target = 68;
+    const tick = (now) => {
+      const t = Math.min(1, (now - start) / dur);
+      const e = 1 - Math.pow(1 - t, 3);
+      this.setState({ hss: target * e });
+      if (t < 1) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  }
+
+  bump(d) {
+    this.setState((s) => ({ reps: Math.max(0, Math.min(20, s.reps + d)) }));
+  }
+  setSeg(i) { this.setState({ seg: i }); }
+  toggleChip(k) {
+    this.setState((s) => {
+      const c = { ...s.chips };
+      if (c[k]) delete c[k]; else c[k] = true;
+      return { chips: c };
+    });
+  }
+
+  renderVals() {
+    const segBase = "flex:1; text-align:center; padding:11px 0; border-radius:6px; font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.14em; cursor:pointer; border:none; transition:all .15s;";
+    const segOn = segBase + " background:#C6F23D; color:#0B0C0E; font-weight:700;";
+    const segOff = segBase + " background:transparent; color:#8A9098; font-weight:500;";
+    const segStyle = (i) => (i === this.state.seg ? segOn : segOff);
+
+    const chipBase = "padding:9px 16px; border-radius:6px; font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.1em; cursor:pointer; transition:all .15s;";
+    const chipOn = chipBase + " background:rgba(198,242,61,.12); color:#C6F23D; border:1px solid #C6F23D;";
+    const chipOff = chipBase + " background:#0B0C0E; color:#8A9098; border:1px solid #2A2F36;";
+    const chipStyle = (k) => (this.state.chips[k] ? chipOn : chipOff);
+
+    return {
+      hss: Math.round(this.state.hss),
+      reps: this.state.reps,
+      inc: () => this.bump(1),
+      dec: () => this.bump(-1),
+      seg0: () => this.setSeg(0),
+      seg1: () => this.setSeg(1),
+      seg2: () => this.setSeg(2),
+      seg0Style: segStyle(0),
+      seg1Style: segStyle(1),
+      seg2Style: segStyle(2),
+      chipZ2: () => this.toggleChip('Z2'),
+      chipTempo: () => this.toggleChip('TEMPO'),
+      chipInt: () => this.toggleChip('INTERVALS'),
+      chipLong: () => this.toggleChip('LONG'),
+      chipZ2Style: chipStyle('Z2'),
+      chipTempoStyle: chipStyle('TEMPO'),
+      chipIntStyle: chipStyle('INTERVALS'),
+      chipLongStyle: chipStyle('LONG'),
+    };
+  }
+}
+</script>
+</body>
+</html>

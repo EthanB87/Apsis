@@ -3,7 +3,7 @@ status: testing
 phase: 03-onboarding-lifting-logger
 source: [03-VERIFICATION.md]
 started: 2026-07-09T22:20:00Z
-updated: 2026-07-09T22:20:00Z
+updated: 2026-07-09T23:05:00Z
 ---
 
 ## Current Test
@@ -44,7 +44,9 @@ result: [pending]
 
 ### 7. Full onboarding walkthrough
 expected: sex → bodyweight → units → threshold-hr → threshold-pace → review, both direct-entry and estimate paths; progress dots advance; soft-validation warns but never blocks; Save inserts profile and transitions to tab shell without relaunch
-result: [pending]
+result: issue
+reported: "first im trying to onboard and when i type in the number for weight its only in kg and there is no way to submit the number the keyboard stays up and covers the continue button and there is no way to get it to go away. Also the UI is blue which is not the design"
+severity: blocker
 
 ### 8. Settings edits apply forward-only + units toggle (ONB-02 / ONB-04)
 expected: Edit bodyweight in Settings, log a new set — only future effective-load uses the new value, past committed sets unchanged; units toggle flips display without changing stored metric
@@ -54,9 +56,39 @@ result: [pending]
 
 total: 8
 passed: 0
-issues: 0
-pending: 8
+issues: 1
+pending: 7
 skipped: 0
 blocked: 0
 
 ## Gaps
+
+- truth: "Bodyweight input can be submitted — keyboard dismisses, Continue button reachable"
+  status: failed
+  reason: "User reported: there is no way to submit the number the keyboard stays up and covers the continue button and there is no way to get it to go away"
+  severity: blocker
+  test: 7
+  root_cause: ""
+  artifacts: []
+  missing: []
+  debug_session: ""
+
+- truth: "Bodyweight step respects unit selection (kg or lbs entry)"
+  status: failed
+  reason: "User reported: when i type in the number for weight its only in kg"
+  severity: major
+  test: 7
+  root_cause: ""
+  artifacts: []
+  missing: []
+  debug_session: ""
+
+- truth: "UI colors match the UI-SPEC design"
+  status: failed
+  reason: "User reported: the UI is blue which is not the design"
+  severity: cosmetic
+  test: 7
+  root_cause: ""
+  artifacts: []
+  missing: []
+  debug_session: ""
