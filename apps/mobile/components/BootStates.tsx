@@ -167,24 +167,24 @@ const resumeStyles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: Spacing.lg,
+    paddingHorizontal: Spacing.xl,
   },
   question: {
     ...Typography.heading,
     color: Colors.dark.text,
     textAlign: 'center',
-    marginBottom: Spacing.xxl,
+    marginBottom: Spacing.xxxl,
   },
   buttonColumn: {
     width: '100%',
-    gap: Spacing.md,
+    gap: Spacing.lg,
   },
   button: {
     minHeight: HIT_TARGET_MIN,
     borderRadius: Radius.lg,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: Spacing.lg,
+    paddingHorizontal: Spacing.xl,
   },
   buttonPressed: {
     opacity: 0.85,

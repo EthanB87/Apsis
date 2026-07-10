@@ -92,7 +92,7 @@ const styles = StyleSheet.create({
     alignItems: 'baseline',
     justifyContent: 'center',
     gap: Spacing.sm,
-    marginTop: Spacing.xl,
+    marginTop: Spacing.xxl,
   },
   input: {
     ...Typography.display,
@@ -110,6 +110,6 @@ const styles = StyleSheet.create({
     ...Typography.label,
     color: Colors.dark.warning,
     textAlign: 'center',
-    marginTop: Spacing.md,
+    marginTop: Spacing.lg,
   },
 });

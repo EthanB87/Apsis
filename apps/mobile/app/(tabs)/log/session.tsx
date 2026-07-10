@@ -124,13 +124,13 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.dark.background,
   },
   scrollContent: {
-    paddingTop: Spacing.md,
-    paddingBottom: Spacing.xxxl,
+    paddingTop: Spacing.lg,
+    paddingBottom: Spacing.xxxxl,
   },
   addExerciseButton: {
     minHeight: HIT_TARGET_MIN,
-    marginHorizontal: Spacing.md,
-    marginTop: Spacing.xl,
+    marginHorizontal: Spacing.lg,
+    marginTop: Spacing.xxl,
     borderRadius: Radius.md,
     borderWidth: 1,
     borderColor: Colors.dark.accent,

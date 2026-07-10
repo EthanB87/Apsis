@@ -178,7 +178,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     width: '100%',
     gap: Spacing.sm,
-    marginTop: Spacing.xl,
+    marginTop: Spacing.xxl,
   },
   modeButton: {
     flex: 1,
@@ -209,7 +209,7 @@ const styles = StyleSheet.create({
     alignItems: 'baseline',
     justifyContent: 'center',
     gap: Spacing.sm,
-    marginTop: Spacing.xl,
+    marginTop: Spacing.xxl,
   },
   input: {
     ...Typography.display,
@@ -227,12 +227,12 @@ const styles = StyleSheet.create({
     ...Typography.label,
     color: Colors.dark.mutedText,
     textAlign: 'center',
-    marginTop: Spacing.md,
+    marginTop: Spacing.lg,
   },
   warning: {
     ...Typography.label,
     color: Colors.dark.warning,
     textAlign: 'center',
-    marginTop: Spacing.md,
+    marginTop: Spacing.lg,
   },
 });

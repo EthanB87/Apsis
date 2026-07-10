@@ -108,7 +108,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: Spacing.lg,
+    paddingHorizontal: Spacing.xl,
   },
   title: {
     ...Typography.heading,
@@ -117,13 +117,13 @@ const styles = StyleSheet.create({
   body: {
     ...Typography.label,
     textAlign: 'center',
-    marginBottom: Spacing.xl,
+    marginBottom: Spacing.xxl,
   },
   error: {
     ...Typography.label,
     color: Colors.dark.destructive,
     textAlign: 'center',
-    marginBottom: Spacing.md,
+    marginBottom: Spacing.lg,
   },
   button: {
     minHeight: 48,
@@ -132,7 +132,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.dark.accent,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: Spacing.lg,
+    paddingHorizontal: Spacing.xl,
   },
   buttonDisabled: {
     backgroundColor: Colors.dark.steel,

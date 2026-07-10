@@ -504,8 +504,8 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: Spacing.lg,
-    gap: Spacing.md,
+    paddingHorizontal: Spacing.xl,
+    gap: Spacing.lg,
   },
   loadErrorText: {
     ...Typography.body,
@@ -519,36 +519,36 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.dark.accent,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: Spacing.lg,
+    paddingHorizontal: Spacing.xl,
   },
   retryLabel: {
     ...Typography.body,
     color: Colors.dark.onAccent,
   },
   scrollContent: {
-    paddingBottom: Spacing.xxl,
+    paddingBottom: Spacing.xxxl,
   },
   screenHeader: {
-    paddingHorizontal: Spacing.md,
-    paddingTop: Spacing.lg,
+    paddingHorizontal: Spacing.lg,
+    paddingTop: Spacing.xl,
   },
   sectionLabel: {
     ...Typography.label,
     color: Colors.dark.mutedText,
-    paddingHorizontal: Spacing.md,
-    paddingTop: Spacing.xl,
+    paddingHorizontal: Spacing.lg,
+    paddingTop: Spacing.xxl,
     paddingBottom: Spacing.xs,
     textTransform: 'uppercase',
   },
   choiceRow: {
     flexDirection: 'row',
-    paddingHorizontal: Spacing.md,
+    paddingHorizontal: Spacing.lg,
     gap: Spacing.sm,
   },
   restRow: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    paddingHorizontal: Spacing.md,
+    paddingHorizontal: Spacing.lg,
     gap: Spacing.sm,
   },
   choiceButton: {
@@ -566,7 +566,7 @@ const styles = StyleSheet.create({
   choiceButtonCompact: {
     flex: 0,
     minWidth: HIT_TARGET_MIN + 24,
-    paddingHorizontal: Spacing.md,
+    paddingHorizontal: Spacing.lg,
   },
   choiceButtonSelected: {
     borderColor: Colors.dark.accent,
@@ -588,7 +588,7 @@ const styles = StyleSheet.create({
   },
   footer: {
     alignItems: 'center',
-    paddingTop: Spacing.xxl,
+    paddingTop: Spacing.xxxl,
     gap: Spacing.xs,
   },
   footerText: {
@@ -600,19 +600,19 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,0.6)',
     alignItems: 'center',
     justifyContent: 'center',
-    padding: Spacing.lg,
+    padding: Spacing.xl,
   },
   modalCard: {
     width: '100%',
     borderRadius: Radius.lg,
     backgroundColor: Colors.dark.surface,
-    padding: Spacing.lg,
+    padding: Spacing.xl,
   },
   modalTitle: {
     ...Typography.heading,
     color: Colors.dark.text,
     textAlign: 'center',
-    marginBottom: Spacing.md,
+    marginBottom: Spacing.lg,
   },
   modalInputRow: {
     flexDirection: 'row',
@@ -677,10 +677,10 @@ const styles = StyleSheet.create({
   modalActions: {
     flexDirection: 'row',
     gap: Spacing.sm,
-    marginTop: Spacing.lg,
+    marginTop: Spacing.xl,
   },
   modalCancelOnly: {
-    marginTop: Spacing.lg,
+    marginTop: Spacing.xl,
   },
   modalActionButton: {
     flex: 1,

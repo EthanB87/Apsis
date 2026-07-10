@@ -111,9 +111,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     backgroundColor: Colors.dark.surface,
-    paddingHorizontal: Spacing.md,
+    paddingHorizontal: Spacing.lg,
     paddingVertical: Spacing.sm,
-    gap: Spacing.md,
+    gap: Spacing.lg,
   },
   countdown: {
     ...Mono,
@@ -127,7 +127,7 @@ const styles = StyleSheet.create({
   ghostButton: {
     minHeight: HIT_TARGET_MIN,
     minWidth: HIT_TARGET_MIN,
-    paddingHorizontal: Spacing.md,
+    paddingHorizontal: Spacing.lg,
     borderRadius: Radius.md,
     borderWidth: 1,
     borderColor: Colors.dark.accent,

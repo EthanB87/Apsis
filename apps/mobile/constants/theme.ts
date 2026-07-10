@@ -11,15 +11,21 @@
  */
 import type { TextStyle } from 'react-native';
 
-/** Spacing scale — all values are multiples of 4 (UI-SPEC Spacing Scale). */
+/**
+ * Spacing scale — all values are multiples of 4 (DESIGN-SYSTEM.md §3 base-4 scale).
+ * Contract-name equivalence (TS identifiers can't start with a digit, so key names
+ * stay camel-safe): xs=4, sm=8, md=12, lg=16, xl=24, xxl=32 (contract "2xl"),
+ * xxxl=48 (contract "3xl"), xxxxl=64 (contract "4xl").
+ */
 export const Spacing = {
   xs: 4,
   sm: 8,
-  md: 16,
-  lg: 24,
-  xl: 32,
-  xxl: 48,
-  xxxl: 64,
+  md: 12,
+  lg: 16,
+  xl: 24,
+  xxl: 32,
+  xxxl: 48,
+  xxxxl: 64,
 } as const;
 
 /**
@@ -29,19 +35,19 @@ export const Spacing = {
  */
 export const HIT_TARGET_MIN = 44;
 
-/** Hairline divider width between set rows / card edges (UI-SPEC exception, not a spacing token). */
-export const HAIRLINE_WIDTH = 2;
+/** Hairline divider width between set rows / card edges (DESIGN-SYSTEM.md §3: hairline borders are 1px). */
+export const HAIRLINE_WIDTH = 1;
 
 /**
- * Corner radius tokens — sharp, not pillowy (design brief: ~6-10px on cards/buttons).
+ * Corner radius tokens — sharp, not pillowy (DESIGN-SYSTEM.md §3: btn 6, card 8, sheet 10, pill 9999).
  * Mapping (Design System v1): sm(6)=buttons/inputs/chips/segments, md(8)=cards/rows,
- * lg(10)=sheets, pill(100)=readiness pills/progress bars.
+ * lg(10)=sheets, pill(9999)=readiness pills/progress bars.
  */
 export const Radius = {
   sm: 6,
   md: 8,
   lg: 10,
-  pill: 100,
+  pill: 9999,
 } as const;
 
 /** Disabled control treatment (Design System v1): steel bg + ash label + this opacity. */

@@ -88,13 +88,13 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    paddingHorizontal: Spacing.md,
-    paddingTop: Spacing.xxxl,
+    paddingHorizontal: Spacing.lg,
+    paddingTop: Spacing.xxxxl,
   },
   question: {
     ...Typography.heading,
     color: Colors.dark.text,
-    marginBottom: Spacing.xxl,
+    marginBottom: Spacing.xxxl,
   },
   content: {
     flex: 1,
@@ -105,7 +105,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     gap: Spacing.sm,
-    paddingBottom: Spacing.lg,
+    paddingBottom: Spacing.xl,
     minHeight: HIT_TARGET_MIN / 4,
   },
   dot: {
@@ -121,8 +121,8 @@ const styles = StyleSheet.create({
   },
   button: {
     minHeight: 48,
-    marginHorizontal: Spacing.md,
-    marginBottom: Spacing.md,
+    marginHorizontal: Spacing.lg,
+    marginBottom: Spacing.lg,
     borderRadius: Radius.md,
     backgroundColor: Colors.dark.accent,
     alignItems: 'center',

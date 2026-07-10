@@ -300,7 +300,7 @@ const styles = StyleSheet.create({
   menuRow: {
     flexDirection: 'row',
     justifyContent: 'flex-end',
-    paddingHorizontal: Spacing.md,
+    paddingHorizontal: Spacing.lg,
   },
   menuButton: {
     minWidth: HIT_TARGET_MIN,
@@ -323,7 +323,7 @@ const styles = StyleSheet.create({
   menuDropdown: {
     position: 'absolute',
     top: HIT_TARGET_MIN + Spacing.sm,
-    right: Spacing.md,
+    right: Spacing.lg,
     zIndex: 2,
     backgroundColor: Colors.dark.surface,
     borderRadius: Radius.lg,
@@ -333,7 +333,7 @@ const styles = StyleSheet.create({
   menuItem: {
     minHeight: HIT_TARGET_MIN,
     justifyContent: 'center',
-    paddingHorizontal: Spacing.md,
+    paddingHorizontal: Spacing.lg,
   },
   menuItemLabel: {
     ...Typography.body,
@@ -341,19 +341,19 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     alignItems: 'center',
-    paddingHorizontal: Spacing.lg,
-    paddingBottom: Spacing.xxl,
+    paddingHorizontal: Spacing.xl,
+    paddingBottom: Spacing.xxxl,
   },
   label: {
     ...Typography.label,
     color: Colors.dark.mutedText,
-    marginTop: Spacing.md,
+    marginTop: Spacing.lg,
     marginBottom: Spacing.sm,
   },
   hss: {
     ...Typography.display,
     color: Colors.dark.accent,
-    marginBottom: Spacing.xxl,
+    marginBottom: Spacing.xxxl,
   },
   exerciseRow: {
     width: '100%',
@@ -371,7 +371,7 @@ const styles = StyleSheet.create({
   },
   warningsSection: {
     width: '100%',
-    marginTop: Spacing.xl,
+    marginTop: Spacing.xxl,
   },
   warningsHeading: {
     ...Typography.heading,
@@ -385,8 +385,8 @@ const styles = StyleSheet.create({
   },
   button: {
     minHeight: 48,
-    marginHorizontal: Spacing.lg,
-    marginBottom: Spacing.lg,
+    marginHorizontal: Spacing.xl,
+    marginBottom: Spacing.xl,
     borderRadius: Radius.md,
     backgroundColor: Colors.dark.accent,
     alignItems: 'center',
@@ -411,18 +411,18 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.6)',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: Spacing.lg,
+    paddingHorizontal: Spacing.xl,
   },
   modalCard: {
     width: '100%',
     backgroundColor: Colors.dark.surface,
     borderRadius: Radius.lg,
-    padding: Spacing.lg,
+    padding: Spacing.xl,
   },
   modalMessage: {
     ...Typography.body,
     color: Colors.dark.text,
-    marginBottom: Spacing.lg,
+    marginBottom: Spacing.xl,
   },
   modalButtonColumn: {
     gap: Spacing.sm,

@@ -98,13 +98,13 @@ const styles = StyleSheet.create({
   card: {
     backgroundColor: Colors.dark.surface,
     borderRadius: Radius.lg,
-    marginHorizontal: Spacing.md,
-    marginBottom: Spacing.md,
+    marginHorizontal: Spacing.lg,
+    marginBottom: Spacing.lg,
     overflow: 'hidden',
   },
   header: {
-    paddingHorizontal: Spacing.lg,
-    paddingTop: Spacing.lg,
+    paddingHorizontal: Spacing.xl,
+    paddingTop: Spacing.xl,
     paddingBottom: Spacing.sm,
   },
   name: {
@@ -128,9 +128,9 @@ const styles = StyleSheet.create({
     borderStyle: 'dashed',
     borderColor: Colors.dark.accent,
     borderRadius: Radius.md,
-    marginHorizontal: Spacing.md,
+    marginHorizontal: Spacing.lg,
     marginTop: Spacing.sm,
-    marginBottom: Spacing.md,
+    marginBottom: Spacing.lg,
   },
   addSetLabel: {
     ...Typography.body,

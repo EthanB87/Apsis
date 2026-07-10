@@ -179,7 +179,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.dark.border,
   },
   searchRow: {
-    paddingHorizontal: Spacing.md,
+    paddingHorizontal: Spacing.lg,
     paddingBottom: Spacing.sm,
   },
   searchInput: {
@@ -187,24 +187,24 @@ const styles = StyleSheet.create({
     color: Colors.dark.text,
     backgroundColor: Colors.dark.background,
     borderRadius: Radius.md,
-    paddingHorizontal: Spacing.md,
+    paddingHorizontal: Spacing.lg,
     minHeight: HIT_TARGET_MIN,
   },
   listContent: {
-    paddingBottom: Spacing.xl,
+    paddingBottom: Spacing.xxl,
   },
   sectionHeader: {
     ...Typography.label,
     color: Colors.dark.mutedText,
     backgroundColor: Colors.dark.surface,
-    paddingHorizontal: Spacing.md,
-    paddingTop: Spacing.md,
+    paddingHorizontal: Spacing.lg,
+    paddingTop: Spacing.lg,
     paddingBottom: Spacing.xs,
   },
   row: {
     minHeight: HIT_TARGET_MIN,
     justifyContent: 'center',
-    paddingHorizontal: Spacing.md,
+    paddingHorizontal: Spacing.lg,
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: Colors.dark.border,
   },
@@ -216,8 +216,8 @@ const styles = StyleSheet.create({
     color: Colors.dark.text,
   },
   emptyState: {
-    paddingHorizontal: Spacing.md,
-    paddingTop: Spacing.xl,
+    paddingHorizontal: Spacing.lg,
+    paddingTop: Spacing.xxl,
     alignItems: 'center',
   },
   emptyHeading: {

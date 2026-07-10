@@ -56,8 +56,8 @@ export default function SexStep(): React.JSX.Element {
 const styles = StyleSheet.create({
   options: {
     width: '100%',
-    gap: Spacing.md,
-    marginTop: Spacing.xl,
+    gap: Spacing.lg,
+    marginTop: Spacing.xxl,
   },
   option: {
     minHeight: HIT_TARGET_MIN + 12,

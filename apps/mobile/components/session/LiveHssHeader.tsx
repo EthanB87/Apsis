@@ -101,7 +101,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     backgroundColor: Colors.dark.surface,
-    paddingHorizontal: Spacing.md,
+    paddingHorizontal: Spacing.lg,
     paddingVertical: Spacing.sm,
   },
   elapsed: {
@@ -128,7 +128,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderRadius: Radius.md,
     backgroundColor: Colors.dark.accent,
-    paddingHorizontal: Spacing.md,
+    paddingHorizontal: Spacing.lg,
   },
   finishLabel: {
     ...Typography.body,

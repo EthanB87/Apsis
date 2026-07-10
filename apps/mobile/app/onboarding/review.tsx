@@ -87,8 +87,8 @@ const styles = StyleSheet.create({
   question: {
     ...Typography.heading,
     color: Colors.dark.text,
-    paddingHorizontal: Spacing.md,
-    paddingTop: Spacing.xxxl,
-    marginBottom: Spacing.lg,
+    paddingHorizontal: Spacing.lg,
+    paddingTop: Spacing.xxxxl,
+    marginBottom: Spacing.xl,
   },
 });

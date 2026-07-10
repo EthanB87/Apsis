@@ -137,15 +137,15 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.dark.border,
   },
   content: {
-    paddingHorizontal: Spacing.lg,
-    paddingTop: Spacing.md,
-    paddingBottom: Spacing.xxl,
+    paddingHorizontal: Spacing.xl,
+    paddingTop: Spacing.lg,
+    paddingBottom: Spacing.xxxl,
   },
   emptyLabel: {
     ...Typography.label,
     color: Colors.dark.mutedText,
     textAlign: 'center',
-    marginTop: Spacing.lg,
+    marginTop: Spacing.xl,
   },
   row: {
     flexDirection: 'row',
@@ -169,8 +169,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginTop: Spacing.md,
-    paddingTop: Spacing.md,
+    marginTop: Spacing.lg,
+    paddingTop: Spacing.lg,
   },
   totalLabel: {
     ...Typography.heading,
