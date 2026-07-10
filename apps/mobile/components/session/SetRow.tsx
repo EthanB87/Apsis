@@ -2,26 +2,27 @@
  * apps/mobile/components/session/SetRow.tsx
  *
  * A single set's entry row (D-06/D-08/D-09): mono tabular-nums load/reps values flanked by
- * compact 24x24 -/+ steppers (44pt hit target via hitSlop, DESIGN-SYSTEM.md §5/§7), a
- * tap-to-open numeric keypad on the value itself (a plain TextInput — tapping it opens the
- * OS keyboard, no custom modal), an inline never-modal RPE 6-10 stepper pre-selected to the
- * exercise's last-used RPE, a leading neutral "W" warmup chip, and a trailing 32x32 checkmark
- * (44pt hit target via hitSlop) that commits/uncommits the set via `lib/commitSet.ts` (D-13
+ * 38x38 -/+ steppers (44pt hit target with hitSlop), a tap-to-open numeric keypad on the
+ * value itself (a plain TextInput — tapping it opens the OS keyboard, no custom modal), an
+ * inline never-modal RPE 6-10 stepper pre-selected to the exercise's last-used RPE, a
+ * leading neutral "W" warmup chip, and a trailing 44x44 checkmark — the row's primary
+ * action — that commits/uncommits the set via `lib/commitSet.ts` (D-13
  * persist-then-recompute / D-09 uncheck-undoes).
  *
- * Layout (UAT Test 9 gap closure, Plan 03-10 — the plan's DELIBERATE two-line fallback,
- * activated by on-device checkpoint feedback: the single-line variant's ~326pt intrinsic
- * width overflowed the card on the tester's device, pushing the checkmark off-screen and
- * colliding with the swipe-delete panel):
- *   line 1 (values): W chip · load stepper group · reps-or-duration stepper group, at FIXED
- *     column widths (SET_ROW_* exports) that ExerciseCard's mono column-header row mirrors
- *     exactly so the unit labels sit over their columns;
- *   line 2 (actions): inline mono "RPE" caption + RPE stepper group · commit checkmark,
- *     right-aligned;
+ * Layout (UAT Test 9 gap closure, Plan 03-10 — the plan's DELIBERATE two-line layout,
+ * with USER-DIRECTED sizing from the on-device checkpoint: the tester asked for larger
+ * steppers and full-row distribution, explicitly granting discretion to exceed
+ * DESIGN-SYSTEM.md §5's compact stepper visuals; color tokens and the one-volt rule stay):
+ *   line 1 (values): W chip · load stepper group · reps-or-duration stepper group — the two
+ *     groups split the remaining width equally (flex), steppers at the group edges, value
+ *     centered between them. ExerciseCard's mono column-header row mirrors this exact flex
+ *     geometry so the unit labels sit over their columns;
+ *   line 2 (actions): mono "RPE" caption + RPE stepper group spanning the left region,
+ *     44x44 commit checkmark at the right edge;
  *   then effective-load / commit-error / warning annotations as explicit rows beneath.
- * These are explicit rows — never the wrap-on-overflow property. Small visual control sizes
- * plus hitSlop supply the 44pt touch target (DESIGN-SYSTEM.md §7). The container paints the
- * card surface color so the swipe-to-delete action panel behind it can never show through.
+ * These are explicit rows — never the wrap-on-overflow property. Every control still meets
+ * the 44pt hit target (visual size + hitSlop). The container paints the card surface color
+ * so the swipe-to-delete action panel behind it can never show through.
  * (See .planning/debug/session-logger-ui-spacing.md for the original overflow defect.)
  */
 
@@ -38,12 +39,11 @@ import { commitSet, uncommitSet } from '../../lib/commitSet';
 import { useSessionStore, type SetDraft } from '../../stores/sessionStore';
 
 /**
- * Fixed column geometry shared with ExerciseCard's column-header row — the header labels
- * (KG/LB · REPS/SEC) can only sit over their columns if both components use the same widths.
+ * Column geometry shared with ExerciseCard's column-header row — the header labels
+ * (KG/LB · REPS/SEC) sit over their columns because both components use the same
+ * leading chip width, gap, and equal-flex column split.
  */
-export const SET_ROW_CHIP_WIDTH = 24;
-export const SET_ROW_LOAD_GROUP_WIDTH = 112;
-export const SET_ROW_VALUE_GROUP_WIDTH = 96;
+export const SET_ROW_CHIP_WIDTH = 28;
 
 const RPE_MIN = 6;
 const RPE_MAX = 10;
@@ -214,7 +214,7 @@ export function SetRow({
         <Pressable
           onPress={() => patch({ isWarmup: !draft.isWarmup })}
           disabled={locked}
-          hitSlop={10}
+          hitSlop={8}
           accessibilityRole="button"
           accessibilityLabel="Warmup"
           accessibilityState={{ selected: draft.isWarmup, disabled: locked }}
@@ -229,7 +229,7 @@ export function SetRow({
               patch({ loadFieldKg: stepWeight(draft.loadFieldKg, units, -1), isBlank: false });
             }}
             disabled={locked}
-            hitSlop={10}
+            hitSlop={4}
             accessibilityRole="button"
             accessibilityLabel="Decrease load"
             style={styles.stepper}>
@@ -258,7 +258,7 @@ export function SetRow({
               patch({ loadFieldKg: stepWeight(draft.loadFieldKg, units, 1), isBlank: false });
             }}
             disabled={locked}
-            hitSlop={10}
+            hitSlop={4}
             accessibilityRole="button"
             accessibilityLabel="Increase load"
             style={styles.stepper}>
@@ -273,7 +273,7 @@ export function SetRow({
                 patch({ durationS: Math.max(0, draft.durationS - DURATION_STEP_S), isBlank: false })
               }
               disabled={locked}
-              hitSlop={10}
+              hitSlop={4}
               accessibilityRole="button"
               accessibilityLabel="Decrease duration"
               style={styles.stepper}>
@@ -296,7 +296,7 @@ export function SetRow({
             <Pressable
               onPress={() => patch({ durationS: draft.durationS + DURATION_STEP_S, isBlank: false })}
               disabled={locked}
-              hitSlop={10}
+              hitSlop={4}
               accessibilityRole="button"
               accessibilityLabel="Increase duration"
               style={styles.stepper}>
@@ -308,7 +308,7 @@ export function SetRow({
             <Pressable
               onPress={() => patch({ reps: Math.max(0, draft.reps - 1), isBlank: false })}
               disabled={locked}
-              hitSlop={10}
+              hitSlop={4}
               accessibilityRole="button"
               accessibilityLabel="Decrease reps"
               style={styles.stepper}>
@@ -331,7 +331,7 @@ export function SetRow({
             <Pressable
               onPress={() => patch({ reps: draft.reps + 1, isBlank: false })}
               disabled={locked}
-              hitSlop={10}
+              hitSlop={4}
               accessibilityRole="button"
               accessibilityLabel="Increase reps"
               style={styles.stepper}>
@@ -343,7 +343,7 @@ export function SetRow({
 
       <View style={styles.actionsRow}>
         <View
-          style={styles.fieldGroup}
+          style={[styles.fieldGroup, styles.rpeGroup]}
           accessibilityRole="adjustable"
           accessibilityLabel="RPE"
           accessibilityValue={{ min: RPE_MIN, max: RPE_MAX, now: draft.rpe }}>
@@ -351,7 +351,7 @@ export function SetRow({
           <Pressable
             onPress={() => patch({ rpe: stepRpe(draft.rpe, -1) })}
             disabled={locked || draft.rpe <= RPE_MIN}
-            hitSlop={10}
+            hitSlop={4}
             accessibilityRole="button"
             accessibilityLabel="Decrease RPE"
             style={styles.stepper}>
@@ -368,7 +368,7 @@ export function SetRow({
           <Pressable
             onPress={() => patch({ rpe: stepRpe(draft.rpe, 1) })}
             disabled={locked || draft.rpe >= RPE_MAX}
-            hitSlop={10}
+            hitSlop={4}
             accessibilityRole="button"
             accessibilityLabel="Increase RPE"
             style={styles.stepper}>
@@ -379,7 +379,7 @@ export function SetRow({
         <Pressable
           onPress={handleToggleCommit}
           disabled={committing}
-          hitSlop={6}
+          hitSlop={4}
           accessibilityRole="button"
           accessibilityLabel={draft.committed ? 'Uncommit set' : 'Commit set'}
           accessibilityState={{ checked: draft.committed, disabled: committing }}
@@ -418,7 +418,7 @@ const styles = StyleSheet.create({
   container: {
     paddingHorizontal: Spacing.md,
     paddingVertical: Spacing.sm,
-    gap: Spacing.xs,
+    gap: Spacing.sm,
     // Opaque row surface (matches the card): without this the swipe-to-delete action
     // panel rendered behind the Swipeable content shows through the row.
     backgroundColor: Colors.dark.surface,
@@ -426,24 +426,23 @@ const styles = StyleSheet.create({
   valuesRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: Spacing.xs,
+    gap: Spacing.sm,
   },
   actionsRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'flex-end',
-    gap: Spacing.lg,
+    gap: Spacing.sm,
   },
   warmupChip: {
     width: SET_ROW_CHIP_WIDTH,
-    height: 24,
+    height: SET_ROW_CHIP_WIDTH,
     borderRadius: 6,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: Colors.dark.border,
   },
-  // Visual size stays small; hitSlop above brings the touchable area to the 44x44
-  // minimum (DESIGN-SYSTEM.md §7 hard rule).
+  // Chip visual is 28x28; hitSlop 8 brings the touchable area to the 44x44 minimum
+  // (DESIGN-SYSTEM.md §7 hard rule).
   warmupChipActive: {
     backgroundColor: Colors.dark.warning,
   },
@@ -456,19 +455,25 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: Spacing.xs,
   },
-  // Fixed group widths (mirrored by ExerciseCard's column-header labels); the value
-  // TextInput flexes to fill the space between the two 24px steppers.
+  // The load and reps/duration groups split line 1's remaining width equally (user-directed
+  // full-row distribution); steppers sit at the group edges, the value TextInput flexes to
+  // fill the space between them. ExerciseCard's column-header labels mirror this flex split.
   loadGroup: {
-    width: SET_ROW_LOAD_GROUP_WIDTH,
+    flex: 1,
   },
   valueGroup: {
-    width: SET_ROW_VALUE_GROUP_WIDTH,
+    flex: 1,
   },
-  // Compact stepper visual (DESIGN-SYSTEM.md §5 "Steppers for LOAD KG / REPS / RPE"): the
-  // 44px hit target comes from hitSlop={10} on the Pressable, not this box's own size.
+  // The RPE group spans line 2's left region; the checkmark holds the right edge.
+  rpeGroup: {
+    flex: 1,
+  },
+  // 38x38 stepper visuals (user-directed sizing from the on-device checkpoint — thumb-first
+  // gym use; supersedes DESIGN-SYSTEM.md §5's compact visuals with the user's explicit
+  // permission). hitSlop={4} tops the touchable area up past the 44pt minimum.
   stepper: {
-    width: 24,
-    height: 24,
+    width: 38,
+    height: 38,
     borderRadius: Radius.sm,
     borderWidth: 1,
     borderColor: Colors.dark.border,
@@ -478,13 +483,13 @@ const styles = StyleSheet.create({
   },
   stepperLabel: {
     fontFamily: 'Archivo_500Medium',
-    fontSize: 14,
-    lineHeight: 16,
+    fontSize: 18,
+    lineHeight: 22,
     color: Colors.dark.text,
   },
   valueInput: {
     fontFamily: 'JetBrainsMono_500Medium',
-    fontSize: 16,
+    fontSize: 17,
     color: Colors.dark.text,
     textAlign: 'center',
     paddingVertical: 0,
@@ -497,19 +502,19 @@ const styles = StyleSheet.create({
   },
   rpeValue: {
     fontFamily: 'JetBrainsMono_500Medium',
-    fontSize: 16,
-    minWidth: 22,
+    fontSize: 17,
+    flex: 1,
     textAlign: 'center',
     color: Colors.dark.text,
   },
   rpeValueHeat: {
     color: Colors.dark.destructive,
   },
-  // Compact commit checkmark: visual 32x32, hitSlop={6} brings the touchable area to 44x44.
+  // 44x44 commit checkmark — the row's primary action gets full hit-target presence.
   checkmark: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
+    width: 44,
+    height: 44,
+    borderRadius: 22,
     borderWidth: 2,
     borderColor: Colors.dark.border,
     alignItems: 'center',
@@ -521,7 +526,7 @@ const styles = StyleSheet.create({
   },
   checkmarkGlyph: {
     color: Colors.dark.onAccent,
-    fontSize: 14,
+    fontSize: 18,
     fontWeight: '700',
   },
   effectiveLoadLabel: {

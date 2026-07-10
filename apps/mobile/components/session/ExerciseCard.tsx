@@ -23,12 +23,7 @@ import Colors from '../../constants/Colors';
 import { HAIRLINE_WIDTH, HIT_TARGET_MIN, Mono, Radius, Spacing, Typography } from '../../constants/theme';
 import { uncommitSet } from '../../lib/commitSet';
 import { useSessionStore, type ExerciseCardState, type SetDraft } from '../../stores/sessionStore';
-import {
-  SET_ROW_CHIP_WIDTH,
-  SET_ROW_LOAD_GROUP_WIDTH,
-  SET_ROW_VALUE_GROUP_WIDTH,
-  SetRow,
-} from './SetRow';
+import { SET_ROW_CHIP_WIDTH, SetRow } from './SetRow';
 
 function DeleteAction({ onPress }: { onPress: () => void }): React.JSX.Element {
   return (
@@ -140,14 +135,15 @@ const styles = StyleSheet.create({
     color: Colors.dark.mutedText,
     marginTop: Spacing.xs,
   },
-  // Mono uppercase column labels above the set rows. Widths/gap/padding EXACTLY mirror
-  // SetRow's values-row geometry (SET_ROW_* exports) so each label sits over its column —
-  // the RPE column moved to SetRow's second (actions) line and carries its own inline
-  // mono caption there, so it has no header label here.
+  // Mono uppercase column labels above the set rows. Structure EXACTLY mirrors SetRow's
+  // values-row geometry (same padding, same gap, same leading chip width, same equal-flex
+  // column split) so each label centers over its column. The RPE column lives on SetRow's
+  // second (actions) line and carries its own inline mono caption there, so it has no
+  // header label here.
   columnHeaderRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: Spacing.xs,
+    gap: Spacing.sm,
     paddingHorizontal: Spacing.md,
     paddingBottom: Spacing.xs,
   },
@@ -160,10 +156,10 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   columnHeaderLoad: {
-    width: SET_ROW_LOAD_GROUP_WIDTH,
+    flex: 1,
   },
   columnHeaderReps: {
-    width: SET_ROW_VALUE_GROUP_WIDTH,
+    flex: 1,
   },
   setDivider: {
     borderTopWidth: HAIRLINE_WIDTH,
