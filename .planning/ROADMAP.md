@@ -133,9 +133,10 @@ Plans:
 - [x] 03-08-PLAN.md — Finish summary + confirmed soft-delete discard + HSS breakdown sheet + warning badges (LIFT-07)
 - [x] 03-09-PLAN.md — Settings tab: profile editor (ONB-02) + units toggle (ONB-04) + default rest timer
 
-**Gap closure** *(UAT Test 9 — set-logging UI wraps instead of rendering a single row)*
+**Gap closure + design-contract conformance** *(UAT Test 9 set-row wrap + DESIGN-SYSTEM.md adoption; 03-11 executes FIRST — gap-closure Wave 1 — because 03-10 builds on the new spacing tokens)*
 
-- [ ] 03-10-PLAN.md — Rebuild SetRow as a single-line row (compact fields + hitSlop touch targets), align ExerciseCard padding, full-width ghost add-set row, drop redundant font weights (LIFT-02/LIFT-03)
+- [ ] 03-11-PLAN.md — DESIGN-SYSTEM.md conformance (Wave 1): contract spacing scale (md=12) + largest-first token remap sweep, typography deltas (heading 22 / title 30, mono tracking, fontWeight cleanup), tab-bar + text-field-focus + segment conformance on existing Phase-3 surfaces only (ONB-01/ONB-02/LIFT-02)
+- [ ] 03-10-PLAN.md — Rebuild SetRow as a single-line row per DESIGN-SYSTEM.md (Wave 2): compact −/+ steppers kept for load/reps + RPE stepper replacing the 44px pills, hitSlop 44pt hit targets, mono column-header row, ExerciseCard alignment + full-width ghost add-set [on-device checkpoint] (LIFT-02/LIFT-03)
 
 **UI hint**: yes
 
