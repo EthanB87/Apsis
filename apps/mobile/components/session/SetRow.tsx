@@ -383,8 +383,11 @@ export function SetRow({
           accessibilityRole="button"
           accessibilityLabel={draft.committed ? 'Uncommit set' : 'Commit set'}
           accessibilityState={{ checked: draft.committed, disabled: committing }}
-          style={[styles.checkmark, draft.committed && styles.checkmarkChecked]}>
-          {draft.committed ? <Text style={styles.checkmarkGlyph}>✓</Text> : null}
+          style={styles.commitControl}>
+          <Text style={styles.commitCaption}>LOG</Text>
+          <View style={[styles.checkmark, draft.committed && styles.checkmarkChecked]}>
+            {draft.committed ? <Text style={styles.checkmarkGlyph}>✓</Text> : null}
+          </View>
         </Pressable>
       </View>
 
@@ -509,6 +512,18 @@ const styles = StyleSheet.create({
   },
   rpeValueHeat: {
     color: Colors.dark.destructive,
+  },
+  // Labeled per-set commit control (user checkpoint request): a static mono "LOG" caption
+  // sits inside the same Pressable as the 44x44 checkmark circle, so the caption is part of
+  // the touch target and there is no dead gap between them.
+  commitControl: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.xs,
+  },
+  commitCaption: {
+    ...Mono,
+    color: Colors.dark.mutedText,
   },
   // 44x44 commit checkmark — the row's primary action gets full hit-target presence.
   checkmark: {
