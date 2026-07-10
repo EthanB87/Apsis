@@ -102,3 +102,4 @@ export interface LoadTrendPoint {
 }
 
 export * from './units';
+export * from './duration';
