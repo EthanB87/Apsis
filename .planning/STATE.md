@@ -6,14 +6,14 @@ current_phase: 04
 current_phase_name: run-logger-home-dashboard
 status: executing
 stopped_at: Completed 04-01-PLAN.md
-last_updated: "2026-07-10T20:38:24.238Z"
+last_updated: "2026-07-10T20:49:14.653Z"
 last_activity: 2026-07-10
 last_activity_desc: Phase 04 execution started
 progress:
   total_phases: 6
   completed_phases: 2
   total_plans: 25
-  completed_plans: 18
+  completed_plans: 19
   percent: 33
 ---
 
@@ -30,7 +30,7 @@ training-load number (HSS) and a readiness band — fully offline.
 ## Current Position
 
 Phase: 04 (run-logger-home-dashboard) — EXECUTING
-Plan: 2 of 8
+Plan: 3 of 8
 Status: Ready to execute
 Last activity: 2026-07-10 — Phase 04 execution started
 traceability filled; 100% of the 39 pending v1.0 requirements mapped to Phases 02–06.
@@ -78,6 +78,7 @@ Progress: [█████░░░░░] 50% (3/6 phases complete)
 | Phase 03 P11 | 20min | 3 tasks | 22 files |
 | Phase 03 P10 | ~5h | 3 tasks | 13 files |
 | Phase 04 P01 | 15min | 3 tasks | 12 files |
+| Phase 04 P02 | 4min | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -140,6 +141,8 @@ Recent decisions affecting current work:
 - [Phase ?]: [Phase 04 P01]: workout.note placed on workout table (not endurance_segment) per RESEARCH A4, so CONDITIONING sessions with no segment still carry a note
 - [Phase ?]: [Phase 04 P01]: @apsis/engine and @apsis/shared added as explicit packages/db dependencies (not left to transitive pnpm hoisting) since loadDaily.ts imports both directly
 - [Phase ?]: [Phase 04 P01]: computeLoadDailyUpsertRows never reads the wall clock -- today is always caller-supplied, matching the engine's own purity convention
+- [Phase 04]: [Phase 04 P02]: react-native-svg kept at expo-resolved 15.15.4 (not RESEARCH's 15.15.5) per Phase 03 SDK-56-line convention; Skia exact-pinned 2.6.9 after human legitimacy approval
+- [Phase 04]: [Phase 04 P02]: iOS native link deferred to EAS cloud build (Windows host cannot prebuild ios/) -- Metro export gate is the local linking verification, per Phase 1 precedent c723e11
 
 ### Pending Todos
 
@@ -177,6 +180,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-07-10T20:38:24.228Z
+Last session: 2026-07-10T20:48:43.043Z
 Stopped at: Completed 04-01-PLAN.md
 Resume file: None

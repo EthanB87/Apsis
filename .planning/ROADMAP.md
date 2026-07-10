@@ -155,13 +155,13 @@ Plans:
   4. Home screen shows a 28-day ATL/CTL/TSB trend chart, and shows a "Building trend…" calibrating state instead of a readiness band until 14+ days of data exist.
   5. User can view workout history grouped by day showing day HSS + session count, with the double-session penalty explicitly labeled when sessionCount > 1 for that day.
 
-**Plans**: 1/8 plans executed
+**Plans**: 2/8 plans executed
 
 Plans:
 **Wave 1**
 
 - [x] 04-01-PLAN.md — Data/pure foundation: workout.note schema + [BLOCKING] migration, load_daily recompute-row builder + history query builders, parseDurationDigits (RUN-02/RUN-05/HOME-03..06)
-- [ ] 04-02-PLAN.md — Native deps install (victory-native/Skia/svg/datetimepicker) + Skia SUS legitimacy checkpoint + prebuild (RUN-04/HOME-03)
+- [x] 04-02-PLAN.md — Native deps install (victory-native/Skia/svg/datetimepicker) + Skia SUS legitimacy checkpoint + prebuild (RUN-04/HOME-03)
 
 **Wave 2** *(blocked on Wave 1)*
 
@@ -221,6 +221,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 | 01. Foundation | 4/4 | Complete | 2026-07-02 |
 | 02. HSS Engine | 6/6 | Complete    | 2026-07-08 |
 | 03. Onboarding & Lifting Logger | 11/11 | Complete    | 2026-07-10 |
-| 04. Run Logger & Home Dashboard | 1/8 | In Progress|  |
+| 04. Run Logger & Home Dashboard | 2/8 | In Progress|  |
 | 05. HealthKit Integration | 0/TBD | Not started | - |
 | 06. Polish & App Store Submission | 0/TBD | Not started | - |
