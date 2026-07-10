@@ -22,17 +22,9 @@ import Colors from '@/constants/Colors';
 import { DISABLED_OPACITY, HIT_TARGET_MIN, Radius, Spacing, Typography } from '@/constants/theme';
 import { useSessionStore } from '@/stores/sessionStore';
 import { fetchProfileSummary } from '@/lib/commitSet';
+import { todayLocalDate } from '@/lib/localDate';
 
 const START_ERROR_MESSAGE = "Couldn't start a new workout. Check available storage and try again.";
-
-/** Local (not UTC) YYYY-MM-DD — workout.localDate must reflect the athlete's own calendar day. */
-function todayLocalDate(): string {
-  const now = new Date();
-  const year = now.getFullYear();
-  const month = String(now.getMonth() + 1).padStart(2, '0');
-  const day = String(now.getDate()).padStart(2, '0');
-  return `${year}-${month}-${day}`;
-}
 
 export default function LogHomeScreen(): React.JSX.Element {
   const router = useRouter();
