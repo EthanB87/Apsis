@@ -50,7 +50,10 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Home',
+          title: 'TODAY',
+          // D-07: TODAY renders its own in-screen timestamp/greeting header — showing the
+          // native tab header too would double it (matches the Settings/Log pattern).
+          headerShown: false,
           tabBarIcon: ({ color }) => (
             <Image
               source={require('../../assets/images/apsis-plate-mark.png')}
@@ -67,6 +70,22 @@ export default function TabLayout() {
           tabBarIcon: ({ color }) => (
             <SymbolView
               name={{ ios: 'plus.circle.fill', android: 'add_circle', web: 'add_circle' }}
+              tintColor={color}
+              size={28}
+            />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="history"
+        options={{
+          title: 'History',
+          // Custom ScreenHeader (Kicker "LEDGER" + Title "History") replaces the native
+          // header, same doubled-header avoidance as TODAY/Settings.
+          headerShown: false,
+          tabBarIcon: ({ color }) => (
+            <SymbolView
+              name={{ ios: 'calendar', android: 'calendar_month', web: 'calendar_month' }}
               tintColor={color}
               size={28}
             />
