@@ -91,6 +91,16 @@ export default function LogHomeScreen(): React.JSX.Element {
         ]}>
         <Text style={[styles.buttonLabel, starting && styles.buttonLabelDisabled]}>Start workout</Text>
       </Pressable>
+
+      {/* Secondary entry point for running/erg/conditioning sessions (UI-SPEC section 11) —
+       * ghost/ash, Start Workout stays the sole volt primary. */}
+      <Pressable
+        onPress={() => router.push('/(tabs)/log/run')}
+        accessibilityRole="button"
+        accessibilityLabel="Log Run"
+        style={({ pressed }) => [styles.secondaryButton, pressed && styles.secondaryButtonPressed]}>
+        <Text style={styles.secondaryButtonLabel}>Log Run</Text>
+      </Pressable>
     </View>
   );
 }
@@ -139,5 +149,24 @@ const styles = StyleSheet.create({
   },
   buttonLabelDisabled: {
     color: Colors.dark.mutedText,
+  },
+  secondaryButton: {
+    minHeight: 48,
+    minWidth: 200,
+    marginTop: Spacing.sm,
+    borderRadius: Radius.md,
+    borderWidth: 1,
+    borderColor: Colors.dark.border,
+    backgroundColor: 'transparent',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: Spacing.xl,
+  },
+  secondaryButtonPressed: {
+    backgroundColor: Colors.dark.steel,
+  },
+  secondaryButtonLabel: {
+    ...Typography.body,
+    color: Colors.dark.text,
   },
 });
