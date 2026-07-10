@@ -4,17 +4,17 @@ milestone: v1.0
 milestone_name: milestone
 current_phase: 04
 current_phase_name: run-logger-home-dashboard
-status: executing
-stopped_at: Completed 04-01-PLAN.md
-last_updated: "2026-07-10T21:51:19.206Z"
+status: verifying
+stopped_at: Completed 04-08-PLAN.md
+last_updated: "2026-07-10T22:06:37.995Z"
 last_activity: 2026-07-10
 last_activity_desc: Phase 04 execution started
 progress:
   total_phases: 6
-  completed_phases: 2
+  completed_phases: 3
   total_plans: 25
-  completed_plans: 24
-  percent: 33
+  completed_plans: 25
+  percent: 50
 ---
 
 # Project State — Apsis
@@ -31,7 +31,7 @@ training-load number (HSS) and a readiness band — fully offline.
 
 Phase: 04 (run-logger-home-dashboard) — EXECUTING
 Plan: 8 of 8
-Status: Ready to execute
+Status: Phase complete — ready for verification
 Last activity: 2026-07-10 — Phase 04 execution started
 traceability filled; 100% of the 39 pending v1.0 requirements mapped to Phases 02–06.
 
@@ -84,6 +84,7 @@ Progress: [█████░░░░░] 50% (3/6 phases complete)
 | Phase 04 P05 | 22min | 3 tasks | 8 files |
 | Phase 04 P06 | 15min | 2 tasks | 1 files |
 | Phase 04 P07 | 35min | 3 tasks | 3 files |
+| Phase 04 P08 | ~25min | 3 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -159,6 +160,10 @@ Recent decisions affecting current work:
 - [Phase 04]: TrendChartPoint carries an explicit index signature so it satisfies victory-native's CartesianChart generic constraint
 - [Phase 04]: TrendChart's calibrating caption is data-availability-driven (historyDays<14) while HssRing's calibrating variant is readiness-band-driven -- computed separately in index.tsx
 - [Phase 04]: D-05 animate-once-per-day ring gate implemented as a module-scoped date/value pair in index.tsx rather than a new Zustand store or AsyncStorage dependency
+- [Phase 04]: History DAY TOTAL uses persisted load_daily.dayHss (never a local re-sum); +Y DOUBLE-DAY LOAD delta computed via dailyHSS(scores)-sum(scores), same discipline as TodayBreakdownSheet
+- [Phase 04]: History paginates client-side over a single full-table load_daily/session read per focus rather than paginated SQL, matching recomputeLoadDaily's existing read-everything-fold-in-memory discipline for this local-first dataset size
+- [Phase 04]: session/detail.tsx uses plain useEffect (not useFocusEffect) -- one-time pushed screen with no store writes, matching finish.tsx's precedent, not the Pitfall-5 store-oscillation risk
+- [Phase 04]: Added app/(tabs)/history/_layout.tsx (Rule 2 deviation, outside plan's declared files) to match the log/settings tab-group Stack convention exactly
 
 ### Pending Todos
 
@@ -196,6 +201,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-07-10T21:48:25.734Z
-Stopped at: Completed 04-01-PLAN.md
+Last session: 2026-07-10T22:06:37.983Z
+Stopped at: Completed 04-08-PLAN.md
 Resume file: None

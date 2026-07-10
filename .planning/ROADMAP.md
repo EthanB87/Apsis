@@ -28,7 +28,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 01: Foundation** - Monorepo, pure-TS package skeletons, drizzle schema + migrations, seeded exercise library, Expo boot sequence — COMPLETE
 - [x] **Phase 02: HSS Engine** - Pure-TS training-load engine (strength/endurance HSS, day HSS, ATL/CTL/TSB trend, readiness band), ≥20 vitest tests — the moat (completed 2026-07-08)
 - [x] **Phase 03: Onboarding & Lifting Logger** - Profile capture + a Strong/Hevy-speed lifting logger with live HSS feedback (completed 2026-07-09)
-- [ ] **Phase 04: Run Logger & Home Dashboard** - Run/conditioning logger plus the home screen readiness band and 28-day trend
+- [x] **Phase 04: Run Logger & Home Dashboard** - Run/conditioning logger plus the home screen readiness band and 28-day trend (completed 2026-07-10)
 - [ ] **Phase 05: HealthKit Integration** - Import runs/HR/bodyweight, write logged sessions back, dedupe against manual entries — lowest priority, first to cut
 - [ ] **Phase 06: Polish & App Store Submission** - Icon, screenshots, privacy label/policy, Sentry health-data audit, EAS submission by ~July 25
 
@@ -155,7 +155,7 @@ Plans:
   4. Home screen shows a 28-day ATL/CTL/TSB trend chart, and shows a "Building trend…" calibrating state instead of a readiness band until 14+ days of data exist.
   5. User can view workout history grouped by day showing day HSS + session count, with the double-session penalty explicitly labeled when sessionCount > 1 for that day.
 
-**Plans**: 7/8 plans executed
+**Plans**: 8/8 plans complete
 
 Plans:
 **Wave 1**
@@ -173,7 +173,7 @@ Plans:
 - [x] 04-05-PLAN.md — Run entry form + saveRun handler + Log-tab CTA (RUN-01..RUN-05)
 - [x] 04-06-PLAN.md — Finish-screen retrofit: endurance branch + 84px mini-ring + TODAY routing (RUN-06)
 - [x] 04-07-PLAN.md — TODAY dashboard + TrendChart scrub tooltip + today-breakdown sheet (HOME-01..HOME-04)
-- [ ] 04-08-PLAN.md — History tab + DayRow + session detail + 4-tab restructure (HOME-05/HOME-06)
+- [x] 04-08-PLAN.md — History tab + DayRow + session detail + 4-tab restructure (HOME-05/HOME-06)
 
 **UI hint**: yes
 
@@ -221,6 +221,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 | 01. Foundation | 4/4 | Complete | 2026-07-02 |
 | 02. HSS Engine | 6/6 | Complete    | 2026-07-08 |
 | 03. Onboarding & Lifting Logger | 11/11 | Complete    | 2026-07-10 |
-| 04. Run Logger & Home Dashboard | 7/8 | In Progress|  |
+| 04. Run Logger & Home Dashboard | 8/8 | Complete   | 2026-07-10 |
 | 05. HealthKit Integration | 0/TBD | Not started | - |
 | 06. Polish & App Store Submission | 0/TBD | Not started | - |
