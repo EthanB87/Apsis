@@ -11,9 +11,9 @@
  * files — this screen is never touched again.
  */
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import { eq } from 'drizzle-orm';
 import { db, workout } from '@apsis/db';
 
@@ -43,12 +43,51 @@ export default function SessionScreen(): React.JSX.Element {
   // D-14 resume: only rehydrate when the store isn't already primed for this workout (a
   // freshly-created workout already has the store initialized via log/index.tsx's
   // startSession, so this only fires on the ResumePrompt's "Resume" path).
-  useEffect(() => {
-    if (!workoutId || storeWorkoutId === workoutId) return;
-    fetchProfileSummary(db)
-      .then((profile) => rehydrateFromDb(workoutId, profile))
-      .catch((err: unknown) => console.error('[Apsis] session rehydrate failed:', err));
-  }, [workoutId, storeWorkoutId, rehydrateFromDb]);
+  //
+  // FOCUS-GATED (checkpoint fix): this was a plain useEffect, which runs on UNFOCUSED
+  // screens too. expo-router keeps prior session screens mounted in the log stack (e.g.
+  // the finished workout A's screen under a new workout B's screen), so two mounted
+  // session screens each saw `storeWorkoutId !== their workoutId` and rehydrated in turn —
+  // an infinite A<->B store oscillation that (a) kept resurrecting the last finished
+  // workout on screen and (b) wiped restTimerEndsAt/restNotificationId on every
+  // rehydrateFromDb call (it resets to INITIAL_SESSION), killing the rest-timer banner
+  // and notifications. useFocusEffect means only the screen the user is actually on can
+  // touch the store.
+  //
+  // FINISHED-WORKOUT GUARD: if a stale session screen regains focus for a workout that is
+  // already finished (or discarded), it must NOT re-open it — it replaces itself with the
+  // Log start screen instead. Without this, finishing a workout (Done -> replace to
+  // /(tabs)/log) landed back on the still-stacked session screen, which then rehydrated
+  // the finished workout from SQLite — the "looping the last finished workout" report.
+  useFocusEffect(
+    useCallback(() => {
+      if (!workoutId || storeWorkoutId === workoutId) return;
+      let cancelled = false;
+      (async () => {
+        try {
+          const rows = await db
+            .select({ finishedAt: workout.finishedAt, deletedAt: workout.deletedAt })
+            .from(workout)
+            .where(eq(workout.id, workoutId))
+            .limit(1);
+          if (cancelled) return;
+          const row = rows[0];
+          if (!row || row.finishedAt != null || row.deletedAt != null) {
+            router.replace('/(tabs)/log');
+            return;
+          }
+          const profile = await fetchProfileSummary(db);
+          if (cancelled) return;
+          await rehydrateFromDb(workoutId, profile);
+        } catch (err: unknown) {
+          console.error('[Apsis] session rehydrate failed:', err);
+        }
+      })();
+      return () => {
+        cancelled = true;
+      };
+    }, [workoutId, storeWorkoutId, rehydrateFromDb, router])
+  );
 
   useEffect(() => {
     if (!workoutId) return;
