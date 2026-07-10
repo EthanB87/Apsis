@@ -6,9 +6,9 @@ current_phase: 3
 current_phase_name: Onboarding & Lifting Logger
 status: verifying
 stopped_at: Completed 03-09-PLAN.md (final plan of Phase 03)
-last_updated: "2026-07-09T21:35:24.728Z"
-last_activity: 2026-07-09
-last_activity_desc: Completed quick tasks 260709-qmv (dark design restyle + icon) and 260709-r4z (onboarding keyboard/units blocker fix)
+last_updated: "2026-07-10T00:15:06.277Z"
+last_activity: 2026-07-10
+last_activity_desc: Completed quick task 260709-rq4 (align UI to Apsis Design System v1 component specs)
 progress:
   total_phases: 6
   completed_phases: 2
@@ -148,6 +148,7 @@ None yet.
 |---|-------------|------|--------|-----------|
 | 260709-qmv | Restyle app UI to Apsis dark design system (void/volt) + wire app icon | 2026-07-09 | 430cf23 | [260709-qmv-restyle-app-ui-to-apsis-dark-design-syst](./quick/260709-qmv-restyle-app-ui-to-apsis-dark-design-syst/) |
 | 260709-r4z | Fix onboarding blocker: keyboard-safe WizardStep + units asked before bodyweight | 2026-07-09 | 3fbc13c | [260709-r4z-fix-onboarding-bodyweight-blocker-keyboa](./quick/260709-r4z-fix-onboarding-bodyweight-blocker-keyboa/) |
+| 260709-rq4 | Align UI to Apsis Design System v1 component specs (pressed/disabled states, radii, sentence case, logger typography, mono tab labels, ScreenHeader) | 2026-07-09 | ce4fef7 | [260709-rq4-align-ui-to-apsis-design-system-v1-compo](./quick/260709-rq4-align-ui-to-apsis-design-system-v1-compo/) |
 
 ## Deferred Items
 
