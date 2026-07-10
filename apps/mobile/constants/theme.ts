@@ -58,22 +58,27 @@ type TypographyRole = Pick<
   'fontSize' | 'fontWeight' | 'lineHeight' | 'fontFamily' | 'textTransform' | 'letterSpacing'
 >;
 
-/** Typography roles — display/heading carry the heavy Archivo family, ALL CAPS, tight tracking. */
+/**
+ * Typography roles — display/heading carry the heavy Archivo family, ALL CAPS, tight tracking.
+ * Sizes/tracking per DESIGN-SYSTEM.md §2: H3 (heading) ~22, H2 (title) ~30, hero (display)
+ * ~68 is the Phase-4 HSS ring number and is NOT built yet -- display stays at 40 (session
+ * header size) per this plan's Phase-3-only scope. heading/display/title are single-face
+ * (Archivo_800ExtraBold / Archivo_900Black) so they carry no fontWeight key -- a mismatched
+ * weight can shift face selection/metrics on iOS.
+ */
 export const Typography: Record<'body' | 'label' | 'heading' | 'display' | 'title', TypographyRole> = {
   body: { fontFamily: 'Archivo_400Regular', fontSize: 16, fontWeight: '400', lineHeight: 24 },
   label: { fontFamily: 'Archivo_500Medium', fontSize: 13, fontWeight: '400', lineHeight: 17 },
   heading: {
     fontFamily: 'Archivo_800ExtraBold',
-    fontSize: 20,
-    fontWeight: '600',
-    lineHeight: 24,
+    fontSize: 22,
+    lineHeight: 21,
     textTransform: 'uppercase',
-    letterSpacing: -0.5,
+    letterSpacing: -0.3,
   },
   display: {
     fontFamily: 'Archivo_900Black',
     fontSize: 40,
-    fontWeight: '600',
     lineHeight: 44,
     textTransform: 'uppercase',
     letterSpacing: -0.5,
@@ -81,22 +86,24 @@ export const Typography: Record<'body' | 'label' | 'heading' | 'display' | 'titl
   /** Screen-header heavy title (Design System v1) — pairs with the `Kicker` mono line above it. */
   title: {
     fontFamily: 'Archivo_900Black',
-    fontSize: 29,
-    fontWeight: '600',
-    lineHeight: 32,
+    fontSize: 30,
+    lineHeight: 28,
     textTransform: 'uppercase',
-    letterSpacing: -0.5,
+    letterSpacing: -0.45,
   },
 };
 
 /**
  * Data / telemetry role for metrics, units, timestamps, set/rep data (design brief:
- * "numbers must look like instrument readouts"). Wide-tracked, uppercase JetBrains Mono.
+ * "numbers must look like instrument readouts"). Wide-tracked, uppercase JetBrains Mono
+ * (DESIGN-SYSTEM.md §2: wide tracking 0.2-0.34em on uppercase mono labels -- 0.2em @ 13px ~= 2.6).
+ * Numeric VALUE styling (set-row load/reps/RPE) must NOT inherit this label tracking --
+ * consume the mono fontFamily directly with `tabularNums`, not this role, to protect row width.
  */
 export const Mono: TypographyRole = {
   fontFamily: 'JetBrainsMono_500Medium',
   fontSize: 13,
-  letterSpacing: 1,
+  letterSpacing: 2.6,
   textTransform: 'uppercase',
 };
 
@@ -112,10 +119,11 @@ export const tabularNums: Pick<TextStyle, 'fontVariant'> = {
 /**
  * Mono kicker line that sits above a `Typography.title` (Design System v1 screen header).
  * Color is applied by the consumer (typically `Colors.dark.mutedText`).
+ * Tracking widened to 0.2em @ 11px (~2.2) per DESIGN-SYSTEM.md §2.
  */
 export const Kicker: TypographyRole = {
   fontFamily: 'JetBrainsMono_500Medium',
   fontSize: 11,
-  letterSpacing: 1.8,
+  letterSpacing: 2.2,
   textTransform: 'uppercase',
 };
