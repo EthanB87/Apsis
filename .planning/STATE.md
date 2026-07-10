@@ -3,17 +3,17 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 current_phase: 04
-current_phase_name: Run Logger & Home Dashboard
+current_phase_name: run-logger-home-dashboard
 status: executing
-stopped_at: Phase 4 UI-SPEC approved
-last_updated: "2026-07-10T18:00:26.865Z"
+stopped_at: Completed 04-01-PLAN.md
+last_updated: "2026-07-10T20:38:24.238Z"
 last_activity: 2026-07-10
-last_activity_desc: Phase 03 complete, transitioned to Phase 04
+last_activity_desc: Phase 04 execution started
 progress:
   total_phases: 6
   completed_phases: 2
-  total_plans: 17
-  completed_plans: 17
+  total_plans: 25
+  completed_plans: 18
   percent: 33
 ---
 
@@ -25,14 +25,14 @@ See: .planning/PROJECT.md (updated 2026-06-29)
 
 **Core value:** Log lifting + running in one app, instantly see one honest combined
 training-load number (HSS) and a readiness band — fully offline.
-**Current focus:** Phase 04 — Run Logger & Home Dashboard
+**Current focus:** Phase 04 — run-logger-home-dashboard
 
 ## Current Position
 
-Phase: 04 — Run Logger & Home Dashboard
-Plan: Not started
+Phase: 04 (run-logger-home-dashboard) — EXECUTING
+Plan: 2 of 8
 Status: Ready to execute
-Last activity: 2026-07-10 — Phase 03 complete, transitioned to Phase 04
+Last activity: 2026-07-10 — Phase 04 execution started
 traceability filled; 100% of the 39 pending v1.0 requirements mapped to Phases 02–06.
 
 Progress: [█████░░░░░] 50% (3/6 phases complete)
@@ -77,6 +77,7 @@ Progress: [█████░░░░░] 50% (3/6 phases complete)
 | Phase 03 P09 | 9min | 2 tasks | 4 files |
 | Phase 03 P11 | 20min | 3 tasks | 22 files |
 | Phase 03 P10 | ~5h | 3 tasks | 13 files |
+| Phase 04 P01 | 15min | 3 tasks | 12 files |
 
 ## Accumulated Context
 
@@ -136,6 +137,9 @@ Recent decisions affecting current work:
 - [Phase ?]: [Phase 03 P10]: Store-writing screen effects must use useFocusEffect, not useEffect — expo-router keeps stacked screens mounted and unfocused plain effects caused an A<->B rehydrateFromDb oscillation that resurrected finished workouts and wiped rest-timer state
 - [Phase ?]: [Phase 03 P10]: OS-notification lifecycle is a paired invariant — the D-26 cancel-on-foreground-return now has a reschedule-on-background inverse (ensureRestNotificationScheduled), so a foreground bounce mid-rest can no longer permanently destroy the completion signal
 - [Phase ?]: [Phase 03 P10]: kgToDisplayLbFractional (nearest 0.1 lb) for entry surfaces; whole-lb kgToDisplayLb retained for read-only summaries per D-12
+- [Phase ?]: [Phase 04 P01]: workout.note placed on workout table (not endurance_segment) per RESEARCH A4, so CONDITIONING sessions with no segment still carry a note
+- [Phase ?]: [Phase 04 P01]: @apsis/engine and @apsis/shared added as explicit packages/db dependencies (not left to transitive pnpm hoisting) since loadDaily.ts imports both directly
+- [Phase ?]: [Phase 04 P01]: computeLoadDailyUpsertRows never reads the wall clock -- today is always caller-supplied, matching the engine's own purity convention
 
 ### Pending Todos
 
@@ -173,6 +177,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-07-10T18:00:26.856Z
-Stopped at: Phase 4 UI-SPEC approved
-Resume file: .planning/phases/04-run-logger-home-dashboard/04-UI-SPEC.md
+Last session: 2026-07-10T20:38:24.228Z
+Stopped at: Completed 04-01-PLAN.md
+Resume file: None

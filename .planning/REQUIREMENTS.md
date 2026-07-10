@@ -49,20 +49,20 @@ Requirements for the v1.0 release. Each maps to exactly one roadmap phase.
 ### Run / Conditioning Logger
 
 - [ ] **RUN-01**: User can log a session with an activity type (Run / Erg / Conditioning)
-- [ ] **RUN-02**: User enters distance + duration and pace auto-calculates live
+- [x] **RUN-02**: User enters distance + duration and pace auto-calculates live
 - [ ] **RUN-03**: User can optionally enter average HR
 - [ ] **RUN-04**: Session date defaults to today and is editable
-- [ ] **RUN-05**: User can add an optional free-text note / tag
+- [x] **RUN-05**: User can add an optional free-text note / tag
 - [ ] **RUN-06**: Session HSS is shown on the finish screen
 
 ### Home / Dashboard
 
 - [ ] **HOME-01**: Home screen shows today's readiness band prominently, above the fold
 - [ ] **HOME-02**: Home screen shows today's total HSS
-- [ ] **HOME-03**: Home screen shows a 28-day ATL / CTL / TSB trend chart
-- [ ] **HOME-04**: Home shows a calibrating state ("Building trend…") until 14+ days of data exist
-- [ ] **HOME-05**: User can view workout history grouped by day with day HSS + session count
-- [ ] **HOME-06**: Double-session penalty is labeled on the day view when sessionCount > 1
+- [x] **HOME-03**: Home screen shows a 28-day ATL / CTL / TSB trend chart
+- [x] **HOME-04**: Home shows a calibrating state ("Building trend…") until 14+ days of data exist
+- [x] **HOME-05**: User can view workout history grouped by day with day HSS + session count
+- [x] **HOME-06**: Double-session penalty is labeled on the day view when sessionCount > 1
 
 ### HealthKit (lowest priority — first to cut if timeline slips)
 
@@ -136,17 +136,17 @@ Which phase covers which requirement. Populated during roadmap creation.
 | LIFT-07 | Phase 03 | Complete |
 | LIFT-08 | Phase 03 | Complete |
 | RUN-01 | Phase 04 | Pending |
-| RUN-02 | Phase 04 | Pending |
+| RUN-02 | Phase 04 | Complete |
 | RUN-03 | Phase 04 | Pending |
 | RUN-04 | Phase 04 | Pending |
-| RUN-05 | Phase 04 | Pending |
+| RUN-05 | Phase 04 | Complete |
 | RUN-06 | Phase 04 | Pending |
 | HOME-01 | Phase 04 | Pending |
 | HOME-02 | Phase 04 | Pending |
-| HOME-03 | Phase 04 | Pending |
-| HOME-04 | Phase 04 | Pending |
-| HOME-05 | Phase 04 | Pending |
-| HOME-06 | Phase 04 | Pending |
+| HOME-03 | Phase 04 | Complete |
+| HOME-04 | Phase 04 | Complete |
+| HOME-05 | Phase 04 | Complete |
+| HOME-06 | Phase 04 | Complete |
 | HK-01 | Phase 05 | Pending |
 | HK-02 | Phase 05 | Pending |
 | HK-03 | Phase 05 | Pending |
