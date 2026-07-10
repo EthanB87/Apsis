@@ -318,6 +318,7 @@ export function SetRow({
       <View style={styles.rpeRow} accessibilityRole="adjustable" accessibilityLabel="RPE">
         {RPE_OPTIONS.map((option) => {
           const selected = draft.rpe === option;
+          const isHot = selected && option >= 9;
           return (
             <Pressable
               key={option}
@@ -327,7 +328,7 @@ export function SetRow({
               accessibilityRole="button"
               accessibilityLabel={`RPE ${option}`}
               accessibilityState={{ selected, disabled: locked }}
-              style={[styles.rpePill, selected && styles.rpePillSelected]}>
+              style={[styles.rpePill, selected && (isHot ? styles.rpePillHeat : styles.rpePillSelected)]}>
               <Text style={[styles.rpePillLabel, selected && styles.rpePillLabelSelected]}>
                 {option}
               </Text>
@@ -408,19 +409,21 @@ const styles = StyleSheet.create({
   stepper: {
     width: HIT_TARGET_MIN,
     height: HIT_TARGET_MIN,
-    borderRadius: Radius.lg,
+    borderRadius: Radius.sm,
+    borderWidth: 1,
+    borderColor: Colors.dark.border,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: Colors.dark.border,
+    backgroundColor: Colors.dark.steel,
   },
   stepperLabel: {
     ...Typography.body,
     color: Colors.dark.text,
   },
   valueInput: {
-    ...Mono,
-    fontSize: 16,
-    textTransform: 'none',
+    fontFamily: 'Archivo_800ExtraBold',
+    fontSize: 19,
+    fontWeight: '600',
     color: Colors.dark.text,
     minWidth: 40,
     textAlign: 'center',
@@ -428,6 +431,7 @@ const styles = StyleSheet.create({
   },
   unitLabel: {
     ...Mono,
+    fontSize: 9,
     color: Colors.dark.mutedText,
   },
   rpeRow: {
@@ -437,13 +441,16 @@ const styles = StyleSheet.create({
   rpePill: {
     minWidth: HIT_TARGET_MIN,
     height: HIT_TARGET_MIN,
-    borderRadius: Radius.lg,
+    borderRadius: Radius.sm,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: Colors.dark.border,
   },
   rpePillSelected: {
     backgroundColor: Colors.dark.accent,
+  },
+  rpePillHeat: {
+    backgroundColor: Colors.dark.destructive,
   },
   rpePillLabel: {
     ...Mono,

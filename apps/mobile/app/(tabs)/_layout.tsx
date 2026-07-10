@@ -19,6 +19,12 @@ export default function TabLayout() {
           borderTopColor: Colors[colorScheme].border,
           borderTopWidth: 1,
         },
+        tabBarLabelStyle: {
+          fontFamily: 'JetBrainsMono_500Medium',
+          fontSize: 9,
+          letterSpacing: 1,
+          textTransform: 'uppercase',
+        },
         // Disable the static render of the header on web
         // to prevent a hydration error in React Navigation v6.
         headerShown: useClientOnlyValue(false, true),
