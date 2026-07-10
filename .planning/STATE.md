@@ -2,13 +2,13 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-current_phase: 03
-current_phase_name: onboarding-lifting-logger
+current_phase: 04
+current_phase_name: Run Logger & Home Dashboard
 status: executing
 stopped_at: Completed 03-10-PLAN.md (set-logging UI gap closure + user-directed overhaul, UAT Test 9 closed)
-last_updated: "2026-07-10T16:58:32.834Z"
+last_updated: "2026-07-10T17:00:35.176Z"
 last_activity: 2026-07-10
-last_activity_desc: Phase 03 execution started
+last_activity_desc: Phase 03 complete, transitioned to Phase 04
 progress:
   total_phases: 6
   completed_phases: 2
@@ -25,25 +25,23 @@ See: .planning/PROJECT.md (updated 2026-06-29)
 
 **Core value:** Log lifting + running in one app, instantly see one honest combined
 training-load number (HSS) and a readiness band — fully offline.
-**Current focus:** Phase 03 — onboarding-lifting-logger
-the pure-TS HSS engine (the moat), which the engine's own `index.ts` explicitly defers to
-"Phase 2."
+**Current focus:** Phase 04 — Run Logger & Home Dashboard
 
 ## Current Position
 
-Phase: 03 (onboarding-lifting-logger) — EXECUTING
-Plan: 3 of 11
+Phase: 04 — Run Logger & Home Dashboard
+Plan: Not started
 Status: Ready to execute
-Last activity: 2026-07-10 — Phase 03 execution started
+Last activity: 2026-07-10 — Phase 03 complete, transitioned to Phase 04
 traceability filled; 100% of the 39 pending v1.0 requirements mapped to Phases 02–06.
 
-Progress: [██░░░░░░░░] 17% (1/6 phases complete)
+Progress: [█████░░░░░] 50% (3/6 phases complete)
 
 ## Performance Metrics
 
 **Velocity:**
 
-- Total plans completed: 6 (all in Phase 01)
+- Total plans completed: 17 (all in Phase 01)
 - Average duration: not tracked (Phase 01 predates STATE.md instrumentation)
 - Total execution time: not tracked
 
@@ -54,6 +52,7 @@ Progress: [██░░░░░░░░] 17% (1/6 phases complete)
 | 01. Foundation | 4/4 | - | - |
 | 02–06 | 0/TBD | - | - |
 | 02 | 6 | - | - |
+| 03 | 11 | - | - |
 
 **Recent Trend:**
 
@@ -148,7 +147,13 @@ None yet.
   for that phase lives only in git commit messages (`6c02971`…`44f6017`). Not blocking;
   noted for context only.
 
-- LIFT-05 (03-07) pending on-device UAT verification -- six behaviors (rest banner countdown, +30s/Skip, background notification fire, early-return cancellation, haptic+sound at zero, lazy permission timing) deferred from the Task 3 checkpoint to phase UAT
+- apps/mobile has no component test harness (engine/shared only) — expo-router focus/stack
+  regressions (like the 03-10 stacked-screen rehydrate loop) are only catchable on-device.
+  Logged in 03 deferred-items.md; consider a harness before v1.1.
+
+- Two pre-existing router.push typed-route tsc errors (app/onboarding/review.tsx,
+  components/ExternalLink.tsx) deferred in 03 deferred-items.md — root `pnpm run typecheck`
+  is not fully clean until addressed.
 
 ### Quick Tasks Completed
 
@@ -169,5 +174,5 @@ Items acknowledged and carried forward from previous milestone close:
 ## Session Continuity
 
 Last session: 2026-07-10T16:58:32.823Z
-Stopped at: Completed 03-10-PLAN.md (set-logging UI gap closure + user-directed overhaul, UAT Test 9 closed)
+Stopped at: Phase 03 complete (11/11 plans, UAT 9/9 passed), ready to plan Phase 04
 Resume file: None

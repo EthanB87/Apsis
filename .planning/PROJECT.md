@@ -18,15 +18,15 @@ and a readiness band — fully offline. If everything else fails, this must work
 ### Validated
 
 - [x] Pure-TS engine computes HSS + readiness on-device, fully unit-tested (the moat) — Validated in Phase 02: HSS Engine (61 vitest tests, calibration anchored at 60-min threshold run ≈ 100 HSS, cold-start 'calibrating' band)
+- [x] User can log a lifting session (exercises, sets, reps, load, RPE) with fast entry — Validated in Phase 03: tabular ledger set rows (tap-to-type), on-device UAT 9/9 passed incl. rest timer (LIFT-05) and crash-resume
+- [x] Onboarding captures the engine's inputs (sex, bodyweight, thresholds) — Validated in Phase 03: 6-step wizard (units before bodyweight), direct-entry + estimate paths, forward-only Settings edits
 
 ### Active
 
-- [ ] User can log a lifting session (exercises, sets, reps, load, RPE) with fast entry
 - [ ] User can log a run / conditioning session (distance, duration, pace, HR if available)
 - [ ] User sees a per-session and per-day HSS, plus a readiness band (green/amber/red)
 - [ ] User sees a 14–30 day load / readiness trend on the home screen
 - [ ] All logging works fully offline; local SQLite is the source of truth
-- [ ] Onboarding captures the engine's inputs (sex, bodyweight, thresholds)
 - [ ] Apple HealthKit import for runs/HR/weight + push logged workouts back (lowest-priority;
       first to defer if the timeline slips)
 
@@ -73,6 +73,9 @@ and a readiness band — fully offline. If everything else fails, this must work
 | iOS-first, HealthKit-only for v1.0                     | Apple integration is straightforward; Garmin/Android deferred | — Pending |
 | Cut nutrition entirely from v1.0                       | Largest scope item; protects the ~4-week App Store window     | — Pending |
 | Monorepo: apps/mobile + packages/engine, db, shared    | Isolates the testable IP; keeps build tooling simple          | — Pending |
+| Logging UI: tabular tap-to-type ledger rows, no steppers (user superseded DESIGN-SYSTEM.md component specs for the logging surface; palette stays binding) | Steppers could not fit a single set row at iPhone widths; keypad entry is faster (Strong/Hevy parity) | ✓ Shipped Phase 03, approved on device |
+| Session-store access must be focus-gated (useFocusEffect, never bare useEffect) | expo-router keeps prior screens mounted; unfocused screens rehydrating the store caused infinite loops | ✓ Fixed Phase 03 (03-10) |
+| Rest-notification invariant: foregrounded ⇒ none pending; backgrounded + live timer ⇒ exactly one | Cancel-on-foreground without reschedule-on-background silently killed LIFT-05 notifications | ✓ Fixed Phase 03 (03-10) |
 
 ## Evolution
 
@@ -95,4 +98,4 @@ This document evolves at phase transitions and milestone boundaries.
 
 ---
 
-_Last updated: 2026-07-08 after Phase 02 (HSS Engine) completion — engine shipped and verified; next: Phase 03 Onboarding & Lifting Logger_
+_Last updated: 2026-07-10 after Phase 03 (Onboarding & Lifting Logger) completion — lifting logger + onboarding shipped and UAT-verified on device (9/9); next: Phase 04 Run Logger & Home Dashboard_
