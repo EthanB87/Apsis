@@ -155,7 +155,7 @@ Plans:
   4. Home screen shows a 28-day ATL/CTL/TSB trend chart, and shows a "Building trend…" calibrating state instead of a readiness band until 14+ days of data exist.
   5. User can view workout history grouped by day showing day HSS + session count, with the double-session penalty explicitly labeled when sessionCount > 1 for that day.
 
-**Plans**: 8/8 plans complete
+**Plans**: 8/10 plans complete (+2 gap-closure plans from 04-VERIFICATION.md)
 
 Plans:
 **Wave 1**
@@ -174,6 +174,11 @@ Plans:
 - [x] 04-06-PLAN.md — Finish-screen retrofit: endurance branch + 84px mini-ring + TODAY routing (RUN-06)
 - [x] 04-07-PLAN.md — TODAY dashboard + TrendChart scrub tooltip + today-breakdown sheet (HOME-01..HOME-04)
 - [x] 04-08-PLAN.md — History tab + DayRow + session detail + 4-tab restructure (HOME-05/HOME-06)
+
+**Wave 4 — gap closure** *(from 04-VERIFICATION.md, gaps_found)*
+
+- [ ] 04-09-PLAN.md — Blocking criticals: TrendChart worklet-safe scrub tooltip (CR-01) + recomputeLoadDaily stale-row DELETE cleanup (CR-02) (HOME-01/HOME-02/HOME-03)
+- [ ] 04-10-PLAN.md — Warnings: formatPaceMinSec carry (WR-08) + iOS date picker dismiss (WR-05) + History empty-load_daily fallback (WR-07) (RUN-02/RUN-04/HOME-05)
 
 **UI hint**: yes
 
