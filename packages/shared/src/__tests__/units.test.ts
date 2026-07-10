@@ -6,6 +6,7 @@
 import {
   KM_PER_MI,
   LB_PER_KG,
+  formatPaceMinSec,
   kgToDisplayLb,
   kgToDisplayLbFractional,
   kmToDisplayMi,
@@ -71,6 +72,24 @@ describe('pace sec/km <-> sec/mi round-trip', () => {
     const secPerMi = paceSecPerKmToSecPerMi(secPerKm);
     const roundTripped = paceSecPerMiToSecPerKm(secPerMi);
     expect(Math.abs(roundTripped - secPerKm)).toBeLessThanOrEqual(1);
+  });
+});
+
+describe('formatPaceMinSec seconds carry (WR-08)', () => {
+  it('270 -> "4:30" (unchanged whole-second case)', () => {
+    expect(formatPaceMinSec(270)).toBe('4:30');
+  });
+
+  it('359.7 -> "6:00" (fractional remainder carries into minutes, never "5:60")', () => {
+    expect(formatPaceMinSec(359.7)).toBe('6:00');
+  });
+
+  it('59.6 -> "1:00" (carry from 0:60 into 1:00)', () => {
+    expect(formatPaceMinSec(59.6)).toBe('1:00');
+  });
+
+  it('0 -> "0:00"', () => {
+    expect(formatPaceMinSec(0)).toBe('0:00');
   });
 });
 
