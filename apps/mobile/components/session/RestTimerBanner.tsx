@@ -36,6 +36,7 @@ export function RestTimerBanner(): React.JSX.Element | null {
   const skipRest = useSessionStore((s) => s.skipRest);
   const setRestTimerEndsAt = useSessionStore((s) => s.setRestTimerEndsAt);
   const cancelPendingNotification = useSessionStore((s) => s.cancelPendingNotification);
+  const ensureRestNotificationScheduled = useSessionStore((s) => s.ensureRestNotificationScheduled);
 
   const [now, setNow] = useState(() => Date.now());
   const zeroHandledRef = useRef(false);
@@ -53,17 +54,28 @@ export function RestTimerBanner(): React.JSX.Element | null {
   // Foreground recompute + returning-early notification cancel (D-26): when the app comes back
   // to the foreground before the timer has expired, the still-pending background notification
   // is cancelled since the live banner is the source of truth again.
+  //
+  // BACKGROUND RESCHEDULE (checkpoint fix): the early-return cancel above had no inverse — a
+  // brief app-switch (or notification-center pull, which cycles inactive -> active) cancelled
+  // the scheduled notification, and backgrounding AGAIN before expiry left NOTHING scheduled:
+  // banner counts fine in-app, no OS notification ever fires. On every transition away from
+  // 'active' we now re-schedule if a timer is live with no pending notification (idempotent).
   useEffect(() => {
     const subscription = AppState.addEventListener('change', (nextState) => {
-      if (nextState !== 'active') return;
-      const wallClockNow = Date.now();
-      setNow(wallClockNow);
-      if (restTimerEndsAt != null && restTimerEndsAt > wallClockNow) {
-        cancelPendingNotification();
+      // TODO(03-10 rest-diag): remove after on-device verification (before SUMMARY).
+      console.log(`[Apsis][rest-diag] AppState -> ${nextState} (endsAt=${restTimerEndsAt})`);
+      if (nextState === 'active') {
+        const wallClockNow = Date.now();
+        setNow(wallClockNow);
+        if (restTimerEndsAt != null && restTimerEndsAt > wallClockNow) {
+          cancelPendingNotification();
+        }
+      } else {
+        ensureRestNotificationScheduled();
       }
     });
     return () => subscription.remove();
-  }, [restTimerEndsAt, cancelPendingNotification]);
+  }, [restTimerEndsAt, cancelPendingNotification, ensureRestNotificationScheduled]);
 
   // Zero-detection: fires the haptic once and clears the banner. Runs as an effect (not during
   // render) so the Haptics call and the store write stay outside the render body.
@@ -72,6 +84,8 @@ export function RestTimerBanner(): React.JSX.Element | null {
     if (remainingSec(restTimerEndsAt, now) > 0) return;
     if (zeroHandledRef.current) return;
     zeroHandledRef.current = true;
+    // TODO(03-10 rest-diag): remove after on-device verification (before SUMMARY).
+    console.log('[Apsis][rest-diag] countdown reached zero in-app (haptic firing, banner clearing)');
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch((err: unknown) => {
       console.error('[Apsis] rest-timer completion haptic failed:', err);
     });

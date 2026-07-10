@@ -106,6 +106,11 @@ interface SessionState {
   /** Returning-early effect (D-26): cancels the pending notification WITHOUT clearing the
    * still-running countdown — called when the app foregrounds before the timer expires. */
   cancelPendingNotification: () => void;
+  /** Backgrounding effect (D-26 gap fix): if the countdown is still running but no
+   * notification is pending (a prior foreground return cancelled it), re-schedule one so
+   * leaving the app mid-rest ALWAYS has a completion signal. Idempotent — no-ops when a
+   * notification is already pending or no timer is running. */
+  ensureRestNotificationScheduled: () => void;
   rehydrateFromDb: (workoutId: string, profile: { bodyweightKg: number; units: Units }) => Promise<void>;
   reset: () => void;
 }
@@ -297,6 +302,8 @@ export const useSessionStore = create<SessionState>((set, get) => ({
     const durationSec = resolveRestDuration(card?.restTimerSec ?? null, profileDefaultSec);
     const endsAt = startRest(durationSec);
     set({ restTimerEndsAt: endsAt, restNotificationId: null });
+    // TODO(03-10 rest-diag): remove after on-device verification (before SUMMARY).
+    console.log(`[Apsis][rest-diag] startRestTimer duration=${durationSec}s endsAt=${endsAt}`);
 
     const notificationId = await scheduleRestNotification(endsAt);
     // Guard against a race: a rapid Skip or a second set's commit could have moved
@@ -304,7 +311,7 @@ export const useSessionStore = create<SessionState>((set, get) => ({
     if (get().restTimerEndsAt === endsAt) {
       set({ restNotificationId: notificationId });
     } else {
-      void cancelRestNotification(notificationId);
+      void cancelRestNotification(notificationId, 'startRestTimer stale-schedule race guard');
     }
   },
 
@@ -313,24 +320,40 @@ export const useSessionStore = create<SessionState>((set, get) => ({
     if (restTimerEndsAt == null) return;
     const nextEndsAt = restTimerEndsAt + 30_000;
     set({ restTimerEndsAt: nextEndsAt, restNotificationId: null });
-    void cancelRestNotification(restNotificationId);
+    void cancelRestNotification(restNotificationId, '+30s reschedule (old id)');
     void scheduleRestNotification(nextEndsAt).then((id) => {
       if (get().restTimerEndsAt === nextEndsAt) set({ restNotificationId: id });
-      else void cancelRestNotification(id);
+      else void cancelRestNotification(id, '+30s stale-schedule race guard');
     });
   },
 
   skipRest: () => {
     const { restNotificationId } = get();
     set({ restTimerEndsAt: null, restNotificationId: null });
-    void cancelRestNotification(restNotificationId);
+    void cancelRestNotification(restNotificationId, 'skipRest');
   },
 
   cancelPendingNotification: () => {
     const { restNotificationId } = get();
     if (restNotificationId == null) return;
     set({ restNotificationId: null });
-    void cancelRestNotification(restNotificationId);
+    void cancelRestNotification(restNotificationId, 'foreground return (D-26 early-return)');
+  },
+
+  ensureRestNotificationScheduled: () => {
+    const { restTimerEndsAt, restNotificationId } = get();
+    if (restTimerEndsAt == null || restNotificationId != null) return;
+    if (restTimerEndsAt <= Date.now()) return;
+    // TODO(03-10 rest-diag): remove after on-device verification (before SUMMARY).
+    console.log('[Apsis][rest-diag] backgrounding with live timer and no pending id — rescheduling');
+    const endsAt = restTimerEndsAt;
+    void scheduleRestNotification(endsAt).then((id) => {
+      if (get().restTimerEndsAt === endsAt && get().restNotificationId == null) {
+        set({ restNotificationId: id });
+      } else {
+        void cancelRestNotification(id, 'ensureRestNotificationScheduled stale race guard');
+      }
+    });
   },
 
   rehydrateFromDb: async (workoutId, profile) => {
@@ -412,7 +435,7 @@ export const useSessionStore = create<SessionState>((set, get) => ({
     // WR-04: finishing/discarding a workout inside the rest window must not leave the
     // scheduled OS "Rest complete" notification behind — cancel it before wiping the id.
     const { restNotificationId } = get();
-    void cancelRestNotification(restNotificationId);
+    void cancelRestNotification(restNotificationId, 'session reset (finish/discard, WR-04)');
     set({ ...INITIAL_SESSION });
   },
 }));
