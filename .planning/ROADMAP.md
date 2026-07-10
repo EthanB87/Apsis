@@ -155,7 +155,7 @@ Plans:
   4. Home screen shows a 28-day ATL/CTL/TSB trend chart, and shows a "Building trend…" calibrating state instead of a readiness band until 14+ days of data exist.
   5. User can view workout history grouped by day showing day HSS + session count, with the double-session penalty explicitly labeled when sessionCount > 1 for that day.
 
-**Plans**: 2/8 plans executed
+**Plans**: 3/8 plans executed
 
 Plans:
 **Wave 1**
@@ -165,7 +165,7 @@ Plans:
 
 **Wave 2** *(blocked on Wave 1)*
 
-- [ ] 04-03-PLAN.md — recomputeLoadDaily pipeline + shared localDate helper + retrofit lifting finish/discard (Pitfall 1) (HOME-01/HOME-02)
+- [x] 04-03-PLAN.md — recomputeLoadDaily pipeline + shared localDate helper + retrofit lifting finish/discard (Pitfall 1) (HOME-01/HOME-02)
 - [ ] 04-04-PLAN.md — Home visual components: HssRing (capped fill + calibrating), PlateOrbit, ReadinessLight, StatTiles (HOME-01/HOME-02)
 
 **Wave 3** *(blocked on Wave 2)*
@@ -221,6 +221,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 | 01. Foundation | 4/4 | Complete | 2026-07-02 |
 | 02. HSS Engine | 6/6 | Complete    | 2026-07-08 |
 | 03. Onboarding & Lifting Logger | 11/11 | Complete    | 2026-07-10 |
-| 04. Run Logger & Home Dashboard | 2/8 | In Progress|  |
+| 04. Run Logger & Home Dashboard | 3/8 | In Progress|  |
 | 05. HealthKit Integration | 0/TBD | Not started | - |
 | 06. Polish & App Store Submission | 0/TBD | Not started | - |

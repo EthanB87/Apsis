@@ -57,8 +57,8 @@ Requirements for the v1.0 release. Each maps to exactly one roadmap phase.
 
 ### Home / Dashboard
 
-- [ ] **HOME-01**: Home screen shows today's readiness band prominently, above the fold
-- [ ] **HOME-02**: Home screen shows today's total HSS
+- [x] **HOME-01**: Home screen shows today's readiness band prominently, above the fold
+- [x] **HOME-02**: Home screen shows today's total HSS
 - [x] **HOME-03**: Home screen shows a 28-day ATL / CTL / TSB trend chart
 - [x] **HOME-04**: Home shows a calibrating state ("Building trend…") until 14+ days of data exist
 - [x] **HOME-05**: User can view workout history grouped by day with day HSS + session count
@@ -141,8 +141,8 @@ Which phase covers which requirement. Populated during roadmap creation.
 | RUN-04 | Phase 04 | Complete |
 | RUN-05 | Phase 04 | Complete |
 | RUN-06 | Phase 04 | Pending |
-| HOME-01 | Phase 04 | Pending |
-| HOME-02 | Phase 04 | Pending |
+| HOME-01 | Phase 04 | Complete |
+| HOME-02 | Phase 04 | Complete |
 | HOME-03 | Phase 04 | Complete |
 | HOME-04 | Phase 04 | Complete |
 | HOME-05 | Phase 04 | Complete |
