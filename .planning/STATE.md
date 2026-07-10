@@ -5,16 +5,16 @@ milestone_name: milestone
 current_phase: 04
 current_phase_name: run-logger-home-dashboard
 status: executing
-stopped_at: Completed 04-09-PLAN.md
-last_updated: "2026-07-10T23:16:57.568Z"
+stopped_at: Completed 04-10-PLAN.md
+last_updated: "2026-07-10T23:23:27.895Z"
 last_activity: 2026-07-10
 last_activity_desc: Phase 04 execution started
 progress:
   total_phases: 6
-  completed_phases: 2
+  completed_phases: 3
   total_plans: 27
-  completed_plans: 26
-  percent: 33
+  completed_plans: 27
+  percent: 50
 ---
 
 # Project State — Apsis
@@ -30,8 +30,8 @@ training-load number (HSS) and a readiness band — fully offline.
 ## Current Position
 
 Phase: 04 (run-logger-home-dashboard) — EXECUTING
-Plan: 9 of 10
-Status: Executing Phase 04
+Plan: 10 of 10
+Status: Ready to execute
 Last activity: 2026-07-10 — Phase 04 execution started
 traceability filled; 100% of the 39 pending v1.0 requirements mapped to Phases 02–06.
 
@@ -86,6 +86,7 @@ Progress: [█████░░░░░] 50% (3/6 phases complete)
 | Phase 04 P07 | 35min | 3 tasks | 3 files |
 | Phase 04 P08 | ~25min | 3 tasks | 5 files |
 | Phase 04 P09 | 6min | 2 tasks | 2 files |
+| Phase 04 P10 | 3min | 3 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -167,6 +168,9 @@ Recent decisions affecting current work:
 - [Phase 04]: Added app/(tabs)/history/_layout.tsx (Rule 2 deviation, outside plan's declared files) to match the log/settings tab-group Stack convention exactly
 - [Phase 04]: formatSignedTsb kept as standalone helper with 'worklet' directive added (not inlined) per plan's preferred fix form for CR-01
 - [Phase 04]: recomputeLoadDaily's stale-row cleanup DELETE stays sequential (non-transactional), issued immediately before the upsert loop -- op-sqlite's drizzle transaction() callback is synchronous (returns T not Promise<T>), incompatible with the function's async upsert loop, so the plan's explicit fallback applies (CR-02)
+- [Phase 04]: formatPaceMinSec rounds total seconds once then splits into minutes/seconds (fixes 'X:60' carry bug, WR-08)
+- [Phase 04]: iOS date picker closes only on event.type === 'set'; Android keeps its pre-existing unconditional close-on-any-change (WR-05)
+- [Phase 04]: History day-entry dates union dayHssByDate and sessionsByDate keys so finished sessions are never dropped when load_daily is empty (WR-07)
 
 ### Pending Todos
 
@@ -204,6 +208,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-07-10T23:16:57.558Z
-Stopped at: Completed 04-08-PLAN.md
+Last session: 2026-07-10T23:23:27.883Z
+Stopped at: Completed 04-10-PLAN.md
 Resume file: None

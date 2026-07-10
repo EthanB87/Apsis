@@ -155,7 +155,7 @@ Plans:
   4. Home screen shows a 28-day ATL/CTL/TSB trend chart, and shows a "Building trend…" calibrating state instead of a readiness band until 14+ days of data exist.
   5. User can view workout history grouped by day showing day HSS + session count, with the double-session penalty explicitly labeled when sessionCount > 1 for that day.
 
-**Plans**: 9/10 plans executed
+**Plans**: 10/10 plans complete
 
 Plans:
 **Wave 1**
@@ -178,7 +178,7 @@ Plans:
 **Wave 4 — gap closure** *(from 04-VERIFICATION.md, gaps_found)*
 
 - [x] 04-09-PLAN.md — Blocking criticals: TrendChart worklet-safe scrub tooltip (CR-01) + recomputeLoadDaily stale-row DELETE cleanup (CR-02) (HOME-01/HOME-02/HOME-03)
-- [ ] 04-10-PLAN.md — Warnings: formatPaceMinSec carry (WR-08) + iOS date picker dismiss (WR-05) + History empty-load_daily fallback (WR-07) (RUN-02/RUN-04/HOME-05)
+- [x] 04-10-PLAN.md — Warnings: formatPaceMinSec carry (WR-08) + iOS date picker dismiss (WR-05) + History empty-load_daily fallback (WR-07) (RUN-02/RUN-04/HOME-05)
 
 **UI hint**: yes
 
@@ -226,6 +226,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 | 01. Foundation | 4/4 | Complete | 2026-07-02 |
 | 02. HSS Engine | 6/6 | Complete    | 2026-07-08 |
 | 03. Onboarding & Lifting Logger | 11/11 | Complete    | 2026-07-10 |
-| 04. Run Logger & Home Dashboard | 9/10 | In Progress|  |
+| 04. Run Logger & Home Dashboard | 10/10 | Complete   | 2026-07-10 |
 | 05. HealthKit Integration | 0/TBD | Not started | - |
 | 06. Polish & App Store Submission | 0/TBD | Not started | - |
