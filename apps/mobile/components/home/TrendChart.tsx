@@ -69,6 +69,7 @@ export interface TrendChartProps {
 }
 
 function formatSignedTsb(tsb: number): string {
+  'worklet';
   const rounded = Math.round(tsb);
   return rounded > 0 ? `+${rounded}` : rounded < 0 ? `−${Math.abs(rounded)}` : '+0';
 }
