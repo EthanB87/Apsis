@@ -66,7 +66,7 @@ type TypographyRole = Pick<
  * (Archivo_800ExtraBold / Archivo_900Black) so they carry no fontWeight key -- a mismatched
  * weight can shift face selection/metrics on iOS.
  */
-export const Typography: Record<'body' | 'label' | 'heading' | 'display' | 'title', TypographyRole> = {
+export const Typography: Record<'body' | 'label' | 'heading' | 'display' | 'displayXl' | 'title', TypographyRole> = {
   body: { fontFamily: 'Archivo_400Regular', fontSize: 16, fontWeight: '400', lineHeight: 24 },
   label: { fontFamily: 'Archivo_500Medium', fontSize: 13, fontWeight: '400', lineHeight: 17 },
   heading: {
@@ -82,6 +82,17 @@ export const Typography: Record<'body' | 'label' | 'heading' | 'display' | 'titl
     lineHeight: 44,
     textTransform: 'uppercase',
     letterSpacing: -0.5,
+  },
+  /**
+   * Phase-4 addition (04-UI-SPEC.md Typography): the home 200px HSS ring's count-up number
+   * ONLY. Single-face heavy (Archivo_900Black), no `fontWeight` key.
+   */
+  displayXl: {
+    fontFamily: 'Archivo_900Black',
+    fontSize: 60,
+    lineHeight: 54,
+    textTransform: 'uppercase',
+    letterSpacing: -0.6,
   },
   /** Screen-header heavy title (Design System v1) — pairs with the `Kicker` mono line above it. */
   title: {
