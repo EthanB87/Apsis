@@ -9,8 +9,9 @@
  * was already committed, the persisted row is deleted and the session HSS recomputed BEFORE
  * the row leaves the in-memory list, so the live header never shows a stale total.
  *
- * Header padding and the column-header row share SetRow's primary-row left edge (both
- * Spacing.md) per DESIGN-SYSTEM.md — see .planning/debug/session-logger-ui-spacing.md for
+ * Header padding and the column-header row share SetRow's values-row left edge (both
+ * Spacing.md), and the column labels reuse SetRow's exported fixed column widths so they
+ * sit exactly over their columns — see .planning/debug/session-logger-ui-spacing.md for
  * the prior left-edge offset this closes (Plan 03-10).
  */
 
@@ -22,7 +23,12 @@ import Colors from '../../constants/Colors';
 import { HAIRLINE_WIDTH, HIT_TARGET_MIN, Mono, Radius, Spacing, Typography } from '../../constants/theme';
 import { uncommitSet } from '../../lib/commitSet';
 import { useSessionStore, type ExerciseCardState, type SetDraft } from '../../stores/sessionStore';
-import { SetRow } from './SetRow';
+import {
+  SET_ROW_CHIP_WIDTH,
+  SET_ROW_LOAD_GROUP_WIDTH,
+  SET_ROW_VALUE_GROUP_WIDTH,
+  SetRow,
+} from './SetRow';
 
 function DeleteAction({ onPress }: { onPress: () => void }): React.JSX.Element {
   return (
@@ -81,8 +87,6 @@ export function ExerciseCard({ exercise }: ExerciseCardProps): React.JSX.Element
         <Text style={[styles.columnHeader, styles.columnHeaderReps]}>
           {exercise.entryMode === 'timed' ? 'SEC' : 'REPS'}
         </Text>
-        <Text style={[styles.columnHeader, styles.columnHeaderRpe]}>RPE</Text>
-        <View style={styles.columnHeaderCheckSpace} />
       </View>
 
       {exercise.sets.map((set, index) => (
@@ -136,9 +140,10 @@ const styles = StyleSheet.create({
     color: Colors.dark.mutedText,
     marginTop: Spacing.xs,
   },
-  // Mono uppercase column labels above the set rows; widths mirror SetRow's primary-row
-  // group widths (chip 24 / load ~92 / reps-or-sec ~76 / RPE ~74 / checkmark 32) so each
-  // label roughly sits over its column.
+  // Mono uppercase column labels above the set rows. Widths/gap/padding EXACTLY mirror
+  // SetRow's values-row geometry (SET_ROW_* exports) so each label sits over its column —
+  // the RPE column moved to SetRow's second (actions) line and carries its own inline
+  // mono caption there, so it has no header label here.
   columnHeaderRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -147,7 +152,7 @@ const styles = StyleSheet.create({
     paddingBottom: Spacing.xs,
   },
   columnHeaderChipSpace: {
-    width: 24,
+    width: SET_ROW_CHIP_WIDTH,
   },
   columnHeader: {
     ...Mono,
@@ -155,16 +160,10 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   columnHeaderLoad: {
-    width: 92,
+    width: SET_ROW_LOAD_GROUP_WIDTH,
   },
   columnHeaderReps: {
-    width: 76,
-  },
-  columnHeaderRpe: {
-    width: 74,
-  },
-  columnHeaderCheckSpace: {
-    width: 32,
+    width: SET_ROW_VALUE_GROUP_WIDTH,
   },
   setDivider: {
     borderTopWidth: HAIRLINE_WIDTH,

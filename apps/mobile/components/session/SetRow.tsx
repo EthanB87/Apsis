@@ -9,14 +9,20 @@
  * (44pt hit target via hitSlop) that commits/uncommits the set via `lib/commitSet.ts` (D-13
  * persist-then-recompute / D-09 uncheck-undoes).
  *
- * Layout (UAT Test 9 gap closure, Plan 03-10, superseded by DESIGN-SYSTEM.md's stepper
- * contract): the primary controls render on ONE horizontal line — small visual control sizes
- * plus hitSlop supply the 44pt touch target without inflating the row's width past what fits
- * inside an ExerciseCard on any supported iPhone. Effective-load / commit-error / warning
- * annotations are explicit rows stacked BELOW the primary line — intentional second lines,
- * never overflow artifacts. Per-row inline unit labels are gone; units live in
- * ExerciseCard's mono column-header row instead (see .planning/debug/session-logger-ui-spacing.md
- * for the prior overflow defect this replaces).
+ * Layout (UAT Test 9 gap closure, Plan 03-10 — the plan's DELIBERATE two-line fallback,
+ * activated by on-device checkpoint feedback: the single-line variant's ~326pt intrinsic
+ * width overflowed the card on the tester's device, pushing the checkmark off-screen and
+ * colliding with the swipe-delete panel):
+ *   line 1 (values): W chip · load stepper group · reps-or-duration stepper group, at FIXED
+ *     column widths (SET_ROW_* exports) that ExerciseCard's mono column-header row mirrors
+ *     exactly so the unit labels sit over their columns;
+ *   line 2 (actions): inline mono "RPE" caption + RPE stepper group · commit checkmark,
+ *     right-aligned;
+ *   then effective-load / commit-error / warning annotations as explicit rows beneath.
+ * These are explicit rows — never the wrap-on-overflow property. Small visual control sizes
+ * plus hitSlop supply the 44pt touch target (DESIGN-SYSTEM.md §7). The container paints the
+ * card surface color so the swipe-to-delete action panel behind it can never show through.
+ * (See .planning/debug/session-logger-ui-spacing.md for the original overflow defect.)
  */
 
 import { useMemo, useState } from 'react';
@@ -30,6 +36,14 @@ import { Mono, Radius, Spacing, Typography, tabularNums } from '../../constants/
 import { computeEffectiveLoad } from '../../lib/effectiveLoad';
 import { commitSet, uncommitSet } from '../../lib/commitSet';
 import { useSessionStore, type SetDraft } from '../../stores/sessionStore';
+
+/**
+ * Fixed column geometry shared with ExerciseCard's column-header row — the header labels
+ * (KG/LB · REPS/SEC) can only sit over their columns if both components use the same widths.
+ */
+export const SET_ROW_CHIP_WIDTH = 24;
+export const SET_ROW_LOAD_GROUP_WIDTH = 112;
+export const SET_ROW_VALUE_GROUP_WIDTH = 96;
 
 const RPE_MIN = 6;
 const RPE_MAX = 10;
@@ -196,7 +210,7 @@ export function SetRow({
 
   return (
     <View style={styles.container}>
-      <View style={styles.primaryRow}>
+      <View style={styles.valuesRow}>
         <Pressable
           onPress={() => patch({ isWarmup: !draft.isWarmup })}
           disabled={locked}
@@ -208,7 +222,7 @@ export function SetRow({
           <Text style={styles.warmupChipLabel}>W</Text>
         </Pressable>
 
-        <View style={styles.fieldGroup}>
+        <View style={[styles.fieldGroup, styles.loadGroup]}>
           <Pressable
             onPress={() => {
               setLoadText(null);
@@ -235,7 +249,7 @@ export function SetRow({
             autoFocus={draft.isBlank}
             editable={!locked}
             selectTextOnFocus
-            style={[styles.valueInput, tabularNums, styles.valueInputLoad]}
+            style={[styles.valueInput, tabularNums]}
             accessibilityLabel={isBodyweight ? 'Added load' : 'Load'}
           />
           <Pressable
@@ -253,7 +267,7 @@ export function SetRow({
         </View>
 
         {isTimed ? (
-          <View style={styles.fieldGroup}>
+          <View style={[styles.fieldGroup, styles.valueGroup]}>
             <Pressable
               onPress={() =>
                 patch({ durationS: Math.max(0, draft.durationS - DURATION_STEP_S), isBlank: false })
@@ -276,7 +290,7 @@ export function SetRow({
               keyboardType="number-pad"
               editable={!locked}
               selectTextOnFocus
-              style={[styles.valueInput, tabularNums, styles.valueInputDuration]}
+              style={[styles.valueInput, tabularNums]}
               accessibilityLabel="Duration in seconds"
             />
             <Pressable
@@ -290,7 +304,7 @@ export function SetRow({
             </Pressable>
           </View>
         ) : (
-          <View style={styles.fieldGroup}>
+          <View style={[styles.fieldGroup, styles.valueGroup]}>
             <Pressable
               onPress={() => patch({ reps: Math.max(0, draft.reps - 1), isBlank: false })}
               disabled={locked}
@@ -311,7 +325,7 @@ export function SetRow({
               keyboardType="number-pad"
               editable={!locked}
               selectTextOnFocus
-              style={[styles.valueInput, tabularNums, styles.valueInputReps]}
+              style={[styles.valueInput, tabularNums]}
               accessibilityLabel="Reps"
             />
             <Pressable
@@ -325,12 +339,15 @@ export function SetRow({
             </Pressable>
           </View>
         )}
+      </View>
 
+      <View style={styles.actionsRow}>
         <View
           style={styles.fieldGroup}
           accessibilityRole="adjustable"
           accessibilityLabel="RPE"
           accessibilityValue={{ min: RPE_MIN, max: RPE_MAX, now: draft.rpe }}>
+          <Text style={styles.rpeCaption}>RPE</Text>
           <Pressable
             onPress={() => patch({ rpe: stepRpe(draft.rpe, -1) })}
             disabled={locked || draft.rpe <= RPE_MIN}
@@ -402,17 +419,25 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.md,
     paddingVertical: Spacing.sm,
     gap: Spacing.xs,
+    // Opaque row surface (matches the card): without this the swipe-to-delete action
+    // panel rendered behind the Swipeable content shows through the row.
+    backgroundColor: Colors.dark.surface,
   },
-  primaryRow: {
+  valuesRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.xs,
   },
+  actionsRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    gap: Spacing.lg,
+  },
   warmupChip: {
-    minWidth: 24,
+    width: SET_ROW_CHIP_WIDTH,
     height: 24,
     borderRadius: 6,
-    paddingHorizontal: Spacing.xs,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: Colors.dark.border,
@@ -430,6 +455,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.xs,
+  },
+  // Fixed group widths (mirrored by ExerciseCard's column-header labels); the value
+  // TextInput flexes to fill the space between the two 24px steppers.
+  loadGroup: {
+    width: SET_ROW_LOAD_GROUP_WIDTH,
+  },
+  valueGroup: {
+    width: SET_ROW_VALUE_GROUP_WIDTH,
   },
   // Compact stepper visual (DESIGN-SYSTEM.md §5 "Steppers for LOAD KG / REPS / RPE"): the
   // 44px hit target comes from hitSlop={10} on the Pressable, not this box's own size.
@@ -455,15 +488,12 @@ const styles = StyleSheet.create({
     color: Colors.dark.text,
     textAlign: 'center',
     paddingVertical: 0,
+    paddingHorizontal: 0,
+    flex: 1,
   },
-  valueInputLoad: {
-    minWidth: 40,
-  },
-  valueInputReps: {
-    minWidth: 24,
-  },
-  valueInputDuration: {
-    minWidth: 30,
+  rpeCaption: {
+    ...Mono,
+    color: Colors.dark.mutedText,
   },
   rpeValue: {
     fontFamily: 'JetBrainsMono_500Medium',
