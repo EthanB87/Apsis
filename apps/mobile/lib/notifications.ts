@@ -31,12 +31,8 @@ Notifications.setNotificationHandler({
 export async function ensureNotificationPermission(): Promise<boolean> {
   try {
     const current = await Notifications.getPermissionsAsync();
-    // TODO(03-10 rest-diag): remove after on-device verification (before SUMMARY).
-    console.log('[Apsis][rest-diag] permission status:', JSON.stringify(current));
     if (current.granted) return true;
     const requested = await Notifications.requestPermissionsAsync();
-    // TODO(03-10 rest-diag): remove after on-device verification (before SUMMARY).
-    console.log('[Apsis][rest-diag] permission after request:', JSON.stringify(requested));
     if (!requested.granted) {
       // Permanent graceful signal: the countdown banner keeps working without notifications.
       console.warn(
@@ -73,8 +69,6 @@ export async function scheduleRestNotification(endsAt: number): Promise<string |
         repeats: false,
       },
     });
-    // TODO(03-10 rest-diag): remove after on-device verification (before SUMMARY).
-    console.log(`[Apsis][rest-diag] scheduled id=${id} in ${seconds}s (endsAt=${endsAt})`);
     return id;
   } catch (err: unknown) {
     console.error('[Apsis] scheduleRestNotification failed:', err);
@@ -86,8 +80,6 @@ export async function scheduleRestNotification(endsAt: number): Promise<string |
 export async function cancelRestNotification(id: string | null, reason?: string): Promise<void> {
   if (!id) return;
   try {
-    // TODO(03-10 rest-diag): remove after on-device verification (before SUMMARY).
-    console.log(`[Apsis][rest-diag] cancel id=${id} reason=${reason ?? 'unspecified'}`);
     await Notifications.cancelScheduledNotificationAsync(id);
   } catch (err: unknown) {
     console.error('[Apsis] cancelRestNotification failed:', err);

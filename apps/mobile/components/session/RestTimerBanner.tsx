@@ -62,8 +62,6 @@ export function RestTimerBanner(): React.JSX.Element | null {
   // 'active' we now re-schedule if a timer is live with no pending notification (idempotent).
   useEffect(() => {
     const subscription = AppState.addEventListener('change', (nextState) => {
-      // TODO(03-10 rest-diag): remove after on-device verification (before SUMMARY).
-      console.log(`[Apsis][rest-diag] AppState -> ${nextState} (endsAt=${restTimerEndsAt})`);
       if (nextState === 'active') {
         const wallClockNow = Date.now();
         setNow(wallClockNow);
@@ -84,8 +82,6 @@ export function RestTimerBanner(): React.JSX.Element | null {
     if (remainingSec(restTimerEndsAt, now) > 0) return;
     if (zeroHandledRef.current) return;
     zeroHandledRef.current = true;
-    // TODO(03-10 rest-diag): remove after on-device verification (before SUMMARY).
-    console.log('[Apsis][rest-diag] countdown reached zero in-app (haptic firing, banner clearing)');
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch((err: unknown) => {
       console.error('[Apsis] rest-timer completion haptic failed:', err);
     });

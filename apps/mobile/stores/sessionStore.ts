@@ -302,8 +302,6 @@ export const useSessionStore = create<SessionState>((set, get) => ({
     const durationSec = resolveRestDuration(card?.restTimerSec ?? null, profileDefaultSec);
     const endsAt = startRest(durationSec);
     set({ restTimerEndsAt: endsAt, restNotificationId: null });
-    // TODO(03-10 rest-diag): remove after on-device verification (before SUMMARY).
-    console.log(`[Apsis][rest-diag] startRestTimer duration=${durationSec}s endsAt=${endsAt}`);
 
     const notificationId = await scheduleRestNotification(endsAt);
     // Guard against a race: a rapid Skip or a second set's commit could have moved
@@ -344,8 +342,6 @@ export const useSessionStore = create<SessionState>((set, get) => ({
     const { restTimerEndsAt, restNotificationId } = get();
     if (restTimerEndsAt == null || restNotificationId != null) return;
     if (restTimerEndsAt <= Date.now()) return;
-    // TODO(03-10 rest-diag): remove after on-device verification (before SUMMARY).
-    console.log('[Apsis][rest-diag] backgrounding with live timer and no pending id — rescheduling');
     const endsAt = restTimerEndsAt;
     void scheduleRestNotification(endsAt).then((id) => {
       if (get().restTimerEndsAt === endsAt && get().restNotificationId == null) {
