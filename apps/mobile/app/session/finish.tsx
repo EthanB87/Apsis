@@ -21,7 +21,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { eq } from 'drizzle-orm';
 import { db, exercise as exerciseTable, strengthSet } from '@apsis/db';
 import { sessionHSSDetailed } from '@apsis/engine';
-import type { CarrySet, StrengthSet } from '@apsis/shared';
+import { kgToDisplayLb, type CarrySet, type StrengthSet, type Units } from '@apsis/shared';
 
 import Colors from '../../constants/Colors';
 import { DISABLED_OPACITY, HIT_TARGET_MIN, Mono, Radius, Spacing, Typography, tabularNums } from '../../constants/theme';
@@ -45,8 +45,12 @@ function isLowerBody(bodyPart: string | null): boolean {
   return bodyPart === 'lower';
 }
 
-function formatVolume(volumeKg: number): string {
-  return `${Math.round(volumeKg)} kg volume`;
+// Volume respects the profile unit preference (checkpoint QoL fix). Whole-lb rounding for
+// this read-only summary follows the D-12 convention (same as the LAST lines).
+function formatVolume(volumeKg: number, units: Units): string {
+  return units === 'imperial'
+    ? `${kgToDisplayLb(volumeKg)} lb volume`
+    : `${Math.round(volumeKg)} kg volume`;
 }
 
 function formatDuration(totalSeconds: number): string {
@@ -63,6 +67,7 @@ export default function FinishScreen(): React.JSX.Element {
 
   const [hss, setHss] = useState<number | null>(null);
   const [warnings, setWarnings] = useState<string[]>([]);
+  const [units, setUnits] = useState<Units>('metric');
   const [exerciseSummaries, setExerciseSummaries] = useState<ExerciseSummary[]>([]);
   const [menuOpen, setMenuOpen] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
@@ -138,6 +143,7 @@ export default function FinishScreen(): React.JSX.Element {
         if (!cancelled) {
           setHss(result.hss);
           setWarnings(result.warnings);
+          setUnits(profile.units);
           setExerciseSummaries(Array.from(byExercise.values()));
         }
       } catch (err: unknown) {
@@ -228,7 +234,7 @@ export default function FinishScreen(): React.JSX.Element {
             <Text style={styles.exerciseMeta}>
               {summary.entryMode === 'timed'
                 ? formatDuration(summary.totalDurationS)
-                : formatVolume(summary.volumeKg)}
+                : formatVolume(summary.volumeKg, units)}
             </Text>
           </View>
         ))}
