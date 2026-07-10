@@ -103,7 +103,7 @@ export default function HistoryScreen(): React.JSX.Element {
         dayGroupedSessions(db),
       ]);
 
-      if (dailyRows.length === 0) {
+      if (dailyRows.length === 0 && sessions.length === 0) {
         setAllDays([]);
         setLoading(false);
         return;
@@ -118,7 +118,11 @@ export default function HistoryScreen(): React.JSX.Element {
         sessionsByDate.set(s.localDate, list);
       }
 
-      const sortedDates = [...dayHssByDate.keys()].sort();
+      // When load_daily hasn't been recomputed yet, dayHssByDate can be empty even though
+      // finished sessions exist -- fall back to session dates so History never drops them
+      // behind a false "No sessions yet" empty state (dayHss defaults to 0 via the ?? below).
+      const knownDates = new Set<string>([...dayHssByDate.keys(), ...sessionsByDate.keys()]);
+      const sortedDates = [...knownDates].sort();
       const lastComputedDate = sortedDates[sortedDates.length - 1]!;
       const today = todayLocalDate();
 
