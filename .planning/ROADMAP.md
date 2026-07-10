@@ -133,6 +133,10 @@ Plans:
 - [x] 03-08-PLAN.md — Finish summary + confirmed soft-delete discard + HSS breakdown sheet + warning badges (LIFT-07)
 - [x] 03-09-PLAN.md — Settings tab: profile editor (ONB-02) + units toggle (ONB-04) + default rest timer
 
+**Gap closure** *(UAT Test 9 — set-logging UI wraps instead of rendering a single row)*
+
+- [ ] 03-10-PLAN.md — Rebuild SetRow as a single-line row (compact fields + hitSlop touch targets), align ExerciseCard padding, full-width ghost add-set row, drop redundant font weights (LIFT-02/LIFT-03)
+
 **UI hint**: yes
 
 ---
