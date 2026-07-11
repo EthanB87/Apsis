@@ -1,7 +1,7 @@
 ---
 phase: 04-run-logger-home-dashboard
 verified: 2026-07-10T23:45:00Z
-status: human_needed
+status: passed
 score: 3/5 must-haves verified
 behavior_unverified: 2
 overrides_applied: 0
@@ -9,15 +9,18 @@ re_verification:
   previous_status: gaps_found
   previous_score: 3/5
   gaps_closed:
+
     - "Home screen shows today's readiness band and today's total HSS prominently, reflecting reality (not stale/deleted data) — CR-02 source-level fix confirmed: recomputeLoadDaily.ts now issues database.delete(loadDaily) on the empty-result path and a parameterized notInArray(loadDaily.localDate, keep) cleanup on every recompute. Moves from FAILED to PRESENT_BEHAVIOR_UNVERIFIED (fix is correct and wired; the delete-then-render sequence itself is not exercised by any automated test)."
     - "Home screen shows a 28-day ATL/CTL/TSB trend chart (with the D-19/D-20 scrub tooltip) — CR-01 source-level fix confirmed: TrendChart.tsx's formatSignedTsb now carries the 'worklet' directive as its first statement, so tooltipText's useDerivedValue no longer calls a non-worklet host function on the UI thread. Moves from FAILED to PRESENT_BEHAVIOR_UNVERIFIED (fix is correct; the actual UI-thread scrub gesture is not exercised by any automated test)."
   gaps_remaining: []
   regressions: []
 behavior_unverified_items:
+
   - truth: "Deleting a session removes its load from load_daily so TODAY never shows a ghost HSS/readiness band (CR-02, D-29)."
     test: "Log a session (appears on TODAY), delete it via History swipe-to-delete, return to TODAY. Separately: with sessions across several days, delete the earliest one."
     expected: "After deleting the only session of a day: TODAY shows the empty/0 readiness state, not the deleted session's HSS/band. After deleting the earliest session: the 28-day trend and History no longer show a stale value for that removed day."
     why_human: "recomputeLoadDaily opens a real op-sqlite JSI connection; the apps/mobile vitest harness is scoped to lib/** pure modules and must never import @apsis/db (would open a native SQLite connection at import/collection time). The delete-then-render sequence is a cleanup/ordering invariant that only a live on-device (or simulator) pass can exercise. Source-level fix is confirmed correct (delete(loadDaily) on empty-input path; notInArray range-shrink cleanup import and call both present) and packages/db's 27-test suite still passes, but no test drives the actual op-sqlite DELETE + re-render sequence."
+
   - truth: "Scrubbing the 28-day trend chart does not crash and renders the snapped tooltip (CR-01, HOME-03/D-19/D-20)."
     test: "Drag across the 28-day trend chart on-device (or in a dev-build/simulator with New Architecture + Reanimated running)."
     expected: "The hairline cursor and tooltip appear, snap to the nearest day, and render the signed TSB form (e.g. 'JUL 8 · HSS 142 · ATL 41 · CTL 55 · TSB +14') without a red-screen crash."

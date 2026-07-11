@@ -2,13 +2,13 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-current_phase: 04
-current_phase_name: run-logger-home-dashboard
+current_phase: 05
+current_phase_name: HealthKit Integration
 status: executing
 stopped_at: Completed 04-10-PLAN.md
-last_updated: "2026-07-10T23:23:27.895Z"
-last_activity: 2026-07-10
-last_activity_desc: Phase 04 execution started
+last_updated: "2026-07-11T17:08:18.312Z"
+last_activity: 2026-07-11
+last_activity_desc: Phase 04 complete, transitioned to Phase 05
 progress:
   total_phases: 6
   completed_phases: 3
@@ -21,27 +21,26 @@ progress:
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-06-29)
+See: .planning/PROJECT.md (updated 2026-07-11)
 
 **Core value:** Log lifting + running in one app, instantly see one honest combined
 training-load number (HSS) and a readiness band — fully offline.
-**Current focus:** Phase 04 — run-logger-home-dashboard
+**Current focus:** Phase 05 — HealthKit Integration
 
 ## Current Position
 
-Phase: 04 (run-logger-home-dashboard) — EXECUTING
-Plan: 10 of 10
-Status: Ready to execute
-Last activity: 2026-07-10 — Phase 04 execution started
-traceability filled; 100% of the 39 pending v1.0 requirements mapped to Phases 02–06.
+Phase: 05 — HealthKit Integration
+Plan: Not started
+Status: Ready to plan (no phase 05 directory/CONTEXT yet — discuss or plan next)
+Last activity: 2026-07-11 — Phase 04 complete (UAT 7/7, security 24/24 closed), transitioned to Phase 05
 
-Progress: [█████░░░░░] 50% (3/6 phases complete)
+Progress: [█████████████░░░░░░░] 67% (4/6 phases complete, 27/27 executed plans)
 
 ## Performance Metrics
 
 **Velocity:**
 
-- Total plans completed: 17 (all in Phase 01)
+- Total plans completed: 27 (all in Phase 01)
 - Average duration: not tracked (Phase 01 predates STATE.md instrumentation)
 - Total execution time: not tracked
 
@@ -53,6 +52,7 @@ Progress: [█████░░░░░] 50% (3/6 phases complete)
 | 02–06 | 0/TBD | - | - |
 | 02 | 6 | - | - |
 | 03 | 11 | - | - |
+| 04 | 10 | - | - |
 
 **Recent Trend:**
 
@@ -190,6 +190,12 @@ None yet.
   components/ExternalLink.tsx) deferred in 03 deferred-items.md — root `pnpm run typecheck`
   is not fully clean until addressed.
 
+- ⚠️ [Phase 04] Native-dep changes require BOTH a pnpm-lock.yaml sync (EAS installs with
+  --frozen-lockfile) AND a fresh EAS dev build before on-device testing — the 04 UAT
+  session was blocked at start by a stale dev client missing RNSkiaModule plus an
+  out-of-sync lockfile (fixed ec76663, 2026-07-11). Phase 05's HealthKit dep will hit
+  the same gate: budget an EAS build cycle into the phase.
+
 ### Quick Tasks Completed
 
 | # | Description | Date | Commit | Directory |
@@ -208,6 +214,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-07-10T23:23:27.883Z
-Stopped at: Completed 04-10-PLAN.md
+Last session: 2026-07-11
+Stopped at: Phase 04 complete, ready to plan Phase 05
 Resume file: None
