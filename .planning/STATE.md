@@ -5,15 +5,15 @@ milestone_name: milestone
 current_phase: 05
 current_phase_name: healthkit-integration
 status: executing
-stopped_at: Completed 05-05-PLAN.md
-last_updated: "2026-07-11T23:28:21.749Z"
+stopped_at: Completed 05-06-PLAN.md
+last_updated: "2026-07-11T23:38:48.695Z"
 last_activity: 2026-07-11
 last_activity_desc: Phase 05 execution started
 progress:
   total_phases: 6
   completed_phases: 3
   total_plans: 36
-  completed_plans: 31
+  completed_plans: 32
   percent: 50
 ---
 
@@ -30,7 +30,7 @@ training-load number (HSS) and a readiness band — fully offline.
 ## Current Position
 
 Phase: 05 (healthkit-integration) — EXECUTING
-Plan: 5 of 9
+Plan: 6 of 9
 Status: Ready to execute
 Last activity: 2026-07-11 — Phase 05 execution started
 
@@ -91,6 +91,7 @@ Progress: [█████████████░░░░░░░] 67% (4/
 | Phase 05 P04 | 8min | 2 tasks | 3 files |
 | Phase 05 P03 | 10min | 3 tasks | 4 files |
 | Phase 05 P05 | 9min | 2 tasks | 3 files |
+| Phase 05 P06 | 12min | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -182,6 +183,9 @@ Recent decisions affecting current work:
 - [Phase ?]: [Phase 05 P05]: Duration-tolerance manual-duplicate dedupe check filters candidatesForDedupe to healthkitUuid==null candidates; the tombstone check runs against the full unfiltered list -- prevents two legitimate same-day HK sessions of similar duration from false-positive-skipping each other while still honoring D-06/07 manual-wins and Pitfall 8/9 soft-deleted tombstones
 - [Phase ?]: [Phase 05 P05]: workout.duration.quantity/totalDistance.quantity used directly as durationS/distanceM -- confirmed against the library's native Swift source that both are unconditionally seconds/meters, no unit conversion needed on the read side
 - [Phase ?]: [Phase 05 P05]: useHealthKitImportSignal is a new non-persisted zustand store (profileVersion.ts pattern) exposing lastImportedCount/lastSyncedAt as the coordinated symbol 05-09's TODAY notice will read
+- [Phase ?]: [Phase 05 P06]: runEntry.ts's HK write-back startedAt is back-computed as finishedAt - durationS*1000, since endurance sessions carry no separate begin timestamp (D-13)
+- [Phase ?]: [Phase 05 P06]: finishWorkout.ts's HK write-back duration is computed from workout.createdAt to the caller-supplied finishedAt, matching the schema's only two session-boundary timestamps
+- [Phase ?]: [Phase 05 P06]: healthkitWriteback.ts is the one codebase location where a caught error is deliberately swallowed, not re-thrown (D-12/D-25 fire-and-forget contract)
 
 ### Pending Todos
 
@@ -225,6 +229,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-07-11T23:28:21.726Z
-Stopped at: Completed 05-05-PLAN.md
+Last session: 2026-07-11T23:38:48.673Z
+Stopped at: Completed 05-06-PLAN.md
 Resume file: None
