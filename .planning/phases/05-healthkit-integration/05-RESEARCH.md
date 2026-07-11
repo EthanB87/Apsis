@@ -539,17 +539,21 @@ export async function discardWorkout(database: DB, workoutId: string, deletedAt:
 
 **If this table is empty:** N/A — see entries above; all other API-shape claims (function signatures, enum values, unit behavior, config plugin shape) were verified directly against the npm tarball's shipped `.d.ts`/Swift source this session, not assumed.
 
-## Open Questions
+## Open Questions (RESOLVED)
 
-1. **Exact conditioning-type HKWorkoutActivityType allowlist (D-04 discretion)**
+> Both questions were resolved during planning and are now locked in the executable plans. Pointers below.
+
+1. **Exact conditioning-type HKWorkoutActivityType allowlist (D-04 discretion)** — **RESOLVED in 05-03 Task 1.**
    - What we know: The full 84-value `WorkoutActivityType` enum (captured above) and the decision's examples (cycling, HIIT, hiking, swimming, elliptical).
    - What's unclear: Whether types like `crossTraining`, `stairClimbing`, `jumpRope`, `waterFitness`, `snowSports` etc. should also map to `conditioning` or be excluded (not imported at all).
    - Recommendation: The planner should finalize the full allowlist as an explicit table in the plan (not left to executor improvisation), erring toward inclusion for anything cardio/conditioning-like per the "a Zwift ride shouldn't be invisible stress" specifics note, and exclusion for anything ambiguous (dance, sports, mind/body) since those weren't discussed in CONTEXT.md.
+   - **RESOLUTION:** 05-03 Task 1 `<behavior>` fixes the full conditioning allowlist as: cycling, highIntensityIntervalTraining, hiking, swimming, elliptical, walking, mixedCardio, mixedMetabolicCardioTraining, crossTraining, stairClimbing, jumpRope → `conditioning`; traditionalStrengthTraining + functionalStrengthTraining → null (D-05); everything else → null. Ambiguous mind/body/sports types are excluded (mapped to null / not imported), per the recommendation.
 
-2. **Does `saveWorkoutSample`'s `quantities` array need an average-HR sample for write-back, or is metadata-only sufficient?**
+2. **Does `saveWorkoutSample`'s `quantities` array need an average-HR sample for write-back, or is metadata-only sufficient?** — **RESOLVED in 05-06 Task 1.**
    - What we know: D-13 says "basics + HSS metadata, no calories" — HR isn't explicitly listed as part of the write-back payload.
    - What's unclear: Whether an empty `quantities: []` array (as shown in Pattern 3) is acceptable, or whether Health app / other apps expect an associated HR sample for a workout to look "complete."
    - Recommendation: Ship with `quantities: []` per the literal D-13 payload (basics + HSS metadata only); this is the simplest interpretation and matches "no fabricated data" — Apsis doesn't always have avgHR for lifting sessions anyway.
+   - **RESOLUTION:** 05-06 Task 1 locks `writeBackRun`/`writeBackLift` to call `saveWorkoutSample` with an empty `quantities: []` array (basics + ApsisHSS metadata only, no calorie/energy fields), per the recommendation.
 
 ## Environment Availability
 
