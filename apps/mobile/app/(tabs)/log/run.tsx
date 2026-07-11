@@ -33,7 +33,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import DateTimePicker, { type DateTimePickerEvent } from '@react-native-community/datetimepicker';
-import { db } from '@apsis/db';
+import { candidatesForDedupe, db } from '@apsis/db';
 import {
   formatPaceMinSec,
   miToKmExact,
@@ -53,6 +53,7 @@ import {
   tabularNums,
 } from '@/constants/theme';
 import { fetchProfileSummary } from '@/lib/commitSet';
+import { isDuplicateOfExisting } from '@/lib/healthkitMapping';
 import { dateToLocalDateStr, todayLocalDate } from '@/lib/localDate';
 import { saveRun, type RunEntryInput } from '@/lib/runEntry';
 import { computePaceSecPerKm, type RunActivityType } from '@/lib/runEntryLogic';
@@ -103,6 +104,7 @@ export default function RunEntryScreen(): React.JSX.Element {
   const [units, setUnits] = useState<Units>('metric');
   const [saving, setSaving] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [hasImportDupe, setHasImportDupe] = useState(false);
 
   // Profile units (for the DISTANCE caption + pace display unit, ONB-04) are read once on
   // mount — a fresh screen each time this route is pushed, so no focus-gating is needed here
@@ -124,6 +126,30 @@ export default function RunEntryScreen(): React.JSX.Element {
   const dateLabel = isToday
     ? 'TODAY'
     : selectedDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }).toUpperCase();
+
+  // D-09: soft, non-blocking dedupe hint -- reuses the D-06 dedupe tolerance the import
+  // pipeline itself uses (isDuplicateOfExisting/DUPE_TOLERANCE), never a second constant.
+  // candidatesForDedupe returns healthkitUuid alongside durationS; a non-null healthkitUuid
+  // is exactly the imported (source==='healthkit') rows this hint cares about.
+  useEffect(() => {
+    let cancelled = false;
+    if (durationS === 0) {
+      setHasImportDupe(false);
+      return;
+    }
+    candidatesForDedupe(db, localDate, activityType)
+      .then((candidates) => {
+        if (cancelled) return;
+        const dupe = candidates
+          .filter((c) => c.healthkitUuid != null)
+          .some((c) => isDuplicateOfExisting(durationS, c.durationS));
+        setHasImportDupe(dupe);
+      })
+      .catch((err: unknown) => console.error('[Apsis] Failed to check import dedupe candidates:', err));
+    return () => {
+      cancelled = true;
+    };
+  }, [localDate, activityType, durationS]);
 
   const distanceM = useMemo(
     () => (activityType === 'conditioning' ? undefined : toDistanceM(distanceText, activityType, units)),
@@ -300,6 +326,11 @@ export default function RunEntryScreen(): React.JSX.Element {
                   maximumDate={new Date()}
                   onChange={handleDateChange}
                 />
+              ) : null}
+              {hasImportDupe ? (
+                <Text style={styles.warningLabel}>
+                  An imported run already covers this — saving will count both.
+                </Text>
               ) : null}
 
               {/* 7. Note field (optional, RUN-05). */}
