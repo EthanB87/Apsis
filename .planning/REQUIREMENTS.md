@@ -66,7 +66,7 @@ Requirements for the v1.0 release. Each maps to exactly one roadmap phase.
 
 ### HealthKit (lowest priority — first to cut if timeline slips)
 
-- [ ] **HK-01**: User grants HealthKit permission and the app imports runs (distance, duration, HR)
+- [x] **HK-01**: User grants HealthKit permission and the app imports runs (distance, duration, HR)
 - [x] **HK-02**: App imports most-recent bodyweight from HealthKit
 - [x] **HK-03**: Imported runs deduplicate against manual entries by timestamp range
 - [x] **HK-04**: App writes logged sessions back to HealthKit (strength training + runs)
@@ -147,7 +147,7 @@ Which phase covers which requirement. Populated during roadmap creation.
 | HOME-04 | Phase 04 | Complete |
 | HOME-05 | Phase 04 | Complete |
 | HOME-06 | Phase 04 | Complete |
-| HK-01 | Phase 05 | Pending |
+| HK-01 | Phase 05 | Complete |
 | HK-02 | Phase 05 | Complete |
 | HK-03 | Phase 05 | Complete |
 | HK-04 | Phase 05 | Complete |
