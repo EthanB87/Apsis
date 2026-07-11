@@ -32,6 +32,7 @@ import {
   type Units,
 } from '@apsis/shared';
 
+import { SourceChip } from '../../components/SourceChip';
 import Colors from '../../constants/Colors';
 import { HAIRLINE_WIDTH, Mono, Spacing, Typography, tabularNums } from '../../constants/theme';
 import { fetchProfileSummary } from '../../lib/commitSet';
@@ -114,6 +115,7 @@ export default function SessionDetailScreen(): React.JSX.Element {
   const [loading, setLoading] = useState(true);
   const [title, setTitle] = useState('Session');
   const [dateLabel, setDateLabel] = useState('');
+  const [source, setSource] = useState<'manual' | 'healthkit'>('manual');
   const [rows, setRows] = useState<DetailRow[]>([]);
   const [total, setTotal] = useState(0);
 
@@ -126,7 +128,13 @@ export default function SessionDetailScreen(): React.JSX.Element {
         const profile = await fetchProfileSummary(db);
 
         const workoutRows = await db
-          .select({ type: workout.type, title: workout.title, localDate: workout.localDate, hss: workout.hss })
+          .select({
+            type: workout.type,
+            title: workout.title,
+            localDate: workout.localDate,
+            hss: workout.hss,
+            source: workout.source,
+          })
           .from(workout)
           .where(eq(workout.id, workoutId));
         const w = workoutRows[0];
@@ -161,6 +169,7 @@ export default function SessionDetailScreen(): React.JSX.Element {
           if (!cancelled) {
             setTitle(w.title ?? (segmentRows[0] ? capitalize(segmentRows[0].activityType) : 'Run'));
             setDateLabel(formatDetailDate(w.localDate));
+            setSource(w.source ?? 'manual');
             setRows(detailRows);
             setTotal(w.hss ?? 0);
             setLoading(false);
@@ -250,6 +259,7 @@ export default function SessionDetailScreen(): React.JSX.Element {
         if (!cancelled) {
           setTitle(w.title ?? capitalize(w.type));
           setDateLabel(formatDetailDate(w.localDate));
+          setSource(w.source ?? 'manual');
           setRows(detailRows);
           setTotal(w.hss ?? 0);
           setLoading(false);
@@ -279,7 +289,11 @@ export default function SessionDetailScreen(): React.JSX.Element {
       />
 
       <ScrollView contentContainerStyle={styles.scrollContent}>
-        <Text style={styles.timestamp}>{dateLabel}</Text>
+        <View style={styles.timestampRow}>
+          <Text style={styles.timestamp}>{dateLabel}</Text>
+          {/* D-08 provenance: shared "APPLE HEALTH" chip, ash tint, source-conditional */}
+          {source === 'healthkit' ? <SourceChip /> : null}
+        </View>
         <Text style={styles.title}>{title}</Text>
 
         {rows.map((row) => (
@@ -310,10 +324,15 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.xl,
     paddingBottom: Spacing.xxxl,
   },
+  timestampRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.sm,
+    marginTop: Spacing.lg,
+  },
   timestamp: {
     ...Mono,
     color: Colors.dark.mutedText,
-    marginTop: Spacing.lg,
   },
   title: {
     ...Typography.heading,
