@@ -196,7 +196,30 @@ Plans:
   3. Imported HealthKit runs never create duplicate entries alongside manually logged runs covering the same time range.
   4. After a user saves a lifting or running session in Apsis, that session appears in the Health app.
 
-**Plans**: TBD
+**Plans**: 9 plans
+
+Plans:
+**Wave 1**
+
+- [ ] 05-01-PLAN.md — Native install: @kingstinct/react-native-healthkit@^14.0.2 + react-native-nitro-modules + config plugin/entitlements + SUS legitimacy checkpoint + fresh EAS dev build (HK-01)
+- [ ] 05-02-PLAN.md — Schema: workout.source/healthkitUuid + user_profile bodyweightSetAt/healthkit sync columns + candidatesForDedupe builder + [BLOCKING] 0003 migration (HK-02/03/04)
+
+**Wave 2** *(blocked on Wave 1)*
+
+- [ ] 05-03-PLAN.md — HK logic foundations: pure healthkitMapping (map/dedupe/recency/metadata/sanitize) + vitest tests + healthkitAuth (minimal identifier sets) + healthkitSyncState accessor (HK-01/02/03/04)
+- [ ] 05-04-PLAN.md — APPLE HEALTH provenance chip on History rows + session detail (D-08) (HK-03)
+
+**Wave 3** *(blocked on Wave 2)*
+
+- [ ] 05-05-PLAN.md — Import engine: 90-day backfill + foreground anchor-sync + dedupe/echo-exclusion + bodyweight import + useForegroundHealthKitSync hook (HK-01/02/03)
+- [ ] 05-06-PLAN.md — Write-back + delete-sync: healthkitWriteback + saveRun/finishWorkout tails + discardWorkout delete-sync (HK-04)
+
+**Wave 4** *(blocked on Wave 3)*
+
+- [ ] 05-07-PLAN.md — Terminal onboarding HealthKit step + profile-version-bump race fix (D-20/22/23) (HK-01)
+- [ ] 05-08-PLAN.md — Settings "Apple Health" section: connect row / sync toggle / last-sync line (D-03/19/21/24) (HK-01/02)
+- [ ] 05-09-PLAN.md — Run-form dedupe hint (D-09) + transient TODAY import notice (D-10) (HK-03)
+
 **UI hint**: no (adapter/import logic; no new screens beyond the permission prompt)
 
 ---
@@ -227,5 +250,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 | 02. HSS Engine | 6/6 | Complete    | 2026-07-08 |
 | 03. Onboarding & Lifting Logger | 11/11 | Complete    | 2026-07-10 |
 | 04. Run Logger & Home Dashboard | 10/10 | Complete    | 2026-07-10 |
-| 05. HealthKit Integration | 0/TBD | Not started | - |
+| 05. HealthKit Integration | 0/9 | Not started | - |
 | 06. Polish & App Store Submission | 0/TBD | Not started | - |
