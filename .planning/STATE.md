@@ -5,8 +5,8 @@ milestone_name: milestone
 current_phase: 05
 current_phase_name: HealthKit Integration
 status: executing
-stopped_at: Phase 5 context gathered
-last_updated: "2026-07-11T20:30:45.432Z"
+stopped_at: Phase 5 UI-SPEC approved
+last_updated: "2026-07-11T21:45:47.798Z"
 last_activity: 2026-07-11
 last_activity_desc: Phase 04 complete (UAT 7/7, security 24/24 closed), transitioned to Phase 05
 progress:
@@ -214,6 +214,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-07-11T20:30:45.422Z
-Stopped at: Phase 5 context gathered
-Resume file: .planning/phases/05-healthkit-integration/05-CONTEXT.md
+Last session: 2026-07-11T21:45:47.788Z
+Stopped at: Phase 5 UI-SPEC approved
+Resume file: .planning/phases/05-healthkit-integration/05-UI-SPEC.md
