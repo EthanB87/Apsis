@@ -40,7 +40,15 @@
         }
       ],
       "expo-notifications",
-      "@react-native-community/datetimepicker"
+      "@react-native-community/datetimepicker",
+      [
+        "@kingstinct/react-native-healthkit",
+        {
+          "NSHealthShareUsageDescription": "Apsis reads your runs, heart rate, and bodyweight from Health so they count toward your training load automatically.",
+          "NSHealthUpdateUsageDescription": "Apsis writes your logged lifting and running sessions to Health so they show up alongside your other workouts.",
+          "background": false
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true
