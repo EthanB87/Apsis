@@ -36,6 +36,7 @@ import TrendChart, { type TrendChartPoint } from '../../components/home/TrendCha
 import { TodayBreakdownSheet, type TodaySessionSummary } from '../../components/home/TodayBreakdownSheet';
 import Colors from '../../constants/Colors';
 import { Mono, Radius, Spacing, Typography, tabularNums } from '../../constants/theme';
+import { useHealthKitImportSignal } from '../../hooks/useForegroundHealthKitSync';
 import { fetchProfileSummary } from '../../lib/commitSet';
 import { todayLocalDate } from '../../lib/localDate';
 
@@ -58,6 +59,22 @@ function shouldAnimateRing(today: string, hss: number): boolean {
     lastAnimatedHssValue = roundedHss;
   }
   return changed;
+}
+
+// D-10's "show once per batch" gate: module-scoped (mirrors lastAnimatedHssDate/
+// lastAnimatedHssValue above), keyed on the import signal's syncedAt timestamp -- each
+// completed foreground sync batch gets a distinct syncedAt, so this is a stable batch id
+// without needing a dedicated field on useHealthKitImportSignal. Not persisted: a stale
+// notice from a prior app session should never resurface after a relaunch (mirrors the
+// import signal store's own non-persisted design, 05-05).
+let lastShownImportBatchAt: number | null = null;
+
+function importNoticeForBatch(importedCount: number | null, syncedAt: Date | null): string | null {
+  if (importedCount == null || importedCount <= 0 || syncedAt == null) return null;
+  const batchKey = syncedAt.getTime();
+  if (lastShownImportBatchAt === batchKey) return null; // already shown for this batch
+  lastShownImportBatchAt = batchKey;
+  return `IMPORTED ${importedCount} SESSION${importedCount === 1 ? '' : 'S'} FROM APPLE HEALTH`;
 }
 
 function formatShortDate(localDate: string): string {
@@ -250,6 +267,7 @@ export default function TodayScreen(): React.JSX.Element {
   const router = useRouter();
   const [state, setState] = useState<HomeState>(INITIAL_STATE);
   const [breakdownOpen, setBreakdownOpen] = useState(false);
+  const [importNotice, setImportNotice] = useState<string | null>(null);
 
   const loadHome = useCallback(async () => {
     try {
@@ -340,6 +358,16 @@ export default function TodayScreen(): React.JSX.Element {
     }, [loadHome])
   );
 
+  // D-10: read the last-import signal (05-05) once per fresh focus -- getState(), not the
+  // reactive hook, so the notice is captured for this focus and doesn't flicker if the store
+  // updates again before the user navigates away. Silent (null) when nothing new arrived.
+  useFocusEffect(
+    useCallback(() => {
+      const { lastImportedCount, lastSyncedAt } = useHealthKitImportSignal.getState();
+      setImportNotice(importNoticeForBatch(lastImportedCount, lastSyncedAt));
+    }, [])
+  );
+
   // Readiness-algorithm calibrating (ring): tied to the persisted band. Data-availability
   // calibrating (chart, D-22): tied to how many real days exist, independent of the band --
   // these can differ in a rare low-CTL-floor edge case, so they're computed separately.
@@ -353,6 +381,7 @@ export default function TodayScreen(): React.JSX.Element {
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <Text style={styles.timestamp}>{formatGreetingTimestamp(new Date())}</Text>
         <Text style={styles.greeting}>LET&apos;S WORK</Text>
+        {importNotice ? <Text style={styles.importNotice}>{importNotice}</Text> : null}
 
         <View style={styles.ringBlock}>
           <HssRing
@@ -448,6 +477,12 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: Spacing.sm,
     marginBottom: Spacing.xxl,
+  },
+  importNotice: {
+    ...Mono,
+    color: Colors.dark.mutedText,
+    textAlign: 'center',
+    marginTop: Spacing.sm,
   },
   ringBlock: {
     alignItems: 'center',
