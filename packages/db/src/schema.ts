@@ -31,6 +31,14 @@ export const userProfile = sqliteTable('user_profile', {
   restTimerDefaultSec: integer('rest_timer_default_sec').default(120),
   createdAt: integer('created_at', { mode: 'timestamp' }).default(sql`(unixepoch())`),
   updatedAt: integer('updated_at', { mode: 'timestamp' }).default(sql`(unixepoch())`),
+  /** When bodyweight was last set, by manual edit or HK import (D-17); drives most-recent-wins conflict resolution. */
+  bodyweightSetAt: integer('bodyweight_set_at', { mode: 'timestamp' }),
+  /** True once the HealthKit permission sheet has completed (D-19/D-21); toggling off pauses all HK reads/writes. */
+  healthkitConnected: integer('healthkit_connected', { mode: 'boolean' }).default(false),
+  /** Timestamp of the last successful foreground sync (D-24); null = never synced or last sync failed (D-25). */
+  healthkitLastSyncAt: integer('healthkit_last_sync_at', { mode: 'timestamp' }),
+  /** Opaque anchor token from HealthKit's anchored query API (D-02 Pattern 2); null = no sync has completed yet. */
+  healthkitAnchor: text('healthkit_anchor'),
 });
 
 // ---------------------------------------------------------------------------
@@ -72,6 +80,11 @@ export const workout = sqliteTable('workout', {
   finishedAt: integer('finished_at', { mode: 'timestamp' }),
   /** Soft-delete marker (D-28); null = active. Every load/HSS read must filter this IS NULL. */
   deletedAt: integer('deleted_at', { mode: 'timestamp' }),
+  /** Provenance (D-08): 'manual' = logged in Apsis, 'healthkit' = imported from Apple Health. */
+  source: text('source', { enum: ['manual', 'healthkit'] }).default('manual'),
+  /** HealthKit sample UUID (D-11/D-14): for 'healthkit' rows, the imported sample's uuid
+   * (echo-exclusion + tombstone check); for 'manual' rows, the uuid of Apsis's own write-back. */
+  healthkitUuid: text('healthkit_uuid'),
 });
 
 // ---------------------------------------------------------------------------

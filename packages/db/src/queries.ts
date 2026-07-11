@@ -15,7 +15,7 @@
 
 import { and, desc, eq, isNotNull, isNull, sql } from 'drizzle-orm';
 import type { BaseSQLiteDatabase } from 'drizzle-orm/sqlite-core';
-import { loadDaily, strengthSet, workout } from './schema';
+import { enduranceSegment, loadDaily, strengthSet, workout } from './schema';
 
 /**
  * Accepts any drizzle SQLite db instance sharing the base query-builder API — the real
@@ -166,8 +166,35 @@ export function dayGroupedSessions(db: QueryableDB) {
       type: workout.type,
       title: workout.title,
       hss: workout.hss,
+      source: workout.source,
     })
     .from(workout)
     .where(and(isNotNull(workout.finishedAt), activeWorkoutFilter))
     .orderBy(desc(workout.localDate), desc(workout.createdAt));
+}
+
+// ---------------------------------------------------------------------------
+// HealthKit import dedupe (HK-03/D-06/Pitfall 9)
+// ---------------------------------------------------------------------------
+
+/**
+ * Active workouts on `localDate` matching `activityType`, for D-06 dedupe comparison
+ * (localDate + activityType + duration-within-tolerance — manual entries carry no
+ * time-of-day, so time-range overlap is not viable).
+ *
+ * Deliberately does NOT apply `activeWorkoutFilter`/`isNull(workout.deletedAt)` — this is
+ * a tombstone check, not a display read. A swipe-deleted imported run must still block
+ * re-import on the next foreground sync (Pitfall 9); filtering out soft-deleted rows here
+ * would let a deleted HK import resurrect itself.
+ */
+export function candidatesForDedupe(
+  db: QueryableDB,
+  localDate: string,
+  activityType: 'run' | 'erg' | 'conditioning' | 'sled' | 'other',
+) {
+  return db
+    .select({ durationS: enduranceSegment.durationS, healthkitUuid: workout.healthkitUuid })
+    .from(workout)
+    .innerJoin(enduranceSegment, eq(enduranceSegment.workoutId, workout.id))
+    .where(and(eq(workout.localDate, localDate), eq(enduranceSegment.activityType, activityType)));
 }

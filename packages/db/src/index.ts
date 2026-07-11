@@ -33,6 +33,7 @@ export {
   last28DaysTrend,
   sessionCountsByDate,
   dayGroupedSessions,
+  candidatesForDedupe,
 } from './queries';
 
 // Pure load_daily recompute-row builder (RUN/HOME foundation — RESEARCH Pattern 1)
