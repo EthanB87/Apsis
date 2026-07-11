@@ -196,7 +196,7 @@ Plans:
   3. Imported HealthKit runs never create duplicate entries alongside manually logged runs covering the same time range.
   4. After a user saves a lifting or running session in Apsis, that session appears in the Health app.
 
-**Plans**: 5/9 plans executed
+**Plans**: 6/9 plans executed
 
 Plans:
 **Wave 1**
@@ -218,7 +218,7 @@ Plans:
 
 - [ ] 05-07-PLAN.md — Terminal onboarding HealthKit step + profile-version-bump race fix (D-20/22/23) (HK-01)
 - [ ] 05-08-PLAN.md — Settings "Apple Health" section: connect row / sync toggle / last-sync line (D-03/19/21/24) (HK-01/02)
-- [ ] 05-09-PLAN.md — Run-form dedupe hint (D-09) + transient TODAY import notice (D-10) (HK-03)
+- [x] 05-09-PLAN.md — Run-form dedupe hint (D-09) + transient TODAY import notice (D-10) (HK-03)
 
 **UI hint**: no (adapter/import logic; no new screens beyond the permission prompt)
 
@@ -250,5 +250,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 | 02. HSS Engine | 6/6 | Complete    | 2026-07-08 |
 | 03. Onboarding & Lifting Logger | 11/11 | Complete    | 2026-07-10 |
 | 04. Run Logger & Home Dashboard | 10/10 | Complete    | 2026-07-10 |
-| 05. HealthKit Integration | 5/9 | In Progress|  |
+| 05. HealthKit Integration | 6/9 | In Progress|  |
 | 06. Polish & App Store Submission | 0/TBD | Not started | - |
