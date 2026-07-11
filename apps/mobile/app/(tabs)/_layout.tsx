@@ -6,9 +6,13 @@ import Colors from '@/constants/Colors';
 import { HAIRLINE_WIDTH, Typography } from '@/constants/theme';
 import { useColorScheme } from '@/components/useColorScheme';
 import { useClientOnlyValue } from '@/components/useClientOnlyValue';
+import { useForegroundHealthKitSync } from '@/hooks/useForegroundHealthKitSync';
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
+  // D-02: silent HK foreground delta-sync, mounted once at the tab shell — deliberately NOT
+  // inside a logging screen so sync never touches the logging path (local-first). No UI.
+  useForegroundHealthKitSync();
 
   return (
     <Tabs
