@@ -9,6 +9,14 @@
  * `runEntryLogic.ts`), insert the finished `workout` + `endurance_segment` rows, write the
  * session HSS, then recompute `load_daily` so Home reflects the new session immediately.
  *
+ * HealthKit write-back (HK-04/D-12): after a successful save, if HealthKit is connected
+ * (`getSyncState`), fires a fire-and-forget `writeBackRun` tail and stores the returned
+ * sample uuid on the workout row. This tail can never fail the save itself (D-25) - it runs
+ * after `recomputeLoadDaily`, outside the function's own try/catch-and-rethrow scope, and its
+ * own internal errors are already swallowed by `healthkitWriteback.ts` (never rethrown there).
+ * `startedAt` is back-computed as `finishedAt - durationS` since endurance sessions are
+ * complete-on-save and carry no separate begin timestamp (RESEARCH D-13).
+ *
  * Security (T-04-08/T-1-01): every query here is a parameterized drizzle builder - no raw
  * `sql` template literals with interpolated user-supplied values; `note` is stored as a bound
  * value. Errors are console.error'd for diagnostics then re-thrown (T-04-09) - the caller
@@ -19,6 +27,8 @@ import { randomUUID } from 'expo-crypto';
 import { enduranceSegment, userProfile, workout, type DB } from '@apsis/db';
 import { sessionHSSDetailed } from '@apsis/engine';
 import { eq } from 'drizzle-orm';
+import { getSyncState } from './healthkitSyncState';
+import { writeBackRun } from './healthkitWriteback';
 import { recomputeLoadDaily } from './recomputeLoadDaily';
 import { resolveRunSegment, type RunActivityType } from './runEntryLogic';
 
@@ -57,6 +67,12 @@ async function fetchThresholds(
  * `sessionHSSDetailed`, then awaits `recomputeLoadDaily` so Home's ring/band/trend reflect the
  * new session immediately. Never throws away errors - re-throws after logging (T-04-09) so
  * the caller can show its own generic message.
+ *
+ * HK-04/D-12: once the save + recompute above have fully succeeded, gates a fire-and-forget
+ * HealthKit write-back on `healthkitConnected` (go-forward only, D-15). The write-back tail
+ * itself never throws (`healthkitWriteback.ts` swallows its own errors) and any failure in the
+ * follow-up `healthkitUuid` UPDATE is caught locally - neither can fail this function or its
+ * already-returned `workoutId`.
  */
 export async function saveRun(database: DB, input: RunEntryInput): Promise<string> {
   try {
@@ -75,13 +91,14 @@ export async function saveRun(database: DB, input: RunEntryInput): Promise<strin
     }
 
     const workoutId = randomUUID();
+    // Endurance sessions are complete on save - no open-session lifecycle (RESEARCH D-13).
+    const finishedAt = new Date();
     await database.insert(workout).values({
       id: workoutId,
       localDate: input.localDate,
       type: 'endurance',
       note: input.note ?? null,
-      // Endurance sessions are complete on save - no open-session lifecycle (RESEARCH D-13).
-      finishedAt: new Date(),
+      finishedAt,
     });
 
     await database.insert(enduranceSegment).values({
@@ -101,6 +118,24 @@ export async function saveRun(database: DB, input: RunEntryInput): Promise<strin
     await database.update(workout).set({ hss }).where(eq(workout.id, workoutId));
 
     await recomputeLoadDaily(database);
+
+    // HK-04/D-12: fire-and-forget write-back tail - never awaited in a way that can fail the
+    // save; `getSyncState`/`writeBackRun` both already swallow their own errors internally.
+    const syncState = await getSyncState(database);
+    if (syncState?.healthkitConnected) {
+      // Endurance sessions carry no separate begin timestamp (complete-on-save, D-13), so the
+      // HK sample's start is back-computed from the save moment minus the logged duration.
+      const startedAt = new Date(finishedAt.getTime() - input.durationS * 1000);
+      writeBackRun(input.distanceM, input.durationS, hss, startedAt)
+        .then(async (hkUuid) => {
+          if (hkUuid != null) {
+            await database.update(workout).set({ healthkitUuid: hkUuid }).where(eq(workout.id, workoutId));
+          }
+        })
+        .catch((err: unknown) => {
+          console.error('[Apsis] saveRun HealthKit write-back tail failed:', err); // D-25 — never blocks the save
+        });
+    }
 
     return workoutId;
   } catch (err: unknown) {
