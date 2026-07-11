@@ -6,14 +6,14 @@ current_phase: 05
 current_phase_name: healthkit-integration
 status: executing
 stopped_at: Completed 05-02-PLAN.md
-last_updated: "2026-07-11T22:53:12.429Z"
+last_updated: "2026-07-11T23:05:24.485Z"
 last_activity: 2026-07-11
 last_activity_desc: Phase 05 execution started
 progress:
   total_phases: 6
   completed_phases: 3
   total_plans: 36
-  completed_plans: 28
+  completed_plans: 29
   percent: 50
 ---
 
@@ -30,7 +30,7 @@ training-load number (HSS) and a readiness band — fully offline.
 ## Current Position
 
 Phase: 05 (healthkit-integration) — EXECUTING
-Plan: 2 of 9
+Plan: 3 of 9
 Status: Ready to execute
 Last activity: 2026-07-11 — Phase 05 execution started
 
@@ -88,6 +88,7 @@ Progress: [█████████████░░░░░░░] 67% (4/
 | Phase 04 P09 | 6min | 2 tasks | 2 files |
 | Phase 04 P10 | 3min | 3 tasks | 4 files |
 | Phase 05 P02 | 13min | 2 tasks | 9 files |
+| Phase 05 P04 | 8min | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -173,6 +174,7 @@ Recent decisions affecting current work:
 - [Phase 04]: iOS date picker closes only on event.type === 'set'; Android keeps its pre-existing unconditional close-on-any-change (WR-05)
 - [Phase 04]: History day-entry dates union dayHssByDate and sessionsByDate keys so finished sessions are never dropped when load_daily is empty (WR-07)
 - [Phase 05]: candidatesForDedupe's activityType param typed as the literal enduranceSegment.activityType union rather than string, to satisfy drizzle's typed eq() overload under tsc --build — Fixes a real typecheck error surfaced by root pnpm run typecheck
+- [Phase 05]: [Phase 05 P04]: Chip built inline in DayRow.tsx for Task 1's commit (satisfying its own file-scoped grep acceptance criteria), then extracted to shared components/SourceChip.tsx in Task 2's commit that wires it into session/detail.tsx -- ends on one shared component, not two style copies
 
 ### Pending Todos
 
@@ -216,6 +218,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-07-11T22:53:12.417Z
+Last session: 2026-07-11T23:02:09.452Z
 Stopped at: Completed 05-02-PLAN.md
 Resume file: None
