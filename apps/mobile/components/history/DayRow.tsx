@@ -35,6 +35,8 @@ export interface DaySession {
   type: 'strength' | 'endurance' | 'hybrid';
   title: string | null;
   hss: number;
+  /** workout.source (D-08 provenance) — drives the ash "APPLE HEALTH" chip below. */
+  source: 'manual' | 'healthkit';
 }
 
 export interface DayRowProps {
@@ -130,7 +132,16 @@ export function DayRow({
                 accessibilityRole="button"
                 accessibilityLabel={`${sessionLabel(session)}, ${Math.round(session.hss)} HSS`}
                 style={styles.sessionRow}>
-                <Text style={styles.sessionLabel}>{sessionLabel(session)}</Text>
+                <View style={styles.sessionRowLeft}>
+                  <Text style={styles.sessionLabel}>{sessionLabel(session)}</Text>
+                  {session.source === 'healthkit' ? (
+                    // D-08 provenance chip -- ash tint (never volt/amber), reuses the exact
+                    // pill shape as the "N SESSIONS · ADJUSTED" chip above (styles.chip).
+                    <View style={styles.sourceChip}>
+                      <Text style={styles.sourceChipLabel}>APPLE HEALTH</Text>
+                    </View>
+                  ) : null}
+                </View>
                 <Text style={[styles.sessionHss, tabularNums]}>{Math.round(session.hss)}</Text>
               </Pressable>
             </Swipeable>
@@ -216,9 +227,28 @@ const styles = StyleSheet.create({
     paddingLeft: Spacing.lg,
     backgroundColor: Colors.dark.surface,
   },
+  sessionRowLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.xs,
+    flexShrink: 1,
+  },
   sessionLabel: {
     ...Typography.label,
     color: Colors.dark.text,
+  },
+  // D-08 provenance chip -- ash tint (not the amber `chip` style above), Mono at fontSize 11,
+  // same Radius.pill shape as "N SESSIONS · ADJUSTED".
+  sourceChip: {
+    paddingHorizontal: Spacing.sm,
+    paddingVertical: 2,
+    borderRadius: Radius.pill,
+    backgroundColor: 'rgba(138,144,152,0.15)',
+  },
+  sourceChipLabel: {
+    ...Mono,
+    fontSize: 11,
+    color: Colors.dark.mutedText,
   },
   sessionHss: {
     ...Mono,

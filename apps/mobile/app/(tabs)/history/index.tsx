@@ -114,7 +114,7 @@ export default function HistoryScreen(): React.JSX.Element {
       const sessionsByDate = new Map<string, DaySession[]>();
       for (const s of sessions) {
         const list = sessionsByDate.get(s.localDate) ?? [];
-        list.push({ id: s.id, type: s.type, title: s.title, hss: s.hss ?? 0 });
+        list.push({ id: s.id, type: s.type, title: s.title, hss: s.hss ?? 0, source: s.source ?? 'manual' });
         sessionsByDate.set(s.localDate, list);
       }
 
