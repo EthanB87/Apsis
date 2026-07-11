@@ -157,3 +157,7 @@ None - no external service configuration required. (The HealthKit entitlement/Ap
 ---
 *Phase: 05-healthkit-integration*
 *Completed: 2026-07-11*
+
+## Self-Check: PASSED
+
+All created files verified present on disk; all task/summary commit hashes (2bc5574, 043f74c, 1d6dfe4) verified in git log.

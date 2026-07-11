@@ -3,17 +3,17 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 current_phase: 05
-current_phase_name: HealthKit Integration
+current_phase_name: healthkit-integration
 status: executing
-stopped_at: Phase 5 UI-SPEC approved
-last_updated: "2026-07-11T21:45:47.798Z"
+stopped_at: Completed 05-02-PLAN.md
+last_updated: "2026-07-11T22:53:12.429Z"
 last_activity: 2026-07-11
-last_activity_desc: Phase 04 complete (UAT 7/7, security 24/24 closed), transitioned to Phase 05
+last_activity_desc: Phase 05 execution started
 progress:
   total_phases: 6
   completed_phases: 3
-  total_plans: 27
-  completed_plans: 27
+  total_plans: 36
+  completed_plans: 28
   percent: 50
 ---
 
@@ -25,14 +25,14 @@ See: .planning/PROJECT.md (updated 2026-07-11)
 
 **Core value:** Log lifting + running in one app, instantly see one honest combined
 training-load number (HSS) and a readiness band — fully offline.
-**Current focus:** Phase 05 — HealthKit Integration
+**Current focus:** Phase 05 — healthkit-integration
 
 ## Current Position
 
-Phase: 05 — HealthKit Integration
-Plan: Not started
-Status: Ready to plan (no phase 05 directory/CONTEXT yet — discuss or plan next)
-Last activity: 2026-07-11 — Phase 04 complete (UAT 7/7, security 24/24 closed), transitioned to Phase 05
+Phase: 05 (healthkit-integration) — EXECUTING
+Plan: 2 of 9
+Status: Ready to execute
+Last activity: 2026-07-11 — Phase 05 execution started
 
 Progress: [█████████████░░░░░░░] 67% (4/6 phases complete, 27/27 executed plans)
 
@@ -87,6 +87,7 @@ Progress: [█████████████░░░░░░░] 67% (4/
 | Phase 04 P08 | ~25min | 3 tasks | 5 files |
 | Phase 04 P09 | 6min | 2 tasks | 2 files |
 | Phase 04 P10 | 3min | 3 tasks | 4 files |
+| Phase 05 P02 | 13min | 2 tasks | 9 files |
 
 ## Accumulated Context
 
@@ -171,6 +172,7 @@ Recent decisions affecting current work:
 - [Phase 04]: formatPaceMinSec rounds total seconds once then splits into minutes/seconds (fixes 'X:60' carry bug, WR-08)
 - [Phase 04]: iOS date picker closes only on event.type === 'set'; Android keeps its pre-existing unconditional close-on-any-change (WR-05)
 - [Phase 04]: History day-entry dates union dayHssByDate and sessionsByDate keys so finished sessions are never dropped when load_daily is empty (WR-07)
+- [Phase 05]: candidatesForDedupe's activityType param typed as the literal enduranceSegment.activityType union rather than string, to satisfy drizzle's typed eq() overload under tsc --build — Fixes a real typecheck error surfaced by root pnpm run typecheck
 
 ### Pending Todos
 
@@ -214,6 +216,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-07-11T21:45:47.788Z
-Stopped at: Phase 5 UI-SPEC approved
-Resume file: .planning/phases/05-healthkit-integration/05-UI-SPEC.md
+Last session: 2026-07-11T22:53:12.417Z
+Stopped at: Completed 05-02-PLAN.md
+Resume file: None
