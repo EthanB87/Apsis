@@ -4,9 +4,9 @@ milestone: v1.0
 milestone_name: milestone
 current_phase: 06
 current_phase_name: Polish & App Store Submission
-status: verifying
-stopped_at: Phase 6 context gathered
-last_updated: "2026-07-12T05:46:39.150Z"
+status: executing
+stopped_at: Phase 6 UI-SPEC approved
+last_updated: "2026-07-12T14:24:02.937Z"
 last_activity: 2026-07-12
 last_activity_desc: Phase 05 complete, transitioned to Phase 06
 progress:
@@ -31,7 +31,7 @@ training-load number (HSS) and a readiness band — fully offline.
 
 Phase: 06 — Polish & App Store Submission
 Plan: Not started
-Status: Ready to plan
+Status: Ready to execute
 Last activity: 2026-07-12 — Phase 05 complete, transitioned to Phase 06
 
 Progress: [█████████████░░░░░░░] 67% (4/6 phases complete, 27/27 executed plans)
@@ -241,6 +241,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-07-12T05:46:39.139Z
-Stopped at: Phase 6 context gathered
-Resume file: .planning/phases/06-polish-app-store-submission/06-CONTEXT.md
+Last session: 2026-07-12T13:55:59.714Z
+Stopped at: Phase 6 UI-SPEC approved
+Resume file: .planning/phases/06-polish-app-store-submission/06-UI-SPEC.md
