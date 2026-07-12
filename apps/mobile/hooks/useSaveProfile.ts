@@ -18,12 +18,14 @@
  * error surface — never the raw error object, message, or file paths. Never logs
  * raw bodyweight/HR/pace values.
  *
- * Insert-only in this plan (first-time onboarding, no existing row). Plan 09's
- * Settings editor reuses `ProfileReview` and will extend this pattern with an
- * update-in-place path against an existing profile row.
+ * WR-09: defensively upserts against the singleton user_profile row — if a row already
+ * exists (a re-invoked save() after navigating back into onboarding), it is UPDATEd in
+ * place rather than INSERTed a second time, since duplicate profile rows make every
+ * `.limit(1)` reader (useProfile, getSyncState, fetchThresholds) nondeterministic.
  */
 
 import { useState } from 'react';
+import { eq } from 'drizzle-orm';
 import { db, userProfile } from '@apsis/db';
 import type { Sex, Units } from '@apsis/shared';
 
@@ -51,7 +53,7 @@ export function useSaveProfile(): UseSaveProfileResult {
     setSubmitting(true);
     setErrorMessage(null);
     try {
-      await db.insert(userProfile).values({
+      const values = {
         sex: input.sex,
         bodyweightKg: input.bodyweightKg,
         // CR-02/D-17: stamp the manual entry time — a null bodyweightSetAt makes
@@ -61,7 +63,18 @@ export function useSaveProfile(): UseSaveProfileResult {
         thresholdHr: input.thresholdHr,
         thresholdPaceSecPerKm: input.thresholdPaceSecPerKm,
         units: input.units,
-      });
+      };
+      // WR-09: user_profile is a singleton — if a row already exists (e.g. save() re-invoked
+      // after navigating back into onboarding), UPDATE it in place. A second INSERT would
+      // create two profile rows, and every reader uses `.limit(1)` with no ORDER BY, so which
+      // row wins would be undefined (sync state and thresholds could split across rows).
+      const existing = await db.select({ id: userProfile.id }).from(userProfile).limit(1);
+      const existingRow = existing[0];
+      if (existingRow != null) {
+        await db.update(userProfile).set(values).where(eq(userProfile.id, existingRow.id));
+      } else {
+        await db.insert(userProfile).values(values);
+      }
       return true;
     } catch (err: unknown) {
       // Raw error logged for developer diagnostics only — never rendered (T-03-11).

@@ -56,10 +56,12 @@ export default function ReviewStep(): React.JSX.Element {
       units: draft.units,
     });
     // Phase 05 (05-07, Pitfall 2 fix): the profile-version bump — and therefore the
-    // Stack.Protected gate flip — no longer happens inside save() itself. Push to the
+    // Stack.Protected gate flip — no longer happens inside save() itself. Navigate to the
     // terminal HealthKit step explicitly; its accept/skip handlers bump the version.
+    // WR-09: replace, not push — a back-swipe from the HealthKit step must not land back on
+    // this screen, where a second "Save & Start Training" tap would re-run save().
     if (ok) {
-      router.push('/onboarding/healthkit');
+      router.replace('/onboarding/healthkit');
     }
   }
 
