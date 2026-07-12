@@ -89,6 +89,7 @@ export default function HistoryScreen(): React.JSX.Element {
   const [allDays, setAllDays] = useState<HistoryDayEntry[]>([]);
   const [windowDays, setWindowDays] = useState(INITIAL_WINDOW_DAYS);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [expandedDate, setExpandedDate] = useState<string | null>(null);
   const [pendingDeleteWorkoutId, setPendingDeleteWorkoutId] = useState<string | null>(null);
@@ -160,6 +161,18 @@ export default function HistoryScreen(): React.JSX.Element {
       loadHistory();
     }, [loadHistory])
   );
+
+  // WR-06: the LOAD_ERROR_MESSAGE copy instructs "Pull down to try again" — this is the
+  // affordance that makes that instruction true (a retry path that never requires leaving
+  // and re-entering the tab).
+  const handleRefresh = useCallback(async () => {
+    setRefreshing(true);
+    try {
+      await loadHistory();
+    } finally {
+      setRefreshing(false);
+    }
+  }, [loadHistory]);
 
   const sections = useMemo<HistorySection[]>(() => {
     const visible = allDays.slice(0, windowDays);
@@ -234,6 +247,8 @@ export default function HistoryScreen(): React.JSX.Element {
           </View>
         )}
         stickySectionHeadersEnabled
+        onRefresh={handleRefresh}
+        refreshing={refreshing}
         onEndReached={handleEndReached}
         onEndReachedThreshold={0.5}
         ListHeaderComponent={listHeader}
