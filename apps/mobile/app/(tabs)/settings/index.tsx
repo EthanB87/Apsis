@@ -319,7 +319,17 @@ export default function SettingsScreen(): React.JSX.Element {
     if (draft == null) return;
     const patch: ProfileUpdateInput = {};
     if (draft.sex != null) patch.sex = draft.sex;
-    if (draft.bodyweightKg != null) patch.bodyweightKg = draft.bodyweightKg;
+    if (draft.bodyweightKg != null) {
+      patch.bodyweightKg = draft.bodyweightKg;
+      // CR-02/D-17: stamp the manual edit time so most-recent-wins conflict resolution can
+      // ever favor the manual side — without this, any HK body-mass sample newer than the
+      // LAST IMPORT's sample silently overwrites this edit on the next foreground sync.
+      // Only stamped when the value actually changed (WR-02 no-drift: an opened-but-unedited
+      // field keeps the exact stored value AND its original timestamp).
+      if (draft.bodyweightKg !== profile?.bodyweightKg) {
+        patch.bodyweightSetAt = new Date();
+      }
+    }
     if (draft.thresholdHr != null) patch.thresholdHr = draft.thresholdHr;
     if (draft.thresholdPaceSecPerKm != null) patch.thresholdPaceSecPerKm = draft.thresholdPaceSecPerKm;
     await update(patch);

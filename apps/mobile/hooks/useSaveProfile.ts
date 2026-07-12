@@ -54,6 +54,10 @@ export function useSaveProfile(): UseSaveProfileResult {
       await db.insert(userProfile).values({
         sex: input.sex,
         bodyweightKg: input.bodyweightKg,
+        // CR-02/D-17: stamp the manual entry time — a null bodyweightSetAt makes
+        // bodyweightSampleIsNewer(x, null) true for ANY HK sample, letting a months-old
+        // body-mass sample overwrite the value the user typed minutes ago in onboarding.
+        bodyweightSetAt: new Date(),
         thresholdHr: input.thresholdHr,
         thresholdPaceSecPerKm: input.thresholdPaceSecPerKm,
         units: input.units,

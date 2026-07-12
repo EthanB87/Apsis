@@ -41,6 +41,10 @@ export interface ProfileValues {
 export interface ProfileUpdateInput {
   sex?: Sex;
   bodyweightKg?: number;
+  /** CR-02/D-17: callers MUST stamp this whenever `bodyweightKg` is manually changed —
+   * most-recent-wins conflict resolution against HK samples compares this timestamp; a
+   * missing stamp lets an older HK body-mass sample silently overwrite the manual edit. */
+  bodyweightSetAt?: Date;
   thresholdHr?: number;
   thresholdPaceSecPerKm?: number;
   units?: Units;
