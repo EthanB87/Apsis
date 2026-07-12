@@ -129,8 +129,9 @@ export default function RunEntryScreen(): React.JSX.Element {
 
   // D-09: soft, non-blocking dedupe hint -- reuses the D-06 dedupe tolerance the import
   // pipeline itself uses (isDuplicateOfExisting/DUPE_TOLERANCE), never a second constant.
-  // candidatesForDedupe returns healthkitUuid alongside durationS; a non-null healthkitUuid
-  // is exactly the imported (source==='healthkit') rows this hint cares about.
+  // candidatesForDedupe returns source alongside durationS; `source === 'healthkit'` is
+  // exactly the imported rows this hint cares about (CR-01: never classify by healthkitUuid
+  // nullability -- written-back manual runs carry Apsis's own write-back uuid too).
   useEffect(() => {
     let cancelled = false;
     if (durationS === 0) {
@@ -141,7 +142,7 @@ export default function RunEntryScreen(): React.JSX.Element {
       .then((candidates) => {
         if (cancelled) return;
         const dupe = candidates
-          .filter((c) => c.healthkitUuid != null)
+          .filter((c) => c.source === 'healthkit')
           .some((c) => isDuplicateOfExisting(durationS, c.durationS));
         setHasImportDupe(dupe);
       })

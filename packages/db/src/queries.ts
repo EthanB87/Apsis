@@ -193,7 +193,14 @@ export function candidatesForDedupe(
   activityType: 'run' | 'erg' | 'conditioning' | 'sled' | 'other',
 ) {
   return db
-    .select({ durationS: enduranceSegment.durationS, healthkitUuid: workout.healthkitUuid })
+    .select({
+      durationS: enduranceSegment.durationS,
+      healthkitUuid: workout.healthkitUuid,
+      // CR-01: provenance must be classified by `source`, never by healthkitUuid nullability —
+      // manual rows carry Apsis's own write-back uuid once HealthKit is connected, so a
+      // uuid-null check misclassifies written-back manual runs as imports.
+      source: workout.source,
+    })
     .from(workout)
     .innerJoin(enduranceSegment, eq(enduranceSegment.workoutId, workout.id))
     .where(and(eq(workout.localDate, localDate), eq(enduranceSegment.activityType, activityType)));

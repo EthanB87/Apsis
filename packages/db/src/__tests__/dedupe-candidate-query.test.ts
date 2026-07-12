@@ -46,4 +46,13 @@ describe('candidatesForDedupe', () => {
     expect(lower).toContain('duration_s');
     expect(lower).toContain('healthkit_uuid');
   });
+
+  it('selects source so callers classify manual rows by provenance, never by uuid nullability (CR-01)', () => {
+    const { sql } = candidatesForDedupe(mockDb, '2026-07-11', 'run').toSQL();
+    const lower = sql.toLowerCase();
+
+    // A written-back manual run carries Apsis's own write-back uuid, so healthkitUuid
+    // nullability cannot distinguish manual from imported rows — `source` must be selected.
+    expect(lower).toContain('"workout"."source"');
+  });
 });

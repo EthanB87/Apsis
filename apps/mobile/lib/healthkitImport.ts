@@ -17,8 +17,9 @@
  *      row for that day+type — including soft-deleted ones (D-11 second layer, Pitfall 8/9,
  *      deleted-imports-stay-deleted) — and (b) a duration-tolerance match against only the
  *      *manual* candidates (D-06/D-07 manual wins; restricting the tolerance check to
- *      `healthkitUuid == null` rows avoids two same-day, similar-duration real HK sessions
- *      false-positive-skipping each other).
+ *      `source === 'manual'` rows avoids two same-day, similar-duration real HK sessions
+ *      false-positive-skipping each other — classified by provenance, never by
+ *      `healthkitUuid` nullability, since manual rows carry Apsis's write-back uuid).
  *   4. Non-duplicates are inserted as `workout(source: 'healthkit', healthkitUuid: <uuid>)` +
  *      `endurance_segment`, IF resolved via the existing `resolveRunSegment` (pace gated to
  *      `activityType === 'run'` only, Pitfall 6/T-04-10 — same rule `runEntry.ts` already
@@ -196,8 +197,13 @@ export async function runHealthKitSync(
       // `candidatesForDedupe`'s own doc comment).
       const candidates = await candidatesForDedupe(database, localDate, activityType);
       const isTombstoned = candidates.some((c) => c.healthkitUuid === sample.uuid);
+      // CR-01: classify manual rows by provenance (`source === 'manual'`), NEVER by
+      // `healthkitUuid == null` — a manual run gains Apsis's own write-back uuid the moment
+      // HealthKit is connected (schema.ts `healthkitUuid` doc), so a uuid-null check would
+      // exclude every written-back manual run from the D-06/D-07 tolerance check and let the
+      // matching watch sample import as a duplicate session (double-counting day HSS).
       const isManualDuplicate = candidates
-        .filter((c) => c.healthkitUuid == null)
+        .filter((c) => c.source === 'manual')
         .some((c) => isDuplicateOfExisting(durationS, c.durationS));
       if (isTombstoned || isManualDuplicate) {
         console.warn('[Apsis] healthkitImport skipped duplicate sample:', {
