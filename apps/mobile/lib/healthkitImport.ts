@@ -51,7 +51,7 @@ import {
 } from '@kingstinct/react-native-healthkit';
 import { candidatesForDedupe, enduranceSegment, userProfile, workout, type DB } from '@apsis/db';
 import { sessionHSSDetailed } from '@apsis/engine';
-import { eq } from 'drizzle-orm';
+import { and, eq, isNull } from 'drizzle-orm';
 import { dateToLocalDateStr } from './localDate';
 import { recomputeLoadDaily } from './recomputeLoadDaily';
 import { resolveRunSegment } from './runEntryLogic';
@@ -163,7 +163,7 @@ async function executeHealthKitSync(
       dateStart.setDate(dateStart.getDate() - INITIAL_IMPORT_WINDOW_DAYS);
     }
 
-    const { workouts, newAnchor } = await queryWorkoutSamplesWithAnchor({
+    const { workouts, deletedSamples, newAnchor } = await queryWorkoutSamplesWithAnchor({
       limit: 0, // 0 = fetch all matching (verified .d.ts comment)
       anchor,
       filter: {
@@ -291,6 +291,26 @@ async function executeHealthKitSync(
       });
 
       importedCount++;
+    }
+
+    // WR-04: a workout deleted in Apple Health must not keep counting toward HSS/readiness
+    // forever — the anchored query reports each deletion exactly once (the anchor then
+    // advances past it), so this is the only chance to observe it. Soft-delete the matching
+    // IMPORTED row only (`source = 'healthkit'`): a manual row whose write-back sample was
+    // deleted in Health still represents a real Apsis-logged session and must survive. The
+    // soft-deleted row keeps its uuid, so the existing tombstone check (deliberately
+    // deletedAt-blind, Pitfall 9) prevents any re-import.
+    for (const deleted of deletedSamples) {
+      await database
+        .update(workout)
+        .set({ deletedAt: new Date() })
+        .where(
+          and(
+            eq(workout.healthkitUuid, deleted.uuid),
+            eq(workout.source, 'healthkit'),
+            isNull(workout.deletedAt)
+          )
+        );
     }
 
     // Pitfall 10: recompute exactly once for the whole batch, after every insert above.
