@@ -5,15 +5,15 @@ milestone_name: milestone
 current_phase: 06
 current_phase_name: polish-app-store-submission
 status: executing
-stopped_at: Completed 06-02-PLAN.md
-last_updated: "2026-07-12T15:28:29.056Z"
+stopped_at: Completed 06-03-PLAN.md
+last_updated: "2026-07-12T15:37:06.111Z"
 last_activity: 2026-07-12
 last_activity_desc: Phase 06 execution started
 progress:
   total_phases: 6
   completed_phases: 4
   total_plans: 43
-  completed_plans: 37
+  completed_plans: 38
   percent: 67
 ---
 
@@ -30,7 +30,7 @@ training-load number (HSS) and a readiness band — fully offline.
 ## Current Position
 
 Phase: 06 (polish-app-store-submission) — EXECUTING
-Plan: 2 of 7
+Plan: 3 of 7
 Status: Ready to execute
 Last activity: 2026-07-12 — Phase 06 execution started
 
@@ -98,6 +98,7 @@ Progress: [█████████████░░░░░░░] 67% (4/
 | Phase 05 P07 | 9min | 2 tasks | 3 files |
 | Phase 05 P08 | 8min | 2 tasks | 1 files |
 | Phase 06 P02 | 15min | 3 tasks | 7 files |
+| Phase 06 P03 | 12min | 2 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -201,6 +202,8 @@ Recent decisions affecting current work:
 - [Phase 05]: [Phase 05 P08]: hkEverConnected derived flag (hkConnected || hkLastSyncAt != null) keeps Settings' Connected UI visible across a toggle-OFF pause, since the single healthkitConnected bit doubles as both ever-connected and sync-enabled
 - [Phase 06]: expo install resolved @sentry/react-native to ~7.11.0, not RESEARCH.md's 8.18.0 line — Expo SDK 56 compatibility table resolver takes precedence over researched version numbers, per established Phase 04 P02 precedent
 - [Phase 06]: Sentry config plugin registered as bare @sentry/react-native (not /expo subpath); integrations filter targets 'Breadcrumbs' not 'Console' — Both adapted to the actually-installed 7.11.0 SDK's real API shape, verified by reading its source directly
+- [Phase 06]: D-14 bwFactor curation: ab-wheel 0.25, hanging-leg-raise 0.35 (fixes ~0 HSS bug) — Kneeling ab-wheel rollout retains ground support vs. full-hang leg raise's longer lever through hip flexors/core; Claude's-discretion biomechanics estimates per D-14, asserted by fixed test fixtures
+- [Phase 06]: New timed catalog entries always use bwFactor: null even when bodyweight-moved (e.g. bear-crawl) — Matches the plan's explicit rule and the pre-existing TIMED_IDS test invariant that every timed movement has bwFactor null
 
 ### Pending Todos
 
@@ -244,6 +247,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-07-12T15:28:29.045Z
-Stopped at: Completed 06-02-PLAN.md
+Last session: 2026-07-12T15:37:06.099Z
+Stopped at: Completed 06-03-PLAN.md
 Resume file: None
