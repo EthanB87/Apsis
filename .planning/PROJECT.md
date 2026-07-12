@@ -24,11 +24,11 @@ and a readiness band — fully offline. If everything else fails, this must work
 - [x] User sees a per-session and per-day HSS, plus a readiness band (green/amber/red) — Validated in Phase 04: HSS ring + readiness band on TODAY, per-day totals with double-day load adjustment in History
 - [x] User sees a 14–30 day load / readiness trend on the home screen — Validated in Phase 04: 28-day Skia trend chart with scrub tooltip, calibrating hero <14 days
 - [x] All logging works fully offline; local SQLite is the source of truth — Validated in Phases 03–04: op-sqlite JSI + drizzle, write→recompute→UI chain proven on device with no network path
+- [x] Apple HealthKit import for runs/HR/weight + push logged workouts back — Validated in Phase 05: 90-day backfill + foreground anchor sync, provenance-based dedupe, write-back with delete-sync, on-device UAT 4/4 passed (post code-review fixes); security review clean (10/10 threats closed)
 
 ### Active
 
-- [ ] Apple HealthKit import for runs/HR/weight + push logged workouts back (lowest-priority;
-      first to defer if the timeline slips)
+- (none — all v1.0 feature requirements validated; Phase 06 is release polish/submission)
 
 ### Out of Scope
 
@@ -70,7 +70,7 @@ and a readiness band — fully offline. If everything else fails, this must work
 | ------------------------------------------------------ | ------------------------------------------------------------- | --------- |
 | Build the pure-TS engine first (Phase 0) before any UI | De-risks the entire thesis; the HSS model is the moat         | — Pending |
 | BUILD.md wins over the docx for all build decisions    | One authoritative executable plan prevents scope drift        | — Pending |
-| iOS-first, HealthKit-only for v1.0                     | Apple integration is straightforward; Garmin/Android deferred | — Pending |
+| iOS-first, HealthKit-only for v1.0                     | Apple integration is straightforward; Garmin/Android deferred | ✓ Good — Phase 05 shipped import/write-back/dedupe on @kingstinct/react-native-healthkit |
 | Cut nutrition entirely from v1.0                       | Largest scope item; protects the ~4-week App Store window     | — Pending |
 | Monorepo: apps/mobile + packages/engine, db, shared    | Isolates the testable IP; keeps build tooling simple          | — Pending |
 | Logging UI: tabular tap-to-type ledger rows, no steppers (user superseded DESIGN-SYSTEM.md component specs for the logging surface; palette stays binding) | Steppers could not fit a single set row at iPhone widths; keypad entry is faster (Strong/Hevy parity) | ✓ Shipped Phase 03, approved on device |
@@ -101,4 +101,4 @@ This document evolves at phase transitions and milestone boundaries.
 
 ---
 
-_Last updated: 2026-07-11 after Phase 04 (Run Logger & Home Dashboard) completion — run logger, TODAY dashboard (HSS ring, readiness, 28-day trend), and History shipped and UAT-verified on device (7/7); security review clean (24/24 threats closed); next: Phase 05 HealthKit Integration_
+_Last updated: 2026-07-12 after Phase 05 (HealthKit Integration) completion — import (backfill + anchor sync), provenance dedupe, bodyweight most-recent-wins, and Health write-back/delete-sync shipped; post-execution code review found and fixed 13 defects (3 critical) before device UAT (4/4 passed on post-fix build); security review clean (10/10 threats closed); next: Phase 06 Polish & App Store Submission_

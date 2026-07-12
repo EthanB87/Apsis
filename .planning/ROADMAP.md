@@ -250,5 +250,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 | 02. HSS Engine | 6/6 | Complete    | 2026-07-08 |
 | 03. Onboarding & Lifting Logger | 11/11 | Complete    | 2026-07-10 |
 | 04. Run Logger & Home Dashboard | 10/10 | Complete    | 2026-07-10 |
-| 05. HealthKit Integration | 9/9 | Complete   | 2026-07-12 |
+| 05. HealthKit Integration | 9/9 | Complete    | 2026-07-12 |
 | 06. Polish & App Store Submission | 0/TBD | Not started | - |

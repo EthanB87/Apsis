@@ -2,13 +2,13 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-current_phase: 05
-current_phase_name: healthkit-integration
+current_phase: 06
+current_phase_name: Polish & App Store Submission
 status: verifying
 stopped_at: Completed 05-07-PLAN.md
-last_updated: "2026-07-12T03:11:00.280Z"
-last_activity: 2026-07-11
-last_activity_desc: Phase 05 execution started
+last_updated: "2026-07-12T05:11:07.199Z"
+last_activity: 2026-07-12
+last_activity_desc: Phase 05 complete, transitioned to Phase 06
 progress:
   total_phases: 6
   completed_phases: 4
@@ -21,18 +21,18 @@ progress:
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-07-11)
+See: .planning/PROJECT.md (updated 2026-07-12)
 
 **Core value:** Log lifting + running in one app, instantly see one honest combined
 training-load number (HSS) and a readiness band — fully offline.
-**Current focus:** Phase 05 — healthkit-integration
+**Current focus:** Phase 06 — Polish & App Store Submission
 
 ## Current Position
 
-Phase: 05 (healthkit-integration) — EXECUTING
-Plan: 9 of 9
-Status: Phase complete — ready for verification
-Last activity: 2026-07-11 — Phase 05 execution started
+Phase: 06 — Polish & App Store Submission
+Plan: Not started
+Status: Ready to plan
+Last activity: 2026-07-12 — Phase 05 complete, transitioned to Phase 06
 
 Progress: [█████████████░░░░░░░] 67% (4/6 phases complete, 27/27 executed plans)
 
@@ -40,7 +40,7 @@ Progress: [█████████████░░░░░░░] 67% (4/
 
 **Velocity:**
 
-- Total plans completed: 27 (all in Phase 01)
+- Total plans completed: 36 (all in Phase 01)
 - Average duration: not tracked (Phase 01 predates STATE.md instrumentation)
 - Total execution time: not tracked
 
@@ -53,6 +53,7 @@ Progress: [█████████████░░░░░░░] 67% (4/
 | 02 | 6 | - | - |
 | 03 | 11 | - | - |
 | 04 | 10 | - | - |
+| 05 | 9 | - | - |
 
 **Recent Trend:**
 
@@ -240,6 +241,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-07-12T03:09:48.736Z
-Stopped at: Completed 05-07-PLAN.md
+Last session: 2026-07-12
+Stopped at: Phase 05 complete (UAT 4/4, security clean), ready to plan Phase 06
 Resume file: None

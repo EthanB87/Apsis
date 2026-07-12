@@ -1,20 +1,24 @@
 ---
 phase: 05-healthkit-integration
 verified: 2026-07-12T00:00:00Z
-status: human_needed
+status: passed
 score: 4/8 must-haves verified
 behavior_unverified: 4
 overrides_applied: 0
 human_verification:
+
   - test: "CR-01 fix — dedupe classifies by provenance, not uuid nullability (HK-03, roadmap SC3). On a physical device with HealthKit connected, log a manual run in Apsis (which write-backs to Health and stores its own uuid on the row), then let an actual Apple Watch/Health workout of similar duration on the same day sync in (or manually add a same-day/similar-duration workout sample in the Health app)."
     expected: "The watch/Health sample does NOT import as a second Apsis session — the manual row (now source='manual' with its own write-back healthkitUuid) is still recognized as a manual duplicate via `source === 'manual'` classification, not skipped due to its non-null healthkitUuid. Day HSS must not double-count."
     why_human: "This is a state-transition/invariant (duplicate classification against live HealthKit data) that unit tests only prove at the SQL-generation level (dedupe-candidate-query.test.ts asserts `source` is SELECTed, not that runtime classification skips the right row). The only on-device build that ever exercised this code (694ca7a8) predates the CR-01 fix commit (6adae75) — no post-fix on-device evidence exists."
+
   - test: "CR-02 fix — bodyweightSetAt stamped on every manual bodyweight write, so most-recent-wins resolves correctly (HK-02, roadmap SC2). On a fresh onboarding flow, enter bodyweight, connect HealthKit immediately after — confirm a stale HK body-mass sample does NOT overwrite the just-entered value. Separately, edit bodyweight in Settings after a prior HK import — confirm a HK sample older than the edit does not silently overwrite it on the next foreground sync."
     expected: "The manually-entered/edited bodyweight persists; only a HealthKit body-mass sample newer than the last manual `bodyweightSetAt` timestamp should override it."
     why_human: "Conflict-resolution correctness against a real HK body-mass sample timeline cannot be exercised by the existing unit test (`bodyweightSampleIsNewer`) alone, since the bug was in the call sites that failed to stamp `bodyweightSetAt`, not in the tested comparator itself. No on-device build post-dating the CR-02 fix commit (2b70769) has been used for this specific check."
+
   - test: "CR-03 fix — a retried initial sync after a failure stays bounded to the 90-day window (HK-01/HK-03). Force an initial sync to fail partway (e.g. airplane-mode mid-sync, or kill the app during the first 90-day import before it completes), then relaunch and let the foreground sync retry."
     expected: "The retry imports only workouts from the last 90 days — never the user's entire HealthKit history."
     why_human: "This is an error-path/retry invariant that requires deliberately interrupting a sync to observe — not something the existing on-device checkpoints (which only observed a successful uninterrupted first-connect flow) ever exercised, and the fix commit (f193c8c) postdates every on-device build used in this phase."
+
   - test: "HK-04 — a saved lift/run appears in the Health app with correct distance/duration and an ApsisHSS metadata key (no calories), and discarding an Apsis-authored session removes that sample from Health while an imported session's sample is left untouched. Also verify a re-tapped 'Done'/crash-resume 'Finish Now' does not create a duplicate Health sample (WR-07), and a back-dated run write-back lands on the correct calendar day in Health (WR-08)."
     expected: "Health app shows the new workout with the right totals and ApsisHSS metadata (visible via a HealthKit sample inspector or the Health app's workout detail); discard removes only self-authored samples; re-invoking finish does not duplicate; back-dated runs appear on the logged date, not today."
     why_human: "05-06-PLAN.md (the plan that built the entire write-back/delete-sync engine) contains no `checkpoint:human-verify` task — HK-04's core behavior (the fourth roadmap Success Criterion) has never been observed on any physical device at any point in this phase, pre- or post-fix. This is a genuine gap in phase closure, not merely a staleness issue."
