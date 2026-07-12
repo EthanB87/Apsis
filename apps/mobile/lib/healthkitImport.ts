@@ -9,8 +9,9 @@
  * Flow per `runHealthKitSync(db, { initial })`:
  *   1. Read the stored anchor/bodyweight-set-at via `healthkitSyncState.getSyncState` (D-02/D-17).
  *   2. Query workouts via `queryWorkoutSamplesWithAnchor` — a `NOT: [{ sources: [...] }]` filter
- *      excludes Apsis's own write-backs (D-11 primary echo defense, Pitfall 8) and, on the
- *      initial connect only, a 90-day `date.startDate` window (D-01) with `anchor: undefined`.
+ *      excludes Apsis's own write-backs (D-11 primary echo defense, Pitfall 8) and, whenever no
+ *      anchor exists yet (initial connect OR a retry after a failed initial import, CR-03), a
+ *      90-day `date.startDate` window (D-01) bounds the query.
  *   3. For each sample: map its activity type (D-04/D-05, `healthkitMapping.mapHKActivityType`,
  *      skip null), sanitize duration/distance/HR (V5/T-05-02, `sanitizeHKNumeric`), then consult
  *      `candidatesForDedupe` for BOTH: (a) a healthkitUuid tombstone match against ANY existing
@@ -127,8 +128,13 @@ export async function runHealthKitSync(
     const syncState = await getSyncState(database);
     const anchor = options.initial ? undefined : (syncState?.healthkitAnchor ?? undefined);
 
+    // CR-03/D-01: the 90-day window applies whenever there is NO anchor — not only when
+    // `options.initial` is true. A failed initial import never persists its anchor (D-25
+    // success-path-only setSyncState below), so the natural foreground-sync retry arrives
+    // here with `initial: false` AND `anchor: undefined`; without this guard that query
+    // would be fully unbounded and import the user's entire HealthKit history.
     let dateStart: Date | undefined;
-    if (options.initial) {
+    if (anchor == null) {
       dateStart = new Date();
       dateStart.setDate(dateStart.getDate() - INITIAL_IMPORT_WINDOW_DAYS);
     }
