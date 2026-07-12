@@ -114,13 +114,37 @@ async function fetchThresholds(
 }
 
 /**
+ * WR-03: module-level in-flight promise — the single concurrency guard for ALL sync entry
+ * points. The fire-and-forget initial imports (onboarding/healthkit.tsx, Settings) are
+ * invisible to `useForegroundHealthKitSync`'s own hook-scoped ref guard, so a foreground
+ * 'active' event during a long 90-day initial import could otherwise start a second
+ * concurrent sync whose dedupe reads race the first one's inserts (same sample passing
+ * dedupe in both loops → duplicate rows).
+ */
+let inFlightSync: Promise<HealthKitSyncSummary> | null = null;
+
+/**
  * Anchored batch sync: imports new/qualifying HK workouts and the most-recent bodyweight
  * sample, deduped and echo-excluded, recomputing `load_daily` exactly once. Never throws away
  * errors — logs (Error object only, T-05-01) then re-throws (mirrors `saveRun`/
  * `recomputeLoadDaily`'s convention) so the caller (`useForegroundHealthKitSync`) can apply
  * D-25's silent-failure UX without this function itself swallowing the failure.
+ *
+ * WR-03: concurrency-safe — if a sync is already running (from ANY entry point), the
+ * in-flight promise is returned instead of starting a second overlapping sync.
  */
-export async function runHealthKitSync(
+export function runHealthKitSync(
+  database: DB,
+  options: RunHealthKitSyncOptions
+): Promise<HealthKitSyncSummary> {
+  if (inFlightSync != null) return inFlightSync;
+  inFlightSync = executeHealthKitSync(database, options).finally(() => {
+    inFlightSync = null;
+  });
+  return inFlightSync;
+}
+
+async function executeHealthKitSync(
   database: DB,
   options: RunHealthKitSyncOptions
 ): Promise<HealthKitSyncSummary> {
