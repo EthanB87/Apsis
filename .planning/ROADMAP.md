@@ -196,12 +196,12 @@ Plans:
   3. Imported HealthKit runs never create duplicate entries alongside manually logged runs covering the same time range.
   4. After a user saves a lifting or running session in Apsis, that session appears in the Health app.
 
-**Plans**: 6/9 plans executed
+**Plans**: 7/9 plans executed
 
 Plans:
 **Wave 1**
 
-- [ ] 05-01-PLAN.md — Native install: @kingstinct/react-native-healthkit@^14.0.2 + react-native-nitro-modules + config plugin/entitlements + SUS legitimacy checkpoint + fresh EAS dev build (HK-01)
+- [x] 05-01-PLAN.md — Native install: @kingstinct/react-native-healthkit@^14.0.2 + react-native-nitro-modules + config plugin/entitlements + SUS legitimacy checkpoint + fresh EAS dev build (HK-01)
 - [x] 05-02-PLAN.md — Schema: workout.source/healthkitUuid + user_profile bodyweightSetAt/healthkit sync columns + candidatesForDedupe builder + [BLOCKING] 0003 migration (HK-02/03/04)
 
 **Wave 2** *(blocked on Wave 1)*
@@ -250,5 +250,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 | 02. HSS Engine | 6/6 | Complete    | 2026-07-08 |
 | 03. Onboarding & Lifting Logger | 11/11 | Complete    | 2026-07-10 |
 | 04. Run Logger & Home Dashboard | 10/10 | Complete    | 2026-07-10 |
-| 05. HealthKit Integration | 6/9 | In Progress|  |
+| 05. HealthKit Integration | 7/9 | In Progress|  |
 | 06. Polish & App Store Submission | 0/TBD | Not started | - |
