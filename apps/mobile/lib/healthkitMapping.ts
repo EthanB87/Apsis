@@ -144,16 +144,18 @@ export function sanitizeHKNumeric(
   if (value == null || !Number.isFinite(value)) {
     return { value: null, warnings: [`HK ${label} was null/NaN/non-finite — discarded (V5/T-05-02)`] };
   }
+  // T-05-01: warning strings are logged — never embed the raw sample value, only the
+  // label and which bound was violated.
   if (value < bounds.min) {
     return {
       value: bounds.min,
-      warnings: [`HK ${label} ${value} below minimum ${bounds.min} — clamped (V5/T-05-02)`],
+      warnings: [`HK ${label} below minimum ${bounds.min} — clamped (V5/T-05-02)`],
     };
   }
   if (value > bounds.max) {
     return {
       value: bounds.max,
-      warnings: [`HK ${label} ${value} above maximum ${bounds.max} — clamped (V5/T-05-02)`],
+      warnings: [`HK ${label} above maximum ${bounds.max} — clamped (V5/T-05-02)`],
     };
   }
   return { value, warnings: [] };
