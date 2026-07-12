@@ -358,14 +358,19 @@ export default function TodayScreen(): React.JSX.Element {
     }, [loadHome])
   );
 
-  // D-10: read the last-import signal (05-05) once per fresh focus -- getState(), not the
-  // reactive hook, so the notice is captured for this focus and doesn't flicker if the store
-  // updates again before the user navigates away. Silent (null) when nothing new arrived.
+  // D-10: read the last-import signal (05-05) via the reactive zustand selectors -- WR-10:
+  // a getState() snapshot inside the focus effect misses the common path where the sync
+  // completes seconds AFTER the TODAY tab is already focused (no new focus event fires on
+  // AppState changes), so the notice would only ever appear after leaving and re-entering
+  // the tab. With reactive selectors the focus effect re-runs when the store updates while
+  // focused; `importNoticeForBatch`'s once-per-batch gate (keyed on syncedAt) still ensures
+  // each completed batch shows exactly once, and a later refocus with no new batch clears it.
+  const lastImportedCount = useHealthKitImportSignal((s) => s.lastImportedCount);
+  const lastSyncedAt = useHealthKitImportSignal((s) => s.lastSyncedAt);
   useFocusEffect(
     useCallback(() => {
-      const { lastImportedCount, lastSyncedAt } = useHealthKitImportSignal.getState();
       setImportNotice(importNoticeForBatch(lastImportedCount, lastSyncedAt));
-    }, [])
+    }, [lastImportedCount, lastSyncedAt])
   );
 
   // Readiness-algorithm calibrating (ring): tied to the persisted band. Data-availability
