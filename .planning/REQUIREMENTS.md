@@ -75,7 +75,7 @@ Requirements for the v1.0 release. Each maps to exactly one roadmap phase.
 
 - [ ] **REL-01**: App has a 1024×1024 icon (no alpha), App Store screenshots, and store metadata
 - [ ] **REL-02**: Privacy nutrition label + privacy policy (live HTTPS URL) declare Health & Fitness data
-- [ ] **REL-03**: Any crash/analytics reporting scrubs all HealthKit-derived values before send
+- [x] **REL-03**: Any crash/analytics reporting scrubs all HealthKit-derived values before send
 - [ ] **REL-04**: Binary is built via EAS and submitted to App Store review by ~July 25, 2026
 
 ## v1.1 Requirements
@@ -153,7 +153,7 @@ Which phase covers which requirement. Populated during roadmap creation.
 | HK-04 | Phase 05 | Complete |
 | REL-01 | Phase 06 | Pending |
 | REL-02 | Phase 06 | Pending |
-| REL-03 | Phase 06 | Pending |
+| REL-03 | Phase 06 | Complete |
 | REL-04 | Phase 06 | Pending |
 
 **Coverage:**

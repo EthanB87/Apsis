@@ -3,17 +3,17 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 current_phase: 06
-current_phase_name: Polish & App Store Submission
+current_phase_name: polish-app-store-submission
 status: executing
-stopped_at: Phase 6 UI-SPEC approved
-last_updated: "2026-07-12T14:24:02.937Z"
+stopped_at: Completed 06-02-PLAN.md
+last_updated: "2026-07-12T15:28:29.056Z"
 last_activity: 2026-07-12
-last_activity_desc: Phase 05 complete, transitioned to Phase 06
+last_activity_desc: Phase 06 execution started
 progress:
   total_phases: 6
   completed_phases: 4
-  total_plans: 36
-  completed_plans: 36
+  total_plans: 43
+  completed_plans: 37
   percent: 67
 ---
 
@@ -25,14 +25,14 @@ See: .planning/PROJECT.md (updated 2026-07-12)
 
 **Core value:** Log lifting + running in one app, instantly see one honest combined
 training-load number (HSS) and a readiness band — fully offline.
-**Current focus:** Phase 06 — Polish & App Store Submission
+**Current focus:** Phase 06 — polish-app-store-submission
 
 ## Current Position
 
-Phase: 06 — Polish & App Store Submission
-Plan: Not started
+Phase: 06 (polish-app-store-submission) — EXECUTING
+Plan: 2 of 7
 Status: Ready to execute
-Last activity: 2026-07-12 — Phase 05 complete, transitioned to Phase 06
+Last activity: 2026-07-12 — Phase 06 execution started
 
 Progress: [█████████████░░░░░░░] 67% (4/6 phases complete, 27/27 executed plans)
 
@@ -97,6 +97,7 @@ Progress: [█████████████░░░░░░░] 67% (4/
 | Phase 05 P01 | 35min | 3 tasks | 3 files |
 | Phase 05 P07 | 9min | 2 tasks | 3 files |
 | Phase 05 P08 | 8min | 2 tasks | 1 files |
+| Phase 06 P02 | 15min | 3 tasks | 7 files |
 
 ## Accumulated Context
 
@@ -198,6 +199,8 @@ Recent decisions affecting current work:
 - [Phase 05]: [Phase 05 P07]: Relocated useProfileVersion bump from useSaveProfile.save() into the terminal HealthKit step's accept/skip handlers (Pitfall 2 fix) -- bumping at insert time raced past the new terminal onboarding step before it could ever render — review.tsx now explicitly router.push()es to /onboarding/healthkit after a successful save instead of relying on the gate to auto-navigate
 - [Phase 05]: [Phase 05 P07]: Both Connect Apple Health and Not now bump the profile version and advance -- decline is quiet, immediate, and the step never re-prompts (D-20); granting fires the initial 90-day HealthKit import in the background without awaiting it (D-22)
 - [Phase 05]: [Phase 05 P08]: hkEverConnected derived flag (hkConnected || hkLastSyncAt != null) keeps Settings' Connected UI visible across a toggle-OFF pause, since the single healthkitConnected bit doubles as both ever-connected and sync-enabled
+- [Phase 06]: expo install resolved @sentry/react-native to ~7.11.0, not RESEARCH.md's 8.18.0 line — Expo SDK 56 compatibility table resolver takes precedence over researched version numbers, per established Phase 04 P02 precedent
+- [Phase 06]: Sentry config plugin registered as bare @sentry/react-native (not /expo subpath); integrations filter targets 'Breadcrumbs' not 'Console' — Both adapted to the actually-installed 7.11.0 SDK's real API shape, verified by reading its source directly
 
 ### Pending Todos
 
@@ -241,6 +244,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-07-12T13:55:59.714Z
-Stopped at: Phase 6 UI-SPEC approved
-Resume file: .planning/phases/06-polish-app-store-submission/06-UI-SPEC.md
+Last session: 2026-07-12T15:28:29.045Z
+Stopped at: Completed 06-02-PLAN.md
+Resume file: None
