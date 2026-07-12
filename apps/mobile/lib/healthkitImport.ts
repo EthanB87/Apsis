@@ -232,31 +232,39 @@ export async function runHealthKitSync(
       }
 
       const workoutId = randomUUID();
-      await database.insert(workout).values({
-        id: workoutId,
-        localDate,
-        type: 'endurance',
-        // D-14: imported sessions are already complete — finishedAt is the sample's own end time.
-        finishedAt: sample.endDate,
-        source: 'healthkit',
-        healthkitUuid: sample.uuid,
-      });
-
-      await database.insert(enduranceSegment).values({
-        id: randomUUID(),
-        workoutId,
-        activityType,
-        distanceM: distanceM ?? null,
-        durationS,
-        avgHr: avgHr ?? null,
-        intensityFactor,
-        stressScore: es,
-      });
-
       const { hss } = sessionHSSDetailed({
         enduranceSegments: [{ durationS, intensityFactor }],
       });
-      await database.update(workout).set({ hss }).where(eq(workout.id, workoutId));
+
+      // WR-01: the three per-sample writes commit atomically — a mid-sequence failure must
+      // never leave a segment-less `workout` row behind. Such an orphan is invisible to
+      // `candidatesForDedupe` (inner join on endurance_segment), so its uuid would not
+      // tombstone and the next sync (anchor unadvanced on failure) would re-import the same
+      // sample as a duplicate.
+      await database.transaction(async (tx) => {
+        await tx.insert(workout).values({
+          id: workoutId,
+          localDate,
+          type: 'endurance',
+          // D-14: imported sessions are already complete — finishedAt is the sample's own end time.
+          finishedAt: sample.endDate,
+          source: 'healthkit',
+          healthkitUuid: sample.uuid,
+        });
+
+        await tx.insert(enduranceSegment).values({
+          id: randomUUID(),
+          workoutId,
+          activityType,
+          distanceM: distanceM ?? null,
+          durationS,
+          avgHr: avgHr ?? null,
+          intensityFactor,
+          stressScore: es,
+        });
+
+        await tx.update(workout).set({ hss }).where(eq(workout.id, workoutId));
+      });
 
       importedCount++;
     }
