@@ -2,12 +2,14 @@
  * apps/mobile/hooks/useForegroundHealthKitSync.ts
  *
  * The D-02 foreground sync trigger: mirrors `RestTimerBanner.tsx`'s `AppState`
- * `'change'`-listener + cleanup-on-unmount shape exactly. On `nextState === 'active'`, if
- * `healthkitConnected` is true (D-21 toggle gate — off pauses all HK reads), fires a silent
- * anchor-delta `runHealthKitSync(db, { initial: false })`. Guarded by an in-flight ref (no
- * overlapping syncs) plus a short debounce window (a rapid background/foreground bounce — e.g.
- * Control Center or a notification-center pull — must not double-trigger a sync; this guard has
- * no analog in `RestTimerBanner.tsx` and is a new discretion item per 05-PATTERNS.md).
+ * `'change'`-listener + cleanup-on-unmount shape. On `nextState === 'active'` — and once on
+ * mount (WR-02: cold launch starts with AppState already 'active', so no 'change' event ever
+ * fires for it) — if `healthkitConnected` is true (D-21 toggle gate — off pauses all HK reads),
+ * fires a silent anchor-delta `runHealthKitSync(db, { initial: false })`. Guarded by an
+ * in-flight ref (no overlapping syncs) plus a short debounce window (a rapid background/
+ * foreground bounce — e.g. Control Center or a notification-center pull — must not
+ * double-trigger a sync; this guard has no analog in `RestTimerBanner.tsx` and is a new
+ * discretion item per 05-PATTERNS.md).
  *
  * D-25 (silent failure): a rejected `runHealthKitSync` is caught here and never rethrown or
  * surfaced as an error banner — the console.error is for developer diagnostics only (T-05-01,
@@ -58,8 +60,7 @@ export function useForegroundHealthKitSync(): void {
   const setLastImport = useHealthKitImportSignal((s) => s.setLastImport);
 
   useEffect(() => {
-    const subscription = AppState.addEventListener('change', (nextState) => {
-      if (nextState !== 'active') return;
+    const triggerSync = (): void => {
       if (inFlightRef.current) return;
       const now = Date.now();
       if (now - lastRunAtRef.current < DEBOUNCE_MS) return;
@@ -79,7 +80,19 @@ export function useForegroundHealthKitSync(): void {
           inFlightRef.current = false;
         }
       })();
+    };
+
+    const subscription = AppState.addEventListener('change', (nextState) => {
+      if (nextState !== 'active') return;
+      triggerSync();
     });
+
+    // WR-02: on a cold launch AppState is ALREADY 'active' and never fires a 'change' event,
+    // so without this mount-time run the first delta sync would wait for a background/
+    // foreground cycle — a user who force-quits nightly would effectively never sync on the
+    // session where they actually look at TODAY. Reuses the same in-flight/debounce guards.
+    triggerSync();
+
     return () => subscription.remove();
   }, [setLastImport]);
 }
