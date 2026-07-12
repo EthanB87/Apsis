@@ -29,6 +29,7 @@ import { sessionHSSDetailed } from '@apsis/engine';
 import { eq } from 'drizzle-orm';
 import { getSyncState } from './healthkitSyncState';
 import { writeBackRun } from './healthkitWriteback';
+import { dateToLocalDateStr } from './localDate';
 import { recomputeLoadDaily } from './recomputeLoadDaily';
 import { resolveRunSegment, type RunActivityType } from './runEntryLogic';
 
@@ -125,7 +126,17 @@ export async function saveRun(database: DB, input: RunEntryInput): Promise<strin
     if (syncState?.healthkitConnected) {
       // Endurance sessions carry no separate begin timestamp (complete-on-save, D-13), so the
       // HK sample's start is back-computed from the save moment minus the logged duration.
-      const startedAt = new Date(finishedAt.getTime() - input.durationS * 1000);
+      // WR-08: for a BACK-DATED entry (D-13 date picker), the save moment is the wrong day —
+      // anchor the sample to noon local on the logged `localDate` instead, so the workout
+      // lands on the correct calendar day in the user's Health record (consistent with the
+      // Apsis row it mirrors).
+      let startedAt: Date;
+      if (input.localDate === dateToLocalDateStr(finishedAt)) {
+        startedAt = new Date(finishedAt.getTime() - input.durationS * 1000);
+      } else {
+        const [year, month, day] = input.localDate.split('-').map((part) => Number.parseInt(part, 10));
+        startedAt = new Date(year ?? 1970, (month ?? 1) - 1, day ?? 1, 12, 0, 0);
+      }
       writeBackRun(input.distanceM, input.durationS, hss, startedAt)
         .then(async (hkUuid) => {
           if (hkUuid != null) {
