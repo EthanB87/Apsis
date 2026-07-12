@@ -50,10 +50,15 @@ export async function finishWorkout(database: DB, workoutId: string, finishedAt:
   const syncState = await getSyncState(database);
   if (syncState?.healthkitConnected) {
     const [row] = await database
-      .select({ createdAt: workout.createdAt, hss: workout.hss })
+      .select({ createdAt: workout.createdAt, hss: workout.hss, healthkitUuid: workout.healthkitUuid })
       .from(workout)
       .where(eq(workout.id, workoutId));
-    if (row?.createdAt != null) {
+    // WR-07: the write-back tail must be idempotent — finishWorkout can be re-invoked (finish
+    // screen "Done" re-tapped, crash-resume "Finish Now" after a normal finish). A non-null
+    // healthkitUuid means a sample was already written; writing again would create a duplicate
+    // HK sample and overwrite the stored uuid, orphaning the earlier sample beyond
+    // discardWorkout's delete-sync reach.
+    if (row?.createdAt != null && row.healthkitUuid == null) {
       const durationS = Math.max(0, Math.round((finishedAt.getTime() - row.createdAt.getTime()) / 1000));
       writeBackLift(durationS, row.hss ?? 0, row.createdAt)
         .then(async (hkUuid) => {
