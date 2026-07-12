@@ -29,7 +29,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 02: HSS Engine** - Pure-TS training-load engine (strength/endurance HSS, day HSS, ATL/CTL/TSB trend, readiness band), ≥20 vitest tests — the moat (completed 2026-07-08)
 - [x] **Phase 03: Onboarding & Lifting Logger** - Profile capture + a Strong/Hevy-speed lifting logger with live HSS feedback (completed 2026-07-09)
 - [x] **Phase 04: Run Logger & Home Dashboard** - Run/conditioning logger plus the home screen readiness band and 28-day trend (completed 2026-07-10)
-- [ ] **Phase 05: HealthKit Integration** - Import runs/HR/bodyweight, write logged sessions back, dedupe against manual entries — lowest priority, first to cut
+- [x] **Phase 05: HealthKit Integration** - Import runs/HR/bodyweight, write logged sessions back, dedupe against manual entries — lowest priority, first to cut (completed 2026-07-12)
 - [ ] **Phase 06: Polish & App Store Submission** - Icon, screenshots, privacy label/policy, Sentry health-data audit, EAS submission by ~July 25
 
 ## Phase Details
@@ -196,7 +196,7 @@ Plans:
   3. Imported HealthKit runs never create duplicate entries alongside manually logged runs covering the same time range.
   4. After a user saves a lifting or running session in Apsis, that session appears in the Health app.
 
-**Plans**: 8/9 plans executed
+**Plans**: 9/9 plans complete
 
 Plans:
 **Wave 1**
@@ -217,7 +217,7 @@ Plans:
 **Wave 4** *(blocked on Wave 3)*
 
 - [x] 05-07-PLAN.md — Terminal onboarding HealthKit step + profile-version-bump race fix (D-20/22/23) (HK-01)
-- [ ] 05-08-PLAN.md — Settings "Apple Health" section: connect row / sync toggle / last-sync line (D-03/19/21/24) (HK-01/02)
+- [x] 05-08-PLAN.md — Settings "Apple Health" section: connect row / sync toggle / last-sync line (D-03/19/21/24) (HK-01/02)
 - [x] 05-09-PLAN.md — Run-form dedupe hint (D-09) + transient TODAY import notice (D-10) (HK-03)
 
 **UI hint**: no (adapter/import logic; no new screens beyond the permission prompt)
@@ -250,5 +250,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 | 02. HSS Engine | 6/6 | Complete    | 2026-07-08 |
 | 03. Onboarding & Lifting Logger | 11/11 | Complete    | 2026-07-10 |
 | 04. Run Logger & Home Dashboard | 10/10 | Complete    | 2026-07-10 |
-| 05. HealthKit Integration | 8/9 | In Progress|  |
+| 05. HealthKit Integration | 9/9 | Complete   | 2026-07-12 |
 | 06. Polish & App Store Submission | 0/TBD | Not started | - |
