@@ -200,6 +200,10 @@ export function candidatesForDedupe(
       // manual rows carry Apsis's own write-back uuid once HealthKit is connected, so a
       // uuid-null check misclassifies written-back manual runs as imports.
       source: workout.source,
+      // WR-05: SELECTED (not filtered — the WHERE stays deletedAt-blind per the tombstone
+      // semantics above) so display-side callers like run.tsx's D-09 hint can exclude
+      // soft-deleted rows, which contribute nothing to the training load.
+      deletedAt: workout.deletedAt,
     })
     .from(workout)
     .innerJoin(enduranceSegment, eq(enduranceSegment.workoutId, workout.id))

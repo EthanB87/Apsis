@@ -141,8 +141,10 @@ export default function RunEntryScreen(): React.JSX.Element {
     candidatesForDedupe(db, localDate, activityType)
       .then((candidates) => {
         if (cancelled) return;
+        // WR-05: a soft-deleted import is only a tombstone — it contributes nothing to the
+        // training load, so "saving will count both" would be false; exclude it here.
         const dupe = candidates
-          .filter((c) => c.source === 'healthkit')
+          .filter((c) => c.source === 'healthkit' && c.deletedAt == null)
           .some((c) => isDuplicateOfExisting(durationS, c.durationS));
         setHasImportDupe(dupe);
       })

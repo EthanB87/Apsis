@@ -19,7 +19,15 @@ const mockDb = drizzle(async () => ({ rows: [] }), { schema });
 describe('candidatesForDedupe', () => {
   it('does NOT filter on deleted_at — tombstoned rows must still be visible (Pitfall 9)', () => {
     const { sql } = candidatesForDedupe(mockDb, '2026-07-11', 'run').toSQL();
-    expect(sql.toLowerCase()).not.toContain('deleted_at');
+    // WR-05: deleted_at IS selected (so display callers can exclude tombstones), but the
+    // WHERE clause must stay deletedAt-blind so tombstoned rows still block re-import.
+    const whereClause = sql.toLowerCase().split(' where ')[1] ?? '';
+    expect(whereClause).not.toContain('deleted_at');
+  });
+
+  it('selects deleted_at so display callers can exclude soft-deleted tombstones (WR-05)', () => {
+    const { sql } = candidatesForDedupe(mockDb, '2026-07-11', 'run').toSQL();
+    expect(sql.toLowerCase()).toContain('"workout"."deleted_at"');
   });
 
   it('filters on local_date and activity_type', () => {
