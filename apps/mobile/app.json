@@ -48,6 +48,14 @@
           "NSHealthUpdateUsageDescription": "Apsis writes your logged lifting and running sessions to Health so they show up alongside your other workouts.",
           "background": false
         }
+      ],
+      [
+        "@sentry/react-native",
+        {
+          "organization": "apsis",
+          "project": "apsis-mobile",
+          "url": "https://sentry.io/"
+        }
       ]
     ],
     "experiments": {
