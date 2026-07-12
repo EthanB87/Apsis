@@ -5,15 +5,15 @@ milestone_name: milestone
 current_phase: 05
 current_phase_name: healthkit-integration
 status: executing
-stopped_at: Completed 05-06-PLAN.md
-last_updated: "2026-07-12T03:02:40.966Z"
+stopped_at: Completed 05-07-PLAN.md
+last_updated: "2026-07-12T03:05:52.395Z"
 last_activity: 2026-07-11
 last_activity_desc: Phase 05 execution started
 progress:
   total_phases: 6
   completed_phases: 3
   total_plans: 36
-  completed_plans: 34
+  completed_plans: 35
   percent: 50
 ---
 
@@ -30,7 +30,7 @@ training-load number (HSS) and a readiness band — fully offline.
 ## Current Position
 
 Phase: 05 (healthkit-integration) — EXECUTING
-Plan: 8 of 9
+Plan: 9 of 9
 Status: Ready to execute
 Last activity: 2026-07-11 — Phase 05 execution started
 
@@ -94,6 +94,7 @@ Progress: [█████████████░░░░░░░] 67% (4/
 | Phase 05 P06 | 12min | 2 tasks | 3 files |
 | Phase 05 P09 | 12min | 2 tasks | 2 files |
 | Phase 05 P01 | 35min | 3 tasks | 3 files |
+| Phase 05 P07 | 9min | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -192,6 +193,8 @@ Recent decisions affecting current work:
 - [Phase 05]: TODAY's D-10 import notice batch id is useHealthKitImportSignal's syncedAt timestamp, not a new dedicated batch-id field -- each completed sync produces a distinct syncedAt
 - [Phase 05 P01]: Installed @kingstinct/react-native-healthkit@^14.0.2 (Nitro rewrite) per RESEARCH Pitfall 1, overriding the CLAUDE.md-stated ~8.2.0 pin
 - [Phase 05 P01]: EAS provisioning-profile build failures required an interactive eas build run so the developer could add the HealthKit capability to com.apsis.app and regenerate the AdHoc profile before a build could embed the entitlement
+- [Phase 05]: [Phase 05 P07]: Relocated useProfileVersion bump from useSaveProfile.save() into the terminal HealthKit step's accept/skip handlers (Pitfall 2 fix) -- bumping at insert time raced past the new terminal onboarding step before it could ever render — review.tsx now explicitly router.push()es to /onboarding/healthkit after a successful save instead of relying on the gate to auto-navigate
+- [Phase 05]: [Phase 05 P07]: Both Connect Apple Health and Not now bump the profile version and advance -- decline is quiet, immediate, and the step never re-prompts (D-20); granting fires the initial 90-day HealthKit import in the background without awaiting it (D-22)
 
 ### Pending Todos
 
@@ -235,6 +238,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-07-12T03:01:40.665Z
-Stopped at: Completed 05-06-PLAN.md
+Last session: 2026-07-12T03:05:52.385Z
+Stopped at: Completed 05-07-PLAN.md
 Resume file: None
