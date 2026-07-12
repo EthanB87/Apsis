@@ -21,12 +21,28 @@
  *   Stack.Protected gates the entire app behind profile existence (D-01) — once past
  *   this gate, downstream code may assume a profile row exists (no null-profile branches).
  *   ONB-03 is satisfied structurally: no readiness UI is reachable before a profile exists.
+ *
+ * Crash reporting (T-06-01/D-01/D-02/D-03, REL-03):
+ *   Sentry.init runs at module scope, alongside SplashScreen.preventAutoHideAsync(), once
+ *   per app launch. Scope is native crashes + unhandled JS errors ONLY — tracesSampleRate 0
+ *   (no performance tracing), attachScreenshot/attachViewHierarchy false, sendDefaultPii
+ *   false (no identity ever attached). `beforeSend: sanitizeSentryEvent` (lib/sentrySanitize.ts)
+ *   is an ALLOWLIST — only exception + contexts.device/app ever survive; health-derived
+ *   values (HR/HSS/bodyweight/distance/duration) cannot leak by omission, not by a denylist
+ *   that would need updating per field. Defense in depth against Pitfall 6 (default
+ *   integrations re-capturing console.* as breadcrumbs): the installed SDK line (7.11.0) has
+ *   no integration literally named 'Console' — its `breadcrumbsIntegration` (name
+ *   'Breadcrumbs') is the one with `console: true` by default, so THAT is the integration
+ *   filtered out of the default set below; `sanitizeSentryEvent` also unconditionally empties
+ *   `event.breadcrumbs` regardless, so console capture is blocked at both layers even if this
+ *   SDK's internal naming changes again in a future upgrade.
  */
 
 import { useEffect, useState } from 'react';
 import { StyleSheet } from 'react-native';
 import { Stack, useRouter, type Href } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
+import * as Sentry from '@sentry/react-native';
 import { useFonts } from 'expo-font';
 import {
   Archivo_400Regular,
@@ -41,13 +57,25 @@ import type { InferSelectModel } from 'drizzle-orm';
 import { db, migrations, seedExercises, workout, openWorkout, softDeleteWorkout } from '@apsis/db';
 import { LoadingScreen, ErrorScreen, ResumePrompt } from '../components/BootStates';
 import { useProfileExists } from '../hooks/useProfileExists';
+import { sanitizeSentryEvent } from '../lib/sentrySanitize';
 
 type WorkoutRow = InferSelectModel<typeof workout>;
 
 // Keep the splash screen up until the database is ready (success or error).
 SplashScreen.preventAutoHideAsync();
 
-export default function RootLayout(): React.JSX.Element | null {
+// Crash reporting (D-01/D-02/D-03, REL-03) — see module doc comment above.
+Sentry.init({
+  dsn: process.env.EXPO_PUBLIC_SENTRY_DSN,
+  sendDefaultPii: false, // D-03: no PII ever added by active integrations
+  tracesSampleRate: 0, // D-02: no performance tracing
+  attachScreenshot: false,
+  attachViewHierarchy: false,
+  beforeSend: sanitizeSentryEvent,
+  integrations: (defaults) => defaults.filter((integration) => integration.name !== 'Breadcrumbs'),
+});
+
+function RootLayout(): React.JSX.Element | null {
   const [fontsLoaded] = useFonts({
     Archivo_400Regular,
     Archivo_500Medium,
@@ -182,6 +210,11 @@ export default function RootLayout(): React.JSX.Element | null {
     </GestureHandlerRootView>
   );
 }
+
+// D-01/REL-03: Sentry.wrap adds touch-event breadcrumb tracking + a top-level error
+// boundary around the whole app. Wraps the named RootLayout declaration above rather than
+// exporting a default function directly.
+export default Sentry.wrap(RootLayout);
 
 const styles = StyleSheet.create({
   fill: { flex: 1 },
