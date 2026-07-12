@@ -26,12 +26,14 @@ import {
   Pressable,
   ScrollView,
   StyleSheet,
+  Switch,
   Text,
   TextInput,
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Constants from 'expo-constants';
+import { db } from '@apsis/db';
 import { ENGINE_VERSION } from '@apsis/engine';
 import type { Sex, Units } from '@apsis/shared';
 import {
@@ -48,7 +50,18 @@ import {
 import { useProfile, type ProfileUpdateInput } from '../../../hooks/useProfile';
 import { ScreenHeader } from '../../../components/ScreenHeader';
 import Colors from '../../../constants/Colors';
-import { HIT_TARGET_MIN, Mono, Radius, Spacing, Typography, tabularNums } from '../../../constants/theme';
+import {
+  HAIRLINE_WIDTH,
+  HIT_TARGET_MIN,
+  Mono,
+  Radius,
+  Spacing,
+  Typography,
+  tabularNums,
+} from '../../../constants/theme';
+import { requestHealthKitAuthorization } from '../../../lib/healthkitAuth';
+import { runHealthKitSync } from '../../../lib/healthkitImport';
+import { getSyncState, setSyncState } from '../../../lib/healthkitSyncState';
 
 const MIN_PLAUSIBLE_KG = 30;
 const MAX_PLAUSIBLE_KG = 250;
@@ -69,6 +82,12 @@ function formatRestLabel(sec: number): string {
   const minutes = Math.floor(sec / 60);
   const seconds = sec % 60;
   return seconds === 0 ? `${minutes}:00` : `${minutes}:${String(seconds).padStart(2, '0')}`;
+}
+
+/** D-24: "LAST SYNC {H:MM AM/PM}" mono status line, or the pre-first-sync placeholder. */
+function formatHealthKitLastSync(date: Date | null): string {
+  if (date == null) return 'LAST SYNC —';
+  return `LAST SYNC ${date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}`;
 }
 
 /**
@@ -105,6 +124,12 @@ export default function SettingsScreen(): React.JSX.Element {
     'bodyweight' | 'thresholdHr' | 'paceMin' | 'paceSec' | null
   >(null);
 
+  // D-19/D-21/D-24: HealthKit sync-toggle state, loaded once from the single
+  // user_profile row (not part of useProfile's ProfileValues shape).
+  const [hkConnected, setHkConnected] = useState(false);
+  const [hkLastSyncAt, setHkLastSyncAt] = useState<Date | null>(null);
+  const [hkConnecting, setHkConnecting] = useState(false);
+
   // Seed the local edit draft from the loaded profile row exactly once — subsequent
   // profile updates (e.g. after Save Changes) are applied optimistically to `draft`
   // by the commit handlers, not re-derived here, so an in-progress edit is never
@@ -120,6 +145,20 @@ export default function SettingsScreen(): React.JSX.Element {
       });
     }
   }, [profile, draft]);
+
+  useEffect(() => {
+    let cancelled = false;
+    void (async () => {
+      const state = await getSyncState(db);
+      if (!cancelled && state != null) {
+        setHkConnected(state.healthkitConnected);
+        setHkLastSyncAt(state.healthkitLastSyncAt);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   // WR-07: a failed profile read must not leave the screen on an indefinite spinner —
   // show the generic error string (never the raw error) with a retry action.
@@ -240,6 +279,42 @@ export default function SettingsScreen(): React.JSX.Element {
     await update({ restTimerDefaultSec: sec });
   }
 
+  /** D-03: the permanent re-entry point for onboarding decliners / existing installs. */
+  async function handleConnectHealthKit(): Promise<void> {
+    if (hkConnecting) return;
+    setHkConnecting(true);
+    try {
+      const granted = await requestHealthKitAuthorization();
+      if (granted) {
+        await setSyncState(db, { healthkitConnected: true });
+        setHkConnected(true);
+        // D-22/D-25 fire-and-forget contract, same as onboarding's healthkit.tsx step —
+        // never block this screen on the initial 90-day import.
+        runHealthKitSync(db, { initial: true }).catch((err: unknown) => {
+          console.error('[Apsis] settings initial healthkit sync failed:', err);
+        });
+      }
+    } catch (err: unknown) {
+      // D-25: never surface an error dialog here — log only.
+      console.error('[Apsis] settings requestHealthKitAuthorization failed:', err);
+    } finally {
+      setHkConnecting(false);
+    }
+  }
+
+  /**
+   * D-21: the toggle pauses/resumes HK reads/writes — it never removes already-imported
+   * sessions. Optimistic-set-then-rollback-on-failure, matching `handleUnitsChange` above.
+   */
+  async function handleToggleHealthKitSync(next: boolean): Promise<void> {
+    const previous = hkConnected;
+    setHkConnected(next);
+    const ok = await setSyncState(db, { healthkitConnected: next });
+    if (!ok) {
+      setHkConnected(previous);
+    }
+  }
+
   async function handleSaveChanges(): Promise<void> {
     if (draft == null) return;
     const patch: ProfileUpdateInput = {};
@@ -277,6 +352,12 @@ export default function SettingsScreen(): React.JSX.Element {
 
   const appVersion = Constants.expoConfig?.version ?? '1.0.0';
 
+  // D-19: "connected" (state A -> B) must survive the D-21 toggle being switched OFF —
+  // healthkitConnected alone doubles as both "ever connected" and "sync enabled" in the
+  // single-bit schema, so a completed prior sync (healthkitLastSyncAt) is also treated as
+  // proof of a completed permission sheet even while the toggle is currently paused.
+  const hkEverConnected = hkConnected || hkLastSyncAt != null;
+
   return (
     <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
@@ -310,6 +391,47 @@ export default function SettingsScreen(): React.JSX.Element {
             />
           ))}
         </View>
+
+        <View style={styles.hairlineDivider} />
+        <Text style={styles.sectionLabel}>Apple Health</Text>
+        {hkEverConnected ? (
+          <View style={styles.hkSection}>
+            <View style={styles.hkInfoRow}>
+              <Text style={styles.hkRowLabel}>Connected</Text>
+              <Text style={styles.hkRowSub}>Manage permissions in the Health app.</Text>
+            </View>
+            <View style={styles.hkToggleRow}>
+              <Text style={styles.hkRowLabel}>Sync with Apple Health</Text>
+              <Switch
+                value={hkConnected}
+                onValueChange={handleToggleHealthKitSync}
+                trackColor={{ false: Colors.dark.steel, true: Colors.dark.accent }}
+                thumbColor={hkConnected ? Colors.dark.background : Colors.dark.text}
+                accessibilityLabel="Sync with Apple Health"
+              />
+            </View>
+            <Text style={styles.hkStatusLine}>
+              {hkConnected ? formatHealthKitLastSync(hkLastSyncAt) : 'SYNC PAUSED'}
+            </Text>
+          </View>
+        ) : (
+          <Pressable
+            onPress={handleConnectHealthKit}
+            disabled={hkConnecting}
+            accessibilityRole="button"
+            accessibilityLabel="Connect Apple Health"
+            accessibilityState={{ disabled: hkConnecting }}
+            style={({ pressed }) => [
+              styles.hkConnectRow,
+              pressed && !hkConnecting && styles.hkConnectRowPressed,
+            ]}>
+            <Text style={styles.hkRowLabel}>Connect Apple Health</Text>
+            <Text style={styles.hkRowSub}>
+              Import runs and bodyweight. Your logged sessions go to Health too.
+            </Text>
+          </Pressable>
+        )}
+        <View style={styles.hairlineDivider} />
 
         <View style={styles.footer}>
           <Text style={styles.footerText}>Apsis v{appVersion}</Text>
@@ -606,6 +728,55 @@ const styles = StyleSheet.create({
   },
   footerText: {
     ...Mono,
+    color: Colors.dark.mutedText,
+  },
+  hairlineDivider: {
+    height: HAIRLINE_WIDTH,
+    backgroundColor: Colors.dark.border,
+    marginHorizontal: Spacing.lg,
+    marginTop: Spacing.xl,
+  },
+  hkSection: {
+    paddingHorizontal: Spacing.lg,
+  },
+  hkConnectRow: {
+    paddingHorizontal: Spacing.lg,
+    minHeight: HIT_TARGET_MIN + 12,
+    paddingVertical: Spacing.lg,
+    borderBottomWidth: HAIRLINE_WIDTH,
+    borderBottomColor: Colors.dark.border,
+    justifyContent: 'center',
+    gap: Spacing.xs,
+  },
+  hkConnectRowPressed: {
+    opacity: 0.7,
+  },
+  hkInfoRow: {
+    minHeight: HIT_TARGET_MIN + 12,
+    paddingVertical: Spacing.lg,
+    borderBottomWidth: HAIRLINE_WIDTH,
+    borderBottomColor: Colors.dark.border,
+    justifyContent: 'center',
+    gap: Spacing.xs,
+  },
+  hkToggleRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    minHeight: HIT_TARGET_MIN,
+    marginTop: Spacing.md,
+  },
+  hkStatusLine: {
+    ...Mono,
+    color: Colors.dark.mutedText,
+    marginTop: Spacing.sm,
+  },
+  hkRowLabel: {
+    ...Typography.body,
+    color: Colors.dark.text,
+  },
+  hkRowSub: {
+    ...Typography.label,
     color: Colors.dark.mutedText,
   },
   modalOverlay: {
