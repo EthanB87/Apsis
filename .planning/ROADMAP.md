@@ -226,13 +226,38 @@ Plans:
 ### Phase 07: Nutrition Tracking
 
 **Goal**: Athletes log food (manual entry, barcode scan, nutrition-label OCR, custom recipes) as fast as MacroFactor/MFP, and see daily kcal/macro targets that adapt to the day's logged training (heavy-lift / long-run / double / rest) — the day-type adaptive targets no macro app offers. Full scope, database strategy (OFF + USDA + local-first cache), and data model are locked in NUTRITION.md (repo root); promoted from v2 into v1 scope 2026-07-13, sequenced after the Phase 6 App Store submission so it ships as the first v1.x update.
-**Requirements**: TBD (nutrition requirements not yet in REQUIREMENTS.md — derive during planning from NUTRITION.md §1 scope)
+**Requirements**: NUTR-01 .. NUTR-22 (granular set added to REQUIREMENTS.md by plan 07-01, derived from NUTRITION.md §1 scope)
 **Depends on:** Phase 6
-**Plans:** 0 plans
+**Plans:** 10 plans
 
 Plans:
+**Wave 1** *(foundation — parallel, no cross-file conflicts)*
 
-- [ ] TBD (run /gsd-plan-phase 7 to break down)
+- [ ] 07-01-PLAN.md — Schema + [BLOCKING] migration + granular NUTR-01..22 requirements: 5 new tables + 3 user_profile fields, drizzle-kit generate + round-trip test (NUTR-01/07/15)
+- [ ] 07-02-PLAN.md — Engine adaptive-target functions (TDD golden-file): dailyMacroTarget/classifyDayType/trainingKcalFromHss + EngineConfig constants (NUTR-16/17/18)
+
+**Wave 2** *(DB service + profile gate — depends on Wave 1)*
+
+- [ ] 07-03-PLAN.md — DB query + target orchestration: nutritionQueries (search/recents/favorites/day-totals/day-type) + pure computeNutritionTargetRow (NUTR-02/04/07/17)
+- [ ] 07-04-PLAN.md — Nutrition profile gate: pure NutritionProfile assembler + completeness hook + staged-draft setup screen for existing users (NUTR-15/20)
+
+**Wave 3** *(manual logging vertical — the sellable increment, depends on Wave 2)*
+
+- [ ] 07-05-PLAN.md — 5th Nutrition tab + targets-vs-totals screen + recomputeNutritionTarget wiring (finish + lazy rest-day fallback) (NUTR-19/16/17/22)
+- [ ] 07-06-PLAN.md — Manual food logging: local search/recents/favorites + custom food + quick-add + shared FoodConfirmSheet (NUTR-03/04/05/06/07)
+
+**Wave 4** *(native prerequisite — depends on Wave 3)*
+
+- [ ] 07-07-PLAN.md — Camera + OCR native install (legitimacy checkpoint) + camera permission + permission wrapper + EAS dev-build gate (NUTR-08/11)
+
+**Wave 5** *(barcode + OCR — depends on Wave 4)*
+
+- [ ] 07-08-PLAN.md — OFF/USDA fetch clients + local-first remote-fallback search + barcode scan chain (cache→OFF→confirm→log, graceful miss) + OFF attribution (NUTR-08/09/10/03/21/22)
+- [ ] 07-09-PLAN.md — Label OCR: pure bounds-checked parser + capture→Apple Vision OCR→confirm→custom food (NUTR-11/12/09)
+
+**Wave 6** *(recipes — last build-order item, cut-first candidate)*
+
+- [ ] 07-10-PLAN.md — Custom recipes: per-serving macro aggregation builders + recipes list/edit screens + log-one-serving (NUTR-13/14)
 
 ---
 
