@@ -39,5 +39,15 @@ export {
 // Pure load_daily recompute-row builder (RUN/HOME foundation — RESEARCH Pattern 1)
 export { computeLoadDailyUpsertRows, type LoadDailyUpsertRow } from './loadDaily';
 
+// Local-first nutrition query builders (NUTR-02/04/07/17 — search/recents/favorites/
+// day-totals/day-type session query)
+export {
+  searchLocalFoods,
+  recentFoods,
+  favoriteFoods,
+  dayTotals,
+  sessionTypesForDate,
+} from './nutritionQueries';
+
 // Generated drizzle migrations for useMigrations() hook in _layout.tsx
 export { migrations } from './migrations';
