@@ -234,7 +234,7 @@ Plans:
 **Wave 1** *(foundation — parallel, no cross-file conflicts)*
 
 - [x] 07-01-PLAN.md — Schema + [BLOCKING] migration + granular NUTR-01..22 requirements: 5 new tables + 3 user_profile fields, drizzle-kit generate + round-trip test (NUTR-01/07/15)
-- [ ] 07-02-PLAN.md — Engine adaptive-target functions (TDD golden-file): dailyMacroTarget/classifyDayType/trainingKcalFromHss + EngineConfig constants (NUTR-16/17/18)
+- [x] 07-02-PLAN.md — Engine adaptive-target functions (TDD golden-file): dailyMacroTarget/classifyDayType/trainingKcalFromHss + EngineConfig constants (NUTR-16/17/18)
 
 **Wave 2** *(DB service + profile gate — depends on Wave 1)*
 

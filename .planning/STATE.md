@@ -5,15 +5,15 @@ milestone_name: milestone
 current_phase: 07
 current_phase_name: nutrition-tracking
 status: executing
-stopped_at: Completed 07-01-PLAN.md
-last_updated: "2026-07-13T20:51:08.821Z"
+stopped_at: Completed 07-02-PLAN.md
+last_updated: "2026-07-13T21:03:10.746Z"
 last_activity: 2026-07-13
 last_activity_desc: Phase 07 execution started
 progress:
   total_phases: 7
   completed_phases: 4
   total_plans: 53
-  completed_plans: 40
+  completed_plans: 41
   percent: 57
 ---
 
@@ -30,7 +30,7 @@ training-load number (HSS) and a readiness band — fully offline.
 ## Current Position
 
 Phase: 07 (nutrition-tracking) — EXECUTING
-Plan: 2 of 10
+Plan: 3 of 10
 Status: Ready to execute
 Last activity: 2026-07-13 — Phase 07 execution started
 
@@ -101,6 +101,7 @@ Progress: [█████████████░░░░░░░] 67% (4/
 | Phase 06 P03 | 12min | 2 tasks | 2 files |
 | Phase 06 P05 | 6min | 3 tasks | 2 files |
 | Phase 07 P01 | 37min | 3 tasks | 9 files |
+| Phase 07 P02 | 12min | 2 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -210,6 +211,9 @@ Recent decisions affecting current work:
 - [Phase 06]: eas.json build.production.ios configured with autoIncrement:true and cli.appVersionSource:remote (D-17) -- marketing version stays pinned at 1.0.0 in app.json
 - [Phase 07]: better-sqlite3 pinned to ^11.10.0 as @apsis/db devDependency only (v12 dropped Node 20 prebuilds; v11.10.0 ships node-v115-win32-x64 prebuilt) after package-legitimacy + native-toolchain checkpoints
 - [Phase 07]: Migration round-trip proof pattern: apply committed drizzle .sql files in journal order to in-memory better-sqlite3 with foreign_keys=ON — typecheck never proves the DB is migrated (schema_push_requirement)
+- [Phase ?]: [Phase 07 P02]: 07-RESEARCH.md Pattern 4 implemented verbatim as the adaptive-target model since NUTRITION.md's referenced PRD section 6 does not exist in this repo
+- [Phase ?]: [Phase 07 P02]: kcal is computed independently of the fat-floor clamp (only c/f adjusted), so cut/bulk kcal deltas and sessionKcal additivity hold exactly even when the clamp fires
+- [Phase ?]: [Phase 07 P02]: per-package tsc --noEmit resolves @apsis/shared against dist declarations (composite project-reference redirect); root pnpm typecheck (tsc --build) is the authoritative cross-package verification entry point, matching Phase 03 P04 precedent
 
 ### Roadmap Evolution
 
@@ -284,7 +288,7 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-07-13T20:51:08.810Z
-Stopped at: Completed 07-01-PLAN.md
+Last session: 2026-07-13T21:03:10.734Z
+Stopped at: Completed 07-02-PLAN.md
 tasks awaiting human action — see Blockers/Concerns). Resume: /gsd-execute-phase 6
 Resume file: None

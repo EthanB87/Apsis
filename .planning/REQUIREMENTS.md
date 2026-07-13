@@ -98,9 +98,9 @@ NUTRITION.md and 07-CONTEXT.md). Supersedes the stale v1.1 `NUTR-01` placeholder
 - [ ] **NUTR-13**: User can combine foods into a custom recipe with a servings count; per-serving macros compute automatically
 - [ ] **NUTR-14**: User can log one recipe serving as a food-log entry
 - [x] **NUTR-15**: `user_profile` gains `heightCm`, `birthYear`, `goalMode` fields required by the adaptive-target model
-- [ ] **NUTR-16**: Engine computes daily kcal/P/C/F targets from profile + goal mode + day's logged training day-type — pure function, no I/O, tunable EngineConfig constants
-- [ ] **NUTR-17**: Day-type (`heavy_lift`/`long_run`/`double`/`rest`/`mixed`) is derived automatically from the day's logged workouts
-- [ ] **NUTR-18**: `dailyMacroTarget` and `classifyDayType` ship with golden-file tests, mirroring the HSS calibration precedent (D-13/D-14/D-20)
+- [x] **NUTR-16**: Engine computes daily kcal/P/C/F targets from profile + goal mode + day's logged training day-type — pure function, no I/O, tunable EngineConfig constants
+- [x] **NUTR-17**: Day-type (`heavy_lift`/`long_run`/`double`/`rest`/`mixed`) is derived automatically from the day's logged workouts
+- [x] **NUTR-18**: `dailyMacroTarget` and `classifyDayType` ship with golden-file tests, mirroring the HSS calibration precedent (D-13/D-14/D-20)
 - [ ] **NUTR-19**: Nutrition screen shows today's targets vs. logged totals (kcal + P/C/F progress)
 - [ ] **NUTR-20**: Existing users (onboarded in Phases 03-06, before Phase 7 shipped) are prompted for the new profile fields the first time they open nutrition, gated like ONB-03
 - [ ] **NUTR-21**: App displays Open Food Facts ODbL/CC-BY-SA attribution in Settings (legal requirement of API use)
@@ -199,9 +199,9 @@ Which phase covers which requirement. Populated during roadmap creation.
 | NUTR-13 | Phase 07 | Pending |
 | NUTR-14 | Phase 07 | Pending |
 | NUTR-15 | Phase 07 | Complete |
-| NUTR-16 | Phase 07 | Pending |
-| NUTR-17 | Phase 07 | Pending |
-| NUTR-18 | Phase 07 | Pending |
+| NUTR-16 | Phase 07 | Complete |
+| NUTR-17 | Phase 07 | Complete |
+| NUTR-18 | Phase 07 | Complete |
 | NUTR-19 | Phase 07 | Pending |
 | NUTR-20 | Phase 07 | Pending |
 | NUTR-21 | Phase 07 | Pending |
