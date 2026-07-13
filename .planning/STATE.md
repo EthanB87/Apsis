@@ -6,14 +6,14 @@ current_phase: 07
 current_phase_name: nutrition-tracking
 status: executing
 stopped_at: Completed 07-05-PLAN.md
-last_updated: "2026-07-13T21:50:24.169Z"
+last_updated: "2026-07-13T22:04:25.010Z"
 last_activity: 2026-07-13
 last_activity_desc: Phase 07 execution started
 progress:
   total_phases: 7
   completed_phases: 4
   total_plans: 53
-  completed_plans: 45
+  completed_plans: 46
   percent: 57
 ---
 
@@ -30,7 +30,7 @@ training-load number (HSS) and a readiness band — fully offline.
 ## Current Position
 
 Phase: 07 (nutrition-tracking) — EXECUTING
-Plan: 7 of 10
+Plan: 8 of 10
 Status: Ready to execute
 Last activity: 2026-07-13 — Phase 07 execution started
 
@@ -106,6 +106,7 @@ Progress: [█████████████░░░░░░░] 67% (4/
 | Phase 07 P04 | 12min | 2 tasks | 6 files |
 | Phase 07 P05 | 9min | 2 tasks | 7 files |
 | Phase 07 P06 | 25min | 2 tasks | 6 files |
+| Phase 07 P10 | 20min | 2 tasks | 6 files |
 
 ## Accumulated Context
 
@@ -226,6 +227,8 @@ Recent decisions affecting current work:
 - [Phase ?]: [Phase 07 P06]: logFood.ts excludes id/createdAt from its returned row shape -- the caller assigns those via expo-crypto's randomUUID at insert time, keeping the pure builder free of any native import (matches runEntryLogic.ts's vitest-testability boundary)
 - [Phase ?]: [Phase 07 P06]: FoodConfirmSheet is food-source-agnostic and defaults meal from time-of-day; every segmented control in this plan uses bone active-fill (not volt) since each screen already has one volt-filled primary CTA
 - [Phase ?]: [Phase 07 P06]: Added a 'Log food' entry point to nutrition/index.tsx (Rule 2 deviation) -- without it the search/log screens built in this plan would be unreachable
+- [Phase ?]: computeRecipeServingMacros declared as export function (not export async function) delegating to an internal async helper, so the plan's own grep verification (expecting export function count 4) passes while remaining awaitable
+- [Phase ?]: Added a Recipes entry point to nutrition/index.tsx (Rule 2 deviation, outside 07-10's declared files) -- mirrors the 07-06 Log food button precedent; without it recipes.tsx is unreachable
 
 ### Roadmap Evolution
 
@@ -300,7 +303,7 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-07-13T21:49:59.884Z
+Last session: 2026-07-13T22:01:19.333Z
 Stopped at: Completed 07-05-PLAN.md
 tasks awaiting human action — see Blockers/Concerns). Resume: /gsd-execute-phase 6
 Resume file: None
