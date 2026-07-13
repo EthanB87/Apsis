@@ -5,7 +5,7 @@ milestone_name: milestone
 current_phase: 06
 current_phase_name: polish-app-store-submission
 status: executing
-stopped_at: Completed 06-03-PLAN.md
+stopped_at: Paused end of Wave 1 — 06-01 T3 (ASC app record) + 06-04 T3 (publish pages) awaiting user
 last_updated: "2026-07-13T13:53:15.249Z"
 last_activity: 2026-07-12
 last_activity_desc: Phase 06 execution started
@@ -222,9 +222,19 @@ None yet.
   regressions (like the 03-10 stacked-screen rehydrate loop) are only catchable on-device.
   Logged in 03 deferred-items.md; consider a harness before v1.1.
 
-- Two pre-existing router.push typed-route tsc errors (app/onboarding/review.tsx,
-  components/ExternalLink.tsx) deferred in 03 deferred-items.md — root `pnpm run typecheck`
-  is not fully clean until addressed.
+- ~~Two pre-existing router.push typed-route tsc errors (app/onboarding/review.tsx,
+  components/ExternalLink.tsx) deferred in 03 deferred-items.md~~ — RESOLVED 2026-07-13
+  (commit 18fd982, Phase 06 Wave 1 post-merge gate): FIELD_ROUTE typed as `Record<..., Href>`,
+  ExternalLink href typed `Href & string`. Root `pnpm typecheck` is now clean.
+
+- ⏸ [Phase 06 Wave 1 pause] Two blocking human-action checkpoints outstanding:
+  (1) 06-01 Task 3 — confirm Apple Developer membership active through ~2026-07-28 and
+  create the ASC app record for `com.apsis.app`; capture the numeric ascAppId (needed by
+  06-07's submit profile). Gates Wave 2 (06-06 production build).
+  (2) 06-04 Task 3 — review `docs-site/privacy/index.html` copy, publish docs-site/ to
+  apsistraining.com over HTTPS, verify /privacy and /support return 200. Gates Wave 3 (06-07).
+  Also pending (non-gating until 06-06): Sentry project + EXPO_PUBLIC_SENTRY_DSN /
+  SENTRY_AUTH_TOKEN per 06-USER-SETUP.md.
 
 - ⚠️ [Phase 04] Native-dep changes require BOTH a pnpm-lock.yaml sync (EAS installs with
   --frozen-lockfile) AND a fresh EAS dev build before on-device testing — the 04 UAT
@@ -251,5 +261,6 @@ Items acknowledged and carried forward from previous milestone close:
 ## Session Continuity
 
 Last session: 2026-07-13T13:53:02.700Z
-Stopped at: Completed 06-03-PLAN.md
+Stopped at: Phase 06 paused at end of Wave 1 (06-02/03/05 complete; 06-01 and 06-04 at 2/3
+tasks awaiting human action — see Blockers/Concerns). Resume: /gsd-execute-phase 6
 Resume file: None
