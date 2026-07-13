@@ -41,6 +41,30 @@ import type { EngineConfig } from '@apsis/shared';
  * - `bandRedRatio` / `bandAmberRatio` (D-04): TSB/CTL ratio thresholds. Ratio below
  *   `bandRedRatio` → red; in [`bandRedRatio`, `bandAmberRatio`) → amber; at/above
  *   `bandAmberRatio` → green.
+ *
+ * Nutrition — day-type adaptive macro target model (NUTR-16/17/18, Phase 07 Plan 02).
+ * 07-RESEARCH.md Pattern 4 IS the model (no PRD §6 exists in this repo); every constant
+ * below is a starting guess pending real-world tuning, calibrated only in the sense that
+ * `nutrition.test.ts`'s 5 golden-file cases assert defensible ranges — same "reasonableness
+ * test, not precise calibration" framing as `kStrength`'s original starting value.
+ * - `proteinGPerKgCut` (2.4) / `proteinGPerKgMaintain` (1.8) / `proteinGPerKgBulk` (1.8):
+ *   ISSN position-stand ranges (2.3–3.1 g/kg cutting, 1.4–2.2 g/kg maintenance), mid-points.
+ *   Calibrated by golden test 2 (cut+heavy_lift: protein highest relative to kcal).
+ * - `neatMultiplier` (1.2): sedentary/light-NEAT baseline multiplier on BMR; exercise kcal
+ *   is added separately via `sessionKcal`, not folded into this constant. Calibrated by
+ *   golden test 1 (maintain+rest sanity range).
+ * - `cutDeltaKcal` (-500) / `bulkDeltaKcal` (300): common ~1lb/week deficit / lean-bulk
+ *   surplus heuristics. Calibrated by golden tests 2 (cut) and 3 (bulk).
+ * - `kcalPerHssPoint` (5): **lowest-confidence constant (A4)** — derived so a ~100-HSS hard
+ *   session adds ≈500 kcal to the day's target; no literature anchor, pure heuristic.
+ *   Calibrated by golden test 3 (bulk+double: sessionKcal clearly additive).
+ * - `carbGPerKgHeavyLift` (4) / `carbGPerKgLongRun` (7) / `carbGPerKgDouble` (8) /
+ *   `carbGPerKgRest` (2.5) / `carbGPerKgMixed` (5): day-type carb g/kg targets, glycogen-
+ *   demand ordered rest < heavy_lift < mixed < long_run < double. Calibrated by golden test 3
+ *   (bulk+double: highest carb target).
+ * - `fatFloorGPerKg` (0.4): essential-fatty-acid/hormonal-health practical floor; clamps an
+ *   aggressive-cut kcal budget from starving fat intake, reducing carbs to compensate instead.
+ *   Calibrated by golden test 5 (aggressive-cut fat-floor clamp).
  */
 export const DEFAULT_CONFIG: EngineConfig = {
   kStrength: 4.4,
@@ -54,6 +78,19 @@ export const DEFAULT_CONFIG: EngineConfig = {
   calibratingCtlFloor: 10,
   bandRedRatio: -0.3,
   bandAmberRatio: -0.1,
+  proteinGPerKgCut: 2.4,
+  proteinGPerKgMaintain: 1.8,
+  proteinGPerKgBulk: 1.8,
+  neatMultiplier: 1.2,
+  cutDeltaKcal: -500,
+  bulkDeltaKcal: 300,
+  kcalPerHssPoint: 5,
+  carbGPerKgHeavyLift: 4,
+  carbGPerKgLongRun: 7,
+  carbGPerKgDouble: 8,
+  carbGPerKgRest: 2.5,
+  carbGPerKgMixed: 5,
+  fatFloorGPerKg: 0.4,
 };
 
 /**

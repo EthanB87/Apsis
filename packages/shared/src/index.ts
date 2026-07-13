@@ -66,6 +66,20 @@ export interface EngineConfig {
   calibratingCtlFloor: number;
   bandRedRatio: number;
   bandAmberRatio: number;
+  // Nutrition — day-type adaptive macro target model (NUTR-16/17/18, Phase 07 Plan 02)
+  proteinGPerKgCut: number;
+  proteinGPerKgMaintain: number;
+  proteinGPerKgBulk: number;
+  neatMultiplier: number;
+  cutDeltaKcal: number;
+  bulkDeltaKcal: number;
+  kcalPerHssPoint: number;
+  carbGPerKgHeavyLift: number;
+  carbGPerKgLongRun: number;
+  carbGPerKgDouble: number;
+  carbGPerKgRest: number;
+  carbGPerKgMixed: number;
+  fatFloorGPerKg: number;
 }
 
 /** Strength-side breakdown: total SS plus per-set stress contributions and any clamp warnings */
@@ -99,6 +113,31 @@ export interface LoadTrendPoint {
   ctl: number;
   tsb: number;
   band: ReadinessBand;
+}
+
+/**
+ * A day's training-type classification for adaptive nutrition targets (NUTR-17). Mirrors
+ * `dailyHSS`'s >1-session-wins precedence: any day with more than one logged session is
+ * `'double'` regardless of type mix.
+ */
+export type DayType = 'heavy_lift' | 'long_run' | 'double' | 'rest' | 'mixed';
+
+/** Profile inputs required by `dailyMacroTarget` (NUTR-16) — extends the engine's existing sex/bodyweight inputs with height/age/goal-mode. */
+export interface NutritionProfile {
+  sex: Sex;
+  bodyweightKg: number;
+  heightCm: number;
+  age: number;
+  goalMode: 'cut' | 'maintain' | 'bulk';
+}
+
+/** Result of `dailyMacroTarget` — daily kcal/macro targets plus any clamp/validation warnings. */
+export interface MacroTargetResult {
+  kcal: number;
+  p: number;
+  c: number;
+  f: number;
+  warnings: string[];
 }
 
 export * from './units';
