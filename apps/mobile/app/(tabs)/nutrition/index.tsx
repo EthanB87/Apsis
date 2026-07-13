@@ -226,6 +226,17 @@ export default function NutritionScreen(): React.JSX.Element {
         <MacroBar label="PROTEIN" value={totals.p} target={target.proteinG} unit="G" accent="bone" />
         <MacroBar label="CARBS" value={totals.c} target={target.carbG} unit="G" accent="bone" />
         <MacroBar label="FAT" value={totals.f} target={target.fatG} unit="G" accent="bone" />
+
+        {/* Rule 2 deviation (Plan 07-06): the only entry point into search/log — without this
+         * the two screens built in this plan are unreachable dead code. Ghost/bone style, not
+         * volt — the calories bar above is already this screen's one volt-filled element. */}
+        <Pressable
+          onPress={() => router.push('/(tabs)/nutrition/search')}
+          accessibilityRole="button"
+          accessibilityLabel="Log food"
+          style={({ pressed }) => [styles.logFoodButton, pressed && styles.logFoodButtonPressed]}>
+          <Text style={styles.logFoodButtonLabel}>Log food</Text>
+        </Pressable>
       </ScrollView>
     </SafeAreaView>
   );
@@ -310,5 +321,22 @@ const styles = StyleSheet.create({
   setupButtonLabel: {
     ...Typography.body,
     color: Colors.dark.onAccent,
+  },
+  logFoodButton: {
+    minHeight: HIT_TARGET_MIN,
+    borderRadius: Radius.lg,
+    borderWidth: 1,
+    borderColor: Colors.dark.border,
+    backgroundColor: 'transparent',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: Spacing.xl,
+  },
+  logFoodButtonPressed: {
+    backgroundColor: Colors.dark.steel,
+  },
+  logFoodButtonLabel: {
+    ...Typography.body,
+    color: Colors.dark.text,
   },
 });
