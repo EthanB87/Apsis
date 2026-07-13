@@ -1,10 +1,11 @@
 /**
- * @apsis/db — nutrition query builders (NUTR-02/04/07/13/14/17)
+ * @apsis/db — nutrition query builders (NUTR-02/04/07/08/13/14/17)
  *
  * Parameterized drizzle query-builder factories for the local-first food cache (search,
- * recents, favorites), the joinless day-totals aggregate, the day-type session query, and
- * recipe CRUD + per-serving macro aggregation — mirroring queries.ts's builder-factory shapes
- * exactly (`previousSessionSet`, `recentExerciseIds`, `sessionCountsByDate`).
+ * barcode lookup, recents, favorites), the joinless day-totals aggregate, the day-type session
+ * query, and recipe CRUD + per-serving macro aggregation — mirroring queries.ts's
+ * builder-factory shapes exactly (`previousSessionSet`, `recentExerciseIds`,
+ * `sessionCountsByDate`).
  *
  * Security (T-1-01/T-07-05): every builder here uses drizzle's parameterized query API
  * exclusively — search text is always bound as a `like()` value, never interpolated into a
@@ -36,6 +37,24 @@ export function searchLocalFoods(db: QueryableDB, query: string, limit = 20) {
     .where(or(like(food.name, pattern), like(food.brand, pattern)))
     .orderBy(food.name)
     .limit(limit);
+}
+
+// ---------------------------------------------------------------------------
+// Barcode lookup (NUTR-08 — 07-08-PLAN.md Task 2, Rule 2 deviation: added outside this
+// plan's declared files_modified since the barcode chain's local-cache step depends on it)
+// ---------------------------------------------------------------------------
+
+/**
+ * Exact match against `food.barcode` — the instant, offline first step of the barcode scan
+ * chain (07-RESEARCH.md Barcode Scan Flow: "local `food` WHERE barcode=?", tried before any
+ * OFF network call). `barcode` is bound as an `eq()` parameter, never interpolated (T-1-01).
+ * `food.barcode` is not declared unique in the schema, but the app only ever upserts one row
+ * per barcode via the OFF cache-through path (a local hit always short-circuits before a
+ * second row for the same code could be created) — `limit(1)` is a defensive cap, not a
+ * correctness assumption.
+ */
+export function findFoodByBarcode(db: QueryableDB, barcode: string) {
+  return db.select().from(food).where(eq(food.barcode, barcode)).limit(1);
 }
 
 // ---------------------------------------------------------------------------

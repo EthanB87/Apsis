@@ -18,6 +18,7 @@ import * as schema from '../schema';
 import { food, foodLog, workout } from '../schema';
 import {
   searchLocalFoods,
+  findFoodByBarcode,
   recentFoods,
   favoriteFoods,
   dayTotals,
@@ -128,6 +129,44 @@ describe('searchLocalFoods', () => {
     const results = searchLocalFoods(db, "Jerry's 100%").all();
     expect(results).toHaveLength(1);
     expect(results[0]?.id).toBe('f1');
+  });
+});
+
+describe('findFoodByBarcode', () => {
+  let harness: ReturnType<typeof openMigratedDb>;
+  beforeEach(() => {
+    harness = openMigratedDb();
+  });
+  afterEach(() => {
+    harness.sqlite.close();
+  });
+
+  it('returns the food row matching an exact barcode', () => {
+    const { db } = harness;
+    db.insert(food)
+      .values([
+        { id: 'f1', name: 'Protein bar', barcode: '0123456789012', ...BASE_FOOD },
+        { id: 'f2', name: 'Rice', barcode: '9999999999999', ...BASE_FOOD },
+      ])
+      .run();
+
+    const results = findFoodByBarcode(db, '0123456789012').all();
+    expect(results).toHaveLength(1);
+    expect(results[0]?.id).toBe('f1');
+  });
+
+  it('returns an empty array when no food has that barcode (cache miss)', () => {
+    const { db } = harness;
+    const results = findFoodByBarcode(db, '0000000000000').all();
+    expect(results).toHaveLength(0);
+  });
+
+  it('finds a barcode containing quote characters without error (parameterization proof)', () => {
+    const { db } = harness;
+    db.insert(food).values({ id: 'f1', name: 'Weird code', barcode: "12'34", ...BASE_FOOD }).run();
+    expect(() => findFoodByBarcode(db, "12'34").all()).not.toThrow();
+    const results = findFoodByBarcode(db, "12'34").all();
+    expect(results).toHaveLength(1);
   });
 });
 

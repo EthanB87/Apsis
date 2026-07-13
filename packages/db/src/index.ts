@@ -39,10 +39,11 @@ export {
 // Pure load_daily recompute-row builder (RUN/HOME foundation — RESEARCH Pattern 1)
 export { computeLoadDailyUpsertRows, type LoadDailyUpsertRow } from './loadDaily';
 
-// Local-first nutrition query builders (NUTR-02/04/07/13/14/17 — search/recents/favorites/
-// day-totals/day-type session query/recipe CRUD + per-serving aggregation)
+// Local-first nutrition query builders (NUTR-02/04/07/08/13/14/17 — search/barcode lookup/
+// recents/favorites/day-totals/day-type session query/recipe CRUD + per-serving aggregation)
 export {
   searchLocalFoods,
+  findFoodByBarcode,
   recentFoods,
   favoriteFoods,
   dayTotals,
