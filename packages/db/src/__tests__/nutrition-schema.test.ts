@@ -54,7 +54,9 @@ function applyCommittedMigrations(sqlite: Database.Database): string[] {
 
 function openMigratedDb() {
   const sqlite = new Database(':memory:');
-  // op-sqlite enables FK enforcement on-device; mirror it so cascade behavior is real.
+  // client.ts enables FK enforcement at init (`PRAGMA foreign_keys = ON`, WR-01) — SQLite's
+  // own default is OFF and op-sqlite does not set it; mirror the client so cascade behavior
+  // proven here is the behavior the app actually runs.
   sqlite.pragma('foreign_keys = ON');
   const appliedTags = applyCommittedMigrations(sqlite);
   const db = drizzle(sqlite, { schema });
@@ -254,6 +256,51 @@ describe('nutrition migration round-trip (0004, schema_push_requirement)', () =>
     expect(() => db.delete(food).where(eq(food.id, 'food-1')).run()).toThrow(
       /FOREIGN KEY constraint failed/,
     );
+  });
+
+  it('a recipe-sourced food_log row must carry NULL foodId under FK enforcement (CR-02)', () => {
+    const { db } = harness;
+    db.insert(recipe).values({ id: 'recipe-1', name: 'Rice bowl', servings: 2 }).run();
+
+    // A recipe id is NOT a `food` row id — freezing it into food_log.foodId violates the
+    // food_log.food_id -> food.id FK (this is exactly what the pre-CR-02 recipe path did).
+    expect(() =>
+      db
+        .insert(foodLog)
+        .values({
+          id: 'log-recipe-bad',
+          localDate: '2026-07-13',
+          meal: 'dinner',
+          foodId: 'recipe-1',
+          qtyGrams: 100,
+          kcal: 500,
+          p: 30,
+          c: 50,
+          f: 15,
+          quickAdd: false,
+        })
+        .run(),
+    ).toThrow(/FOREIGN KEY constraint failed/);
+
+    // The fixed path (logFood.ts `isVirtual`) writes foodId NULL — inserts cleanly with FKs ON.
+    db.insert(foodLog)
+      .values({
+        id: 'log-recipe',
+        localDate: '2026-07-13',
+        meal: 'dinner',
+        foodId: null,
+        qtyGrams: 100,
+        kcal: 500,
+        p: 30,
+        c: 50,
+        f: 15,
+        quickAdd: false,
+      })
+      .run();
+
+    const readBack = db.select().from(foodLog).where(eq(foodLog.id, 'log-recipe')).get();
+    expect(readBack?.foodId).toBeNull();
+    expect(readBack?.quickAdd).toBe(false);
   });
 
   it('round-trips a nutrition_target row', () => {

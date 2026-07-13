@@ -47,7 +47,14 @@ function clampNonNegative(value: number | null | undefined): number {
 }
 
 export interface BuildFoodLogRowInput {
-  food: { id: string } & FoodPer100g;
+  food: {
+    id: string;
+    /** True when the "food" is a stand-in for something that is NOT a `food` table row (e.g.
+     * a recipe's per-serving macros, recipes.tsx). `food_log.food_id` carries a FOREIGN KEY to
+     * `food.id`, so a virtual food's id must never be frozen into `foodId` — the row is built
+     * with `foodId: null` instead (CR-02). */
+    isVirtual?: boolean;
+  } & FoodPer100g;
   qtyGrams: number;
   meal: Meal;
   localDate: string;
@@ -70,7 +77,9 @@ export function buildFoodLogRow(input: BuildFoodLogRowInput): FoodLogRow {
   return {
     localDate: input.localDate,
     meal: input.meal,
-    foodId: input.food.id,
+    // CR-02: a virtual food's id points at a non-`food` row (e.g. a recipe) — writing it into
+    // `food_log.food_id` violates the FK to `food.id` (enforced on-device since WR-01).
+    foodId: input.food.isVirtual === true ? null : input.food.id,
     qtyGrams,
     kcal: Math.round(kcalPer100g * ratio),
     p: Math.round(proteinGPer100g * ratio),

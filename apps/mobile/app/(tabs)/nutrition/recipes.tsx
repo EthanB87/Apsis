@@ -47,10 +47,13 @@ function formatWhole(n: number): string {
 
 /** Builds the food-source-agnostic ConfirmableFood the confirm sheet needs — the recipe's
  * per-serving macros stand in for a "per-100g" value, with servingGrams=100 so the sheet
- * defaults to logging exactly one serving. */
+ * defaults to logging exactly one serving. `isVirtual: true` because `recipe.id` is NOT a
+ * `food` row id — `buildFoodLogRow` must write `foodId: null` rather than a dangling
+ * reference that violates `food_log.food_id`'s FK to `food.id` (CR-02). */
 function recipeToConfirmableFood(recipe: RecipeRow, macros: RecipeServingMacros): ConfirmableFood {
   return {
     id: recipe.id,
+    isVirtual: true,
     name: recipe.name,
     kcalPer100g: macros.kcal,
     proteinGPer100g: macros.p,

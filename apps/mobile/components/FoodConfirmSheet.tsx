@@ -42,6 +42,10 @@ export interface ConfirmableFood extends FoodPer100g {
   brand?: string | null;
   servingName?: string | null;
   servingGrams?: number | null;
+  /** True when this is a stand-in for a non-`food`-row source (e.g. a recipe serving,
+   * recipes.tsx) — `buildFoodLogRow` then writes `foodId: null` instead of freezing an id
+   * that would violate `food_log.food_id`'s FK to `food.id` (CR-02). */
+  isVirtual?: boolean;
 }
 
 export interface FoodConfirmSheetProps {

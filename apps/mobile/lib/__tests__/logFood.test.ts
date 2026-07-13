@@ -88,6 +88,18 @@ describe('buildFoodLogRow', () => {
     expect(row.kcal).toBe(0);
   });
 
+  it('a virtual food (e.g. recipe serving) yields foodId null — never a non-food id (CR-02)', () => {
+    const row = buildFoodLogRow({
+      food: { ...baseFood, id: 'recipe-1', isVirtual: true },
+      qtyGrams: 100,
+      meal: 'dinner',
+      localDate: '2026-07-13',
+    });
+    expect(row.foodId).toBeNull();
+    expect(row.quickAdd).toBe(false);
+    expect(row.kcal).toBe(200); // macros still computed normally
+  });
+
   it('missing/non-finite per-100g macros clamp to 0 rather than producing NaN', () => {
     const row = buildFoodLogRow({
       food: {
