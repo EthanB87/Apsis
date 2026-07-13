@@ -1,6 +1,6 @@
 /**
  * nutrition-queries.test.ts — NUTR-02/04/07/17 local-first query-builder tests (07-03-PLAN.md
- * Task 1).
+ * Task 1) + pure `computeNutritionTargetRow` tests (Task 2).
  *
  * Reuses nutrition-schema.test.ts's real in-memory better-sqlite3 harness (applying the
  * committed drizzle migrations in journal order) rather than the sqlite-proxy `.toSQL()`
@@ -22,6 +22,8 @@ import {
   dayTotals,
   sessionTypesForDate,
 } from '../nutritionQueries';
+import { computeNutritionTargetRow } from '../nutritionTarget';
+import type { NutritionProfile } from '@apsis/shared';
 
 const DRIZZLE_DIR = path.resolve(__dirname, '../../drizzle');
 
@@ -353,5 +355,51 @@ describe('sessionTypesForDate', () => {
 
     const results = sessionTypesForDate(db, '2026-07-13').all();
     expect(results.map((r) => r.type).sort()).toEqual(['endurance', 'strength']);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// computeNutritionTargetRow (pure, 07-03-PLAN.md Task 2)
+// ---------------------------------------------------------------------------
+
+const PROFILE: NutritionProfile = {
+  sex: 'male',
+  bodyweightKg: 80,
+  heightCm: 180,
+  age: 30,
+  goalMode: 'maintain',
+};
+
+describe('computeNutritionTargetRow', () => {
+  it('a rest day (empty sessionTypes, dayHss 0) yields dayType "rest" and a rest-day target', () => {
+    const row = computeNutritionTargetRow(PROFILE, [], 0, '2026-07-13');
+
+    expect(row.dayType).toBe('rest');
+    expect(row.localDate).toBe('2026-07-13');
+    expect(row.source).toBe('auto');
+    expect(row.kcal).toBeGreaterThan(0);
+    expect(row.proteinG).toBeGreaterThan(0);
+  });
+
+  it('a double day (2 session types) yields dayType "double" with additive sessionKcal reflected in kcal', () => {
+    const restRow = computeNutritionTargetRow(PROFILE, [], 0, '2026-07-13');
+    const doubleRow = computeNutritionTargetRow(
+      PROFILE,
+      ['strength', 'endurance'],
+      150,
+      '2026-07-13',
+    );
+
+    expect(doubleRow.dayType).toBe('double');
+    // Training kcal add (from dayHss > 0) must raise the target above the rest-day baseline.
+    expect(doubleRow.kcal).toBeGreaterThan(restRow.kcal);
+  });
+
+  it('derives a deterministic id from localDate (so the auto row for a date always upserts to itself)', () => {
+    const row1 = computeNutritionTargetRow(PROFILE, [], 0, '2026-07-13');
+    const row2 = computeNutritionTargetRow(PROFILE, ['strength'], 50, '2026-07-13');
+
+    expect(row1.id).toBe(row2.id);
+    expect(row1.id).toBe('auto-2026-07-13');
   });
 });

@@ -49,5 +49,8 @@ export {
   sessionTypesForDate,
 } from './nutritionQueries';
 
+// Pure nutrition_target upsert-row builder (NUTR-16/17)
+export { computeNutritionTargetRow, type NutritionTargetUpsertRow } from './nutritionTarget';
+
 // Generated drizzle migrations for useMigrations() hook in _layout.tsx
 export { migrations } from './migrations';
