@@ -78,6 +78,34 @@ Requirements for the v1.0 release. Each maps to exactly one roadmap phase.
 - [x] **REL-03**: Any crash/analytics reporting scrubs all HealthKit-derived values before send
 - [x] **REL-04**: Binary is built via EAS and submitted to App Store review by ~July 25, 2026
 
+### Nutrition (Phase 07)
+
+Nutrition tracking, promoted from v2/v1.1 into v1.0 scope by owner decision 2026-07-13 (see
+NUTRITION.md and 07-CONTEXT.md). Supersedes the stale v1.1 `NUTR-01` placeholder below.
+
+- [ ] **NUTR-01**: `food`/`food_log`/`recipe`/`recipe_ingredient`/`nutrition_target` schema ships via committed drizzle migrations (extends DATA-03 pattern)
+- [ ] **NUTR-02**: Local-first food cache: every logged food (manual, barcode, OCR) is cached on-device; repeat logging works fully offline
+- [ ] **NUTR-03**: User can search cached/local foods inline with a debounced remote OFF/USDA fallback; usable result in <1s
+- [ ] **NUTR-04**: User can log a recent or favorite food in ≤3 taps
+- [ ] **NUTR-05**: User can create a custom food via full manual macro entry (kcal/P/C/F, serving)
+- [ ] **NUTR-06**: User can quick-add a macro-only log entry with no associated `food` row
+- [ ] **NUTR-07**: Food log entries are tagged to a meal (breakfast/lunch/dinner/snack) and a local date
+- [ ] **NUTR-08**: User can scan a barcode via camera; app resolves it through local cache → OFF (Apsis DB / commercial fallback deferred)
+- [ ] **NUTR-09**: User confirms/edits serving size and quantity before a scanned/OCR'd product is logged
+- [ ] **NUTR-10**: Barcode/search misses fall back gracefully to manual/custom food entry — never a dead end
+- [ ] **NUTR-11**: User can photograph a nutrition label; on-device OCR (Apple Vision via expo-text-extractor) extracts kcal/P/C/F/serving into a pre-filled custom food
+- [ ] **NUTR-12**: Every confirmed label scan saves as a custom food (`source:'user'`, provenance from OCR)
+- [ ] **NUTR-13**: User can combine foods into a custom recipe with a servings count; per-serving macros compute automatically
+- [ ] **NUTR-14**: User can log one recipe serving as a food-log entry
+- [ ] **NUTR-15**: `user_profile` gains `heightCm`, `birthYear`, `goalMode` fields required by the adaptive-target model
+- [ ] **NUTR-16**: Engine computes daily kcal/P/C/F targets from profile + goal mode + day's logged training day-type — pure function, no I/O, tunable EngineConfig constants
+- [ ] **NUTR-17**: Day-type (`heavy_lift`/`long_run`/`double`/`rest`/`mixed`) is derived automatically from the day's logged workouts
+- [ ] **NUTR-18**: `dailyMacroTarget` and `classifyDayType` ship with golden-file tests, mirroring the HSS calibration precedent (D-13/D-14/D-20)
+- [ ] **NUTR-19**: Nutrition screen shows today's targets vs. logged totals (kcal + P/C/F progress)
+- [ ] **NUTR-20**: Existing users (onboarded in Phases 03-06, before Phase 7 shipped) are prompted for the new profile fields the first time they open nutrition, gated like ONB-03
+- [ ] **NUTR-21**: App displays Open Food Facts ODbL/CC-BY-SA attribution in Settings (legal requirement of API use)
+- [ ] **NUTR-22**: Nutrition values are scrubbed from crash/analytics reporting like HealthKit values (extends REL-03 pattern)
+
 ## v1.1 Requirements
 
 Deferred to the next release. Tracked, not in this roadmap.
@@ -89,7 +117,8 @@ Deferred to the next release. Tracked, not in this roadmap.
 - **BACKUP-01**: iCloud / cloud backup of the local database
 - **GARMIN-01**: Garmin activity import (gated on Garmin developer program access)
 - **SUPER-01**: Superset / circuit-block logging
-- **NUTR-01**: Nutrition / macro tracking
+- (former placeholder removed 2026-07-13: nutrition tracking promoted to v1.0 scope as the
+  granular NUTR-01..NUTR-22 set under "Nutrition (Phase 07)" above)
 
 ## Out of Scope
 
@@ -97,7 +126,7 @@ Explicitly excluded from v1.0 to protect the ~4-week App Store window.
 
 | Feature | Reason |
 |---------|--------|
-| Nutrition / macros | Largest scope item; cut per BUILD.md §0; v1.1 fast-follow |
+| ~~Nutrition / macros~~ | ~~Largest scope item; cut per BUILD.md §0; v1.1 fast-follow~~ — superseded 2026-07-13: promoted into v1.0 scope as Phase 07 (see NUTR-01..22 above) |
 | Garmin integration | Requires Garmin developer program access; HealthKit-only for launch |
 | Android | HealthKit is iOS-only; ship iOS first (RN keeps the door open) |
 | Backend / cloud sync | v1.0 is fully offline; a server adds review surface + latency risk |
@@ -155,17 +184,41 @@ Which phase covers which requirement. Populated during roadmap creation.
 | REL-02 | Phase 06 | Pending |
 | REL-03 | Phase 06 | Complete |
 | REL-04 | Phase 06 | Complete |
+| NUTR-01 | Phase 07 | Pending |
+| NUTR-02 | Phase 07 | Pending |
+| NUTR-03 | Phase 07 | Pending |
+| NUTR-04 | Phase 07 | Pending |
+| NUTR-05 | Phase 07 | Pending |
+| NUTR-06 | Phase 07 | Pending |
+| NUTR-07 | Phase 07 | Pending |
+| NUTR-08 | Phase 07 | Pending |
+| NUTR-09 | Phase 07 | Pending |
+| NUTR-10 | Phase 07 | Pending |
+| NUTR-11 | Phase 07 | Pending |
+| NUTR-12 | Phase 07 | Pending |
+| NUTR-13 | Phase 07 | Pending |
+| NUTR-14 | Phase 07 | Pending |
+| NUTR-15 | Phase 07 | Pending |
+| NUTR-16 | Phase 07 | Pending |
+| NUTR-17 | Phase 07 | Pending |
+| NUTR-18 | Phase 07 | Pending |
+| NUTR-19 | Phase 07 | Pending |
+| NUTR-20 | Phase 07 | Pending |
+| NUTR-21 | Phase 07 | Pending |
+| NUTR-22 | Phase 07 | Pending |
 
 **Coverage:**
 
-- v1 requirements: 42 total (3 complete via Phase 01, 39 pending). Note: an earlier
+- v1 requirements: 64 total (3 complete via Phase 01, 61 pending). Note: an earlier
   version of this table said "37 total / 34 pending" — that was a stale placeholder left
-  over from initial requirements definition; a full recount of every checklist item above
-  gives 42.
+  over from initial requirements definition; the count grew to 42 after a full recount, and
+  to 64 after Phase 07's granular NUTR-01..NUTR-22 set was added 2026-07-13 (nutrition
+  promoted from v1.1 into v1.0 scope).
 
-- Mapped to phases: 42/42 (100%)
+- Mapped to phases: 64/64 (100%)
 - Unmapped: 0
 
 ---
 *Requirements defined: 2026-07-02 (reconstructed alongside the lost roadmap)*
-*Last updated: 2026-07-02 after ROADMAP.md creation — 100% v1.0 coverage across Phases 01–06*
+*Last updated: 2026-07-13 — added Phase 07 (nutrition-tracking) NUTR-01..NUTR-22 granular
+requirement set + traceability rows, promoted from the stale v1.1 NUTR-01 placeholder*
