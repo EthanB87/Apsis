@@ -4,17 +4,17 @@ milestone: v1.0
 milestone_name: milestone
 current_phase: 07
 current_phase_name: nutrition-tracking
-status: executing
+status: verifying
 stopped_at: Completed 07-07-PLAN.md
-last_updated: "2026-07-13T22:38:25.743Z"
+last_updated: "2026-07-13T22:53:14.142Z"
 last_activity: 2026-07-13
 last_activity_desc: Phase 07 execution started
 progress:
   total_phases: 7
-  completed_phases: 4
+  completed_phases: 5
   total_plans: 53
-  completed_plans: 48
-  percent: 57
+  completed_plans: 49
+  percent: 71
 ---
 
 # Project State — Apsis
@@ -31,7 +31,7 @@ training-load number (HSS) and a readiness band — fully offline.
 
 Phase: 07 (nutrition-tracking) — EXECUTING
 Plan: 10 of 10
-Status: Ready to execute
+Status: Phase complete — ready for verification
 Last activity: 2026-07-13 — Phase 07 execution started
 
 Progress: [█████████████░░░░░░░] 67% (4/6 phases complete, 27/27 executed plans)
@@ -109,6 +109,7 @@ Progress: [█████████████░░░░░░░] 67% (4/
 | Phase 07 P10 | 20min | 2 tasks | 6 files |
 | Phase 07 P07 | 9min | 2 tasks | 4 files |
 | Phase 07 P08 | 26min | 2 tasks | 10 files |
+| Phase 07 P09 | 25min | 2 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -237,6 +238,8 @@ Recent decisions affecting current work:
 - [Phase ?]: [Phase 07 P07]: NUTR-08/NUTR-11 deliberately NOT marked complete by the prerequisite plan — 07-08/07-09 own those requirements and mark them when barcode/OCR features ship, so a deadline tail-cut never leaves falsely-satisfied requirements
 - [Phase 07]: [Phase 07 P08]: offLookupBarcode returns null (not a partial candidate) whenever any core macro is missing/non-finite -- keeps scan.tsx's hit/miss branch a simple null check and guarantees a resolved food is always immediately loggable
 - [Phase 07]: [Phase 07 P08]: Added findFoodByBarcode to nutritionQueries.ts (Rule 2 deviation, outside 07-08's declared files) -- the barcode chain's local-cache step had no query builder anywhere in the codebase
+- [Phase 07 P09]: labelOcrParse's field names mirror the food table's per-100g columns directly (no serving-to-100g conversion) -- the mandatory editable review step in label-scan.tsx is the correctness backstop, not the parser
+- [Phase 07 P09]: label-scan.tsx builds its own editable macro-review form (mirrors nutrition/log.tsx's Custom food mode) rather than pre-filling FoodConfirmSheet directly -- FoodConfirmSheet has no macro-editing UI and food.kcalPer100g/etc are NOT NULL, so undefined OCR fields cannot reach an insert without a fill-in step
 
 ### Roadmap Evolution
 
@@ -311,7 +314,7 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-07-13T22:37:59.129Z
+Last session: 2026-07-13T22:52:21.927Z
 Stopped at: Completed 07-07-PLAN.md
 tasks awaiting human action — see Blockers/Concerns). Resume: /gsd-execute-phase 6
 Resume file: None
