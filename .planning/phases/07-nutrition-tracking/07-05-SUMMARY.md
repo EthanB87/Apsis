@@ -191,3 +191,10 @@ None - no external service configuration required.
 ---
 *Phase: 07-nutrition-tracking*
 *Completed: 2026-07-13*
+
+## Self-Check: PASSED
+
+- All created files verified present on disk via `[ -f ]`.
+- All three commit hashes (`abc187d`, `234e35e`, `83e668d`) verified present via `git log --oneline --all`.
+- All task-level `<acceptance_criteria>` grep/tsc checks re-run and passed.
+- Plan-level `<verification>` re-run: `pnpm --filter @apsis/mobile test` (44/44 passed), root `pnpm run typecheck` clean, `pnpm --filter @apsis/mobile exec tsc --noEmit` clean.
