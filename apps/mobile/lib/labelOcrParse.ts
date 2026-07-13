@@ -18,6 +18,16 @@
  * block — Apple's on-device text recognizer commonly returns that number as a *separate* line
  * from the "Calories" label itself. `labelOcrParse` accounts for this by also checking the line
  * immediately following a bare "Calories" line for a standalone numeric value.
+ *
+ * PER-SERVING → PER-100G NORMALIZATION (CR-01): US "Nutrition Facts" labels state kcal/macros
+ * PER SERVING, not per 100g, while this parser's result fields (and the `food` row they
+ * pre-fill) are per-100g. When a serving size in grams is extracted from the same label, every
+ * macro value is normalized by `100 / servingGrams` before being returned — e.g. "Calories 230"
+ * on a "Serving size 1 cup (240g)" label yields `kcalPer100g ≈ 95.8`, so logging one 240 g
+ * serving computes back to the label's 230 kcal. Without this, per-serving values stored as
+ * per-100g double-scale at log time (a 2.4× kcal overstatement in that example). When no
+ * serving grams are found, values pass through unchanged (per-100g-style labels, e.g. the EU
+ * format, carry no serving-size line) — the user-review form remains the final gate.
  */
 
 const MAX_KCAL = 50_000;
@@ -122,22 +132,32 @@ function extractServing(lines: string[]): RawServing {
 /**
  * Regex-extracts kcal/protein/carb/fat/serving from a nutrition label's recognized text lines.
  * Bounds-checks every numeric value (Pitfall 9): negative values are dropped, absurd values
- * are dropped, un-extractable fields are left `undefined`. Never throws, regardless of input —
- * malformed, empty, or garbage `lines` all resolve to an all-`undefined` result.
+ * are dropped, un-extractable fields are left `undefined`. When a serving size in grams was
+ * extracted, kcal/macro values are normalized from the label's per-serving figures to per-100g
+ * (CR-01 — see module doc comment); rounded to 1 decimal so the review form pre-fills a sane
+ * number. Never throws, regardless of input — malformed, empty, or garbage `lines` all resolve
+ * to an all-`undefined` result.
  */
 export function labelOcrParse(lines: string[]): LabelOcrResult {
   try {
     const safeLines = Array.isArray(lines) ? lines.filter((l): l is string => typeof l === 'string') : [];
 
     const serving = extractServing(safeLines);
+    const servingGrams = boundedNonNegative(serving.servingGrams, MAX_SERVING_G);
+
+    // CR-01: US labels state values per serving — normalize to per-100g when the serving size
+    // (grams) was extracted in the same pass. No serving size → pass through unchanged.
+    const scale = servingGrams != null && servingGrams > 0 ? 100 / servingGrams : 1;
+    const norm = (v: number | undefined): number | undefined =>
+      v != null ? Math.round(v * scale * 10) / 10 : undefined;
 
     return {
-      kcalPer100g: boundedNonNegative(extractKcal(safeLines), MAX_KCAL),
-      proteinGPer100g: boundedNonNegative(extractProteinG(safeLines), MAX_MACRO_G),
-      carbGPer100g: boundedNonNegative(extractCarbG(safeLines), MAX_MACRO_G),
-      fatGPer100g: boundedNonNegative(extractFatG(safeLines), MAX_MACRO_G),
+      kcalPer100g: norm(boundedNonNegative(extractKcal(safeLines), MAX_KCAL)),
+      proteinGPer100g: norm(boundedNonNegative(extractProteinG(safeLines), MAX_MACRO_G)),
+      carbGPer100g: norm(boundedNonNegative(extractCarbG(safeLines), MAX_MACRO_G)),
+      fatGPer100g: norm(boundedNonNegative(extractFatG(safeLines), MAX_MACRO_G)),
       servingName: serving.servingName,
-      servingGrams: boundedNonNegative(serving.servingGrams, MAX_SERVING_G),
+      servingGrams,
     };
   } catch (err: unknown) {
     console.error('[Apsis] labelOcrParse failed on malformed input:', err);
