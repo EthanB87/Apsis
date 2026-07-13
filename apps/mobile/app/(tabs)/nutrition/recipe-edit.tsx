@@ -234,27 +234,36 @@ export default function RecipeEditScreen(): React.JSX.Element {
     setSaving(true);
     setSaveError(null);
     try {
+      // WR-08: the recipe row + its ingredient rows are one logical write — a mid-loop failure
+      // without a transaction leaves a partial recipe on disk while the error copy claims
+      // "Nothing was lost", and the retry (fresh randomUUID recipe id in create mode /
+      // re-inserted new ingredients in edit mode) duplicates rows. `db.transaction` rolls the
+      // whole save back atomically, making the error message true and the retry safe.
       if (isEditing && recipeId != null) {
-        await db.update(recipe).set({ name: name.trim(), servings }).where(eq(recipe.id, recipeId));
-        for (const ing of newIngredients) {
-          await addRecipeIngredient(db, {
-            id: randomUUID(),
-            recipeId,
-            foodId: ing.foodId,
-            qtyGrams: parseNumberInput(ing.qtyText),
-          });
-        }
+        await db.transaction(async (tx) => {
+          await tx.update(recipe).set({ name: name.trim(), servings }).where(eq(recipe.id, recipeId));
+          for (const ing of newIngredients) {
+            await addRecipeIngredient(tx, {
+              id: randomUUID(),
+              recipeId,
+              foodId: ing.foodId,
+              qtyGrams: parseNumberInput(ing.qtyText),
+            });
+          }
+        });
       } else {
         const id = randomUUID();
-        await createRecipe(db, { id, name: name.trim(), servings });
-        for (const ing of newIngredients) {
-          await addRecipeIngredient(db, {
-            id: randomUUID(),
-            recipeId: id,
-            foodId: ing.foodId,
-            qtyGrams: parseNumberInput(ing.qtyText),
-          });
-        }
+        await db.transaction(async (tx) => {
+          await createRecipe(tx, { id, name: name.trim(), servings });
+          for (const ing of newIngredients) {
+            await addRecipeIngredient(tx, {
+              id: randomUUID(),
+              recipeId: id,
+              foodId: ing.foodId,
+              qtyGrams: parseNumberInput(ing.qtyText),
+            });
+          }
+        });
       }
       if (router.canGoBack()) router.back();
       else router.push('/(tabs)/nutrition/recipes');
