@@ -6,14 +6,14 @@ current_phase: 07
 current_phase_name: nutrition-tracking
 status: executing
 stopped_at: Completed 07-05-PLAN.md
-last_updated: "2026-07-13T21:39:24.208Z"
+last_updated: "2026-07-13T21:50:24.169Z"
 last_activity: 2026-07-13
 last_activity_desc: Phase 07 execution started
 progress:
   total_phases: 7
   completed_phases: 4
   total_plans: 53
-  completed_plans: 44
+  completed_plans: 45
   percent: 57
 ---
 
@@ -30,7 +30,7 @@ training-load number (HSS) and a readiness band — fully offline.
 ## Current Position
 
 Phase: 07 (nutrition-tracking) — EXECUTING
-Plan: 6 of 10
+Plan: 7 of 10
 Status: Ready to execute
 Last activity: 2026-07-13 — Phase 07 execution started
 
@@ -105,6 +105,7 @@ Progress: [█████████████░░░░░░░] 67% (4/
 | Phase 07 P03 | 9min | 2 tasks | 4 files |
 | Phase 07 P04 | 12min | 2 tasks | 6 files |
 | Phase 07 P05 | 9min | 2 tasks | 7 files |
+| Phase 07 P06 | 25min | 2 tasks | 6 files |
 
 ## Accumulated Context
 
@@ -222,6 +223,9 @@ Recent decisions affecting current work:
 - [Phase 07]: Extended useProfile.ts's ProfileUpdateInput with heightCm/birthYear/goalMode (Rule 2 deviation, outside 07-04's declared files) so the Nutrition Setup screen reuses the existing update-in-place profile hook for its single batched UPDATE — Plan 07-04 explicitly directs reusing the existing update-in-place profile hook; the type didn't cover the 3 new fields
 - [Phase 07]: recomputeNutritionTarget derives currentYear from localDate's own year, never the wall clock — Keeps the app-layer wrapper's inputs fully caller-supplied, matching the engine-purity spirit one layer up
 - [Phase 07]: nutrition/index.tsx pushes '/nutrition-setup/index' not the collapsed '/nutrition-setup' — expo-router's currently-generated typed-routes .d.ts only emits the /index-suffixed literal for this standalone top-level route; both resolve to the same screen at runtime (Phase 06 typed-route-adaptation precedent)
+- [Phase ?]: [Phase 07 P06]: logFood.ts excludes id/createdAt from its returned row shape -- the caller assigns those via expo-crypto's randomUUID at insert time, keeping the pure builder free of any native import (matches runEntryLogic.ts's vitest-testability boundary)
+- [Phase ?]: [Phase 07 P06]: FoodConfirmSheet is food-source-agnostic and defaults meal from time-of-day; every segmented control in this plan uses bone active-fill (not volt) since each screen already has one volt-filled primary CTA
+- [Phase ?]: [Phase 07 P06]: Added a 'Log food' entry point to nutrition/index.tsx (Rule 2 deviation) -- without it the search/log screens built in this plan would be unreachable
 
 ### Roadmap Evolution
 
@@ -296,7 +300,7 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-07-13T21:39:24.196Z
+Last session: 2026-07-13T21:49:59.884Z
 Stopped at: Completed 07-05-PLAN.md
 tasks awaiting human action — see Blockers/Concerns). Resume: /gsd-execute-phase 6
 Resume file: None

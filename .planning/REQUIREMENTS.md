@@ -85,10 +85,10 @@ NUTRITION.md and 07-CONTEXT.md). Supersedes the stale v1.1 `NUTR-01` placeholder
 
 - [x] **NUTR-01**: `food`/`food_log`/`recipe`/`recipe_ingredient`/`nutrition_target` schema ships via committed drizzle migrations (extends DATA-03 pattern)
 - [x] **NUTR-02**: Local-first food cache: every logged food (manual, barcode, OCR) is cached on-device; repeat logging works fully offline
-- [ ] **NUTR-03**: User can search cached/local foods inline with a debounced remote OFF/USDA fallback; usable result in <1s
+- [x] **NUTR-03**: User can search cached/local foods inline with a debounced remote OFF/USDA fallback; usable result in <1s
 - [x] **NUTR-04**: User can log a recent or favorite food in ≤3 taps
-- [ ] **NUTR-05**: User can create a custom food via full manual macro entry (kcal/P/C/F, serving)
-- [ ] **NUTR-06**: User can quick-add a macro-only log entry with no associated `food` row
+- [x] **NUTR-05**: User can create a custom food via full manual macro entry (kcal/P/C/F, serving)
+- [x] **NUTR-06**: User can quick-add a macro-only log entry with no associated `food` row
 - [x] **NUTR-07**: Food log entries are tagged to a meal (breakfast/lunch/dinner/snack) and a local date
 - [ ] **NUTR-08**: User can scan a barcode via camera; app resolves it through local cache → OFF (Apsis DB / commercial fallback deferred)
 - [ ] **NUTR-09**: User confirms/edits serving size and quantity before a scanned/OCR'd product is logged
@@ -186,10 +186,10 @@ Which phase covers which requirement. Populated during roadmap creation.
 | REL-04 | Phase 06 | Complete |
 | NUTR-01 | Phase 07 | Complete |
 | NUTR-02 | Phase 07 | Complete |
-| NUTR-03 | Phase 07 | Pending |
+| NUTR-03 | Phase 07 | Complete |
 | NUTR-04 | Phase 07 | Complete |
-| NUTR-05 | Phase 07 | Pending |
-| NUTR-06 | Phase 07 | Pending |
+| NUTR-05 | Phase 07 | Complete |
+| NUTR-06 | Phase 07 | Complete |
 | NUTR-07 | Phase 07 | Complete |
 | NUTR-08 | Phase 07 | Pending |
 | NUTR-09 | Phase 07 | Pending |
