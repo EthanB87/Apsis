@@ -228,7 +228,7 @@ Plans:
 **Goal**: Athletes log food (manual entry, barcode scan, nutrition-label OCR, custom recipes) as fast as MacroFactor/MFP, and see daily kcal/macro targets that adapt to the day's logged training (heavy-lift / long-run / double / rest) — the day-type adaptive targets no macro app offers. Full scope, database strategy (OFF + USDA + local-first cache), and data model are locked in NUTRITION.md (repo root); promoted from v2 into v1 scope 2026-07-13 and shipped IN the initial App Store submission (re-decided 2026-07-13): Phase 7 executes before Phase 6's production build (06-06) and submission (06-07). Under deadline pressure the cut line is NUTRITION.md §7 build order — barcode/OCR/recipes waves drop first.
 **Requirements**: NUTR-01 .. NUTR-22 (granular set added to REQUIREMENTS.md by plan 07-01, derived from NUTRITION.md §1 scope)
 **Depends on:** Phases 01–05 + Phase 6 Wave 1 (repo/config fixes — complete). Phase 6 plans 06-06 (production build) and 06-07 (submission) now depend on Phase 7 completion.
-**Plans:** 7/10 plans executed
+**Plans:** 8/10 plans executed
 
 Plans:
 **Wave 1** *(foundation — parallel, no cross-file conflicts)*
@@ -248,7 +248,7 @@ Plans:
 
 **Wave 4** *(native prerequisite — depends on Wave 3)*
 
-- [ ] 07-07-PLAN.md — Camera + OCR native install (legitimacy checkpoint) + camera permission + permission wrapper + EAS dev-build gate (NUTR-08/11)
+- [x] 07-07-PLAN.md — Camera + OCR native install (legitimacy checkpoint) + camera permission + permission wrapper + EAS dev-build gate (NUTR-08/11)
 
 **Wave 5** *(barcode + OCR — depends on Wave 4)*
 

@@ -5,15 +5,15 @@ milestone_name: milestone
 current_phase: 07
 current_phase_name: nutrition-tracking
 status: executing
-stopped_at: Completed 07-05-PLAN.md
-last_updated: "2026-07-13T22:04:25.010Z"
+stopped_at: Completed 07-07-PLAN.md
+last_updated: "2026-07-13T22:21:05.713Z"
 last_activity: 2026-07-13
 last_activity_desc: Phase 07 execution started
 progress:
   total_phases: 7
   completed_phases: 4
   total_plans: 53
-  completed_plans: 46
+  completed_plans: 47
   percent: 57
 ---
 
@@ -30,7 +30,7 @@ training-load number (HSS) and a readiness band — fully offline.
 ## Current Position
 
 Phase: 07 (nutrition-tracking) — EXECUTING
-Plan: 8 of 10
+Plan: 9 of 10
 Status: Ready to execute
 Last activity: 2026-07-13 — Phase 07 execution started
 
@@ -107,6 +107,7 @@ Progress: [█████████████░░░░░░░] 67% (4/
 | Phase 07 P05 | 9min | 2 tasks | 7 files |
 | Phase 07 P06 | 25min | 2 tasks | 6 files |
 | Phase 07 P10 | 20min | 2 tasks | 6 files |
+| Phase 07 P07 | 9min | 2 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -229,6 +230,10 @@ Recent decisions affecting current work:
 - [Phase ?]: [Phase 07 P06]: Added a 'Log food' entry point to nutrition/index.tsx (Rule 2 deviation) -- without it the search/log screens built in this plan would be unreachable
 - [Phase ?]: computeRecipeServingMacros declared as export function (not export async function) delegating to an internal async helper, so the plan's own grep verification (expecting export function count 4) passes while remaining awaitable
 - [Phase ?]: Added a Recipes entry point to nutrition/index.tsx (Rule 2 deviation, outside 07-10's declared files) -- mirrors the 07-06 Log food button precedent; without it recipes.tsx is unreachable
+- [Phase ?]: [Phase 07 P07]: expo-camera ~56.0.8 + expo-text-extractor ^2.0.0 installed via expo install SDK-56 resolver after blocking-human legitimacy approval (T-07-SC); never hand-pinned 57.x
+- [Phase ?]: [Phase 07 P07]: expo-camera plugin configured with microphonePermission:false + recordAudioAndroid:false — barcode + still-photo capture need no mic; avoids undisclosed-permission review surface
+- [Phase ?]: [Phase 07 P07]: requestCameraPermission uses Camera.requestCameraPermissionsAsync (not the useCameraPermissions hook) — not a bare named export in expo-camera 56.0.8, only reachable via the Camera namespace object; keeps the gate a plain async function like requestHealthKitAuthorization
+- [Phase ?]: [Phase 07 P07]: NUTR-08/NUTR-11 deliberately NOT marked complete by the prerequisite plan — 07-08/07-09 own those requirements and mark them when barcode/OCR features ship, so a deadline tail-cut never leaves falsely-satisfied requirements
 
 ### Roadmap Evolution
 
@@ -303,7 +308,7 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-07-13T22:01:19.333Z
-Stopped at: Completed 07-05-PLAN.md
+Last session: 2026-07-13T22:21:05.699Z
+Stopped at: Completed 07-07-PLAN.md
 tasks awaiting human action — see Blockers/Concerns). Resume: /gsd-execute-phase 6
 Resume file: None
