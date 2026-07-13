@@ -64,7 +64,11 @@ interface DraftIngredient {
   proteinGPer100g: number;
   carbGPer100g: number;
   fatGPer100g: number;
-  qtyGrams: number;
+  /** WR-07: kept as RAW TEXT while editing (like every other numeric field in this phase) so
+   * decimals can be typed ("12." must not re-render as "12") and clearing the field doesn't
+   * fight the user with a phantom "0". Parsed to a number only for the preview computation and
+   * at save time. */
+  qtyText: string;
   /** True for ingredients already persisted (edit mode) — not removable from this screen. */
   existing: boolean;
 }
@@ -135,7 +139,7 @@ export default function RecipeEditScreen(): React.JSX.Element {
             proteinGPer100g: row.proteinGPer100g,
             carbGPer100g: row.carbGPer100g,
             fatGPer100g: row.fatGPer100g,
-            qtyGrams: row.qtyGrams,
+            qtyText: String(row.qtyGrams),
             existing: true,
           })),
         );
@@ -180,15 +184,16 @@ export default function RecipeEditScreen(): React.JSX.Element {
         proteinGPer100g: f.proteinGPer100g,
         carbGPer100g: f.carbGPer100g,
         fatGPer100g: f.fatGPer100g,
-        qtyGrams: DEFAULT_INGREDIENT_QTY_GRAMS,
+        qtyText: String(DEFAULT_INGREDIENT_QTY_GRAMS),
         existing: false,
       },
     ]);
   }
 
   function handleQtyChange(draftId: string, text: string): void {
-    const qtyGrams = parseNumberInput(text.replace(/[^0-9.]/g, ''));
-    setIngredients((prev) => prev.map((ing) => (ing.draftId === draftId ? { ...ing, qtyGrams } : ing)));
+    // WR-07: sanitize but keep the raw text (never round-trip through a number mid-typing).
+    const qtyText = text.replace(/[^0-9.]/g, '');
+    setIngredients((prev) => prev.map((ing) => (ing.draftId === draftId ? { ...ing, qtyText } : ing)));
   }
 
   function handleRemoveIngredient(draftId: string): void {
@@ -204,7 +209,7 @@ export default function RecipeEditScreen(): React.JSX.Element {
     if (ingredients.length === 0) return null;
     const totals = ingredients.reduce(
       (acc, ing) => {
-        const factor = ing.qtyGrams / 100;
+        const factor = parseNumberInput(ing.qtyText) / 100;
         acc.kcal += ing.kcalPer100g * factor;
         acc.p += ing.proteinGPer100g * factor;
         acc.c += ing.carbGPer100g * factor;
@@ -236,7 +241,7 @@ export default function RecipeEditScreen(): React.JSX.Element {
             id: randomUUID(),
             recipeId,
             foodId: ing.foodId,
-            qtyGrams: ing.qtyGrams,
+            qtyGrams: parseNumberInput(ing.qtyText),
           });
         }
       } else {
@@ -247,7 +252,7 @@ export default function RecipeEditScreen(): React.JSX.Element {
             id: randomUUID(),
             recipeId: id,
             foodId: ing.foodId,
-            qtyGrams: ing.qtyGrams,
+            qtyGrams: parseNumberInput(ing.qtyText),
           });
         }
       }
@@ -309,7 +314,7 @@ export default function RecipeEditScreen(): React.JSX.Element {
                     {ing.name}
                   </Text>
                   <TextInput
-                    value={String(ing.qtyGrams)}
+                    value={ing.qtyText}
                     onChangeText={(t) => handleQtyChange(ing.draftId, t)}
                     keyboardType="decimal-pad"
                     editable={!ing.existing}
