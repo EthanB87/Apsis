@@ -97,6 +97,22 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
+        name="nutrition"
+        options={{
+          title: 'Nutrition',
+          // Custom in-screen ScreenHeader (Kicker "NUTRITION" + Title "Today"), same doubled-
+          // header avoidance as TODAY/History/Settings.
+          headerShown: false,
+          tabBarIcon: ({ color }) => (
+            <SymbolView
+              name={{ ios: 'fork.knife', android: 'restaurant', web: 'restaurant' }}
+              tintColor={color}
+              size={28}
+            />
+          ),
+        }}
+      />
+      <Tabs.Screen
         name="settings"
         options={{
           title: 'Settings',
