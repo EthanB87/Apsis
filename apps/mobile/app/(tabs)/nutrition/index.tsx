@@ -69,6 +69,8 @@ interface DayTotalsRow {
 
 interface NutritionState {
   loading: boolean;
+  /** WR-04: a failed load must render an error + Retry, never an indefinite spinner. */
+  error: boolean;
   target: DayTarget | null;
   totals: DayTotalsRow;
 }
@@ -77,9 +79,12 @@ const ZERO_TOTALS: DayTotalsRow = { kcal: 0, p: 0, c: 0, f: 0 };
 
 const INITIAL_STATE: NutritionState = {
   loading: true,
+  error: false,
   target: null,
   totals: ZERO_TOTALS,
 };
+
+const LOAD_ERROR_MESSAGE = "Couldn't load today's nutrition. Try again.";
 
 function ratio(value: number, target: number): number {
   if (!Number.isFinite(target) || target <= 0) return 0;
@@ -144,6 +149,7 @@ export default function NutritionScreen(): React.JSX.Element {
 
       setState({
         loading: false,
+        error: false,
         target:
           targetRow != null
             ? {
@@ -158,9 +164,16 @@ export default function NutritionScreen(): React.JSX.Element {
       });
     } catch (err: unknown) {
       console.error('[Apsis] Nutrition TODAY load failed:', err);
-      setState((prev) => ({ ...prev, loading: false }));
+      // WR-04: flag the failure so the render below shows the error + Retry state (matching
+      // the Settings load-failure precedent) instead of spinning forever on a null target.
+      setState((prev) => ({ ...prev, loading: false, error: true }));
     }
   }, [targetVersion]);
+
+  function handleRetry(): void {
+    setState(INITIAL_STATE);
+    void loadNutrition();
+  }
 
   useFocusEffect(
     useCallback(() => {
@@ -203,11 +216,32 @@ export default function NutritionScreen(): React.JSX.Element {
     );
   }
 
-  if (state.loading || state.target == null) {
+  if (state.loading) {
     return (
       <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
         <View style={styles.loadingContainer}>
           <ActivityIndicator color={Colors.dark.accent} />
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  // WR-04: load failed OR the recompute returned without writing (e.g. profile raced to
+  // incomplete) — show the generic error string + Retry, never an indefinite spinner.
+  if (state.error || state.target == null) {
+    return (
+      <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
+        <View style={styles.loadingContainer}>
+          <Text style={styles.loadErrorText} accessibilityRole="alert">
+            {LOAD_ERROR_MESSAGE}
+          </Text>
+          <Pressable
+            onPress={handleRetry}
+            accessibilityRole="button"
+            accessibilityLabel="Retry"
+            style={styles.retryButton}>
+            <Text style={styles.retryLabel}>Retry</Text>
+          </Pressable>
         </View>
       </SafeAreaView>
     );
@@ -261,6 +295,26 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+    paddingHorizontal: Spacing.xl,
+    gap: Spacing.lg,
+  },
+  loadErrorText: {
+    ...Typography.body,
+    color: Colors.dark.text,
+    textAlign: 'center',
+  },
+  retryButton: {
+    minHeight: 48,
+    minWidth: 120,
+    borderRadius: Radius.md,
+    backgroundColor: Colors.dark.accent,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: Spacing.xl,
+  },
+  retryLabel: {
+    ...Typography.body,
+    color: Colors.dark.onAccent,
   },
   scrollContent: {
     paddingHorizontal: Spacing.lg,
