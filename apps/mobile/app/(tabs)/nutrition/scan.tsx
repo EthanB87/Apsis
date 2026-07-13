@@ -103,6 +103,10 @@ export default function ScanScreen(): React.JSX.Element {
       if (offProduct == null) {
         // Miss (status:0 or incomplete macros) — NEVER a dead end (NUTR-10): fall through to
         // manual/custom entry rather than leaving the user stuck on the scan screen.
+        // WR-05: this screen stays mounted beneath the pushed one — clear the same-code guard
+        // so returning (e.g. after creating the food manually) and rescanning the SAME barcode
+        // isn't silently ignored.
+        lastCodeRef.current = null;
         router.push('/(tabs)/nutrition/log');
         return;
       }
@@ -136,7 +140,9 @@ export default function ScanScreen(): React.JSX.Element {
       });
     } catch (err: unknown) {
       console.error('[Apsis] Barcode lookup chain failed:', err);
-      // Still never a dead end, even on an unexpected error.
+      // Still never a dead end, even on an unexpected error. WR-05: clear the same-code guard
+      // here too, so a transient failure doesn't permanently ignore this barcode on return.
+      lastCodeRef.current = null;
       router.push('/(tabs)/nutrition/log');
     } finally {
       scanningRef.current = false;
