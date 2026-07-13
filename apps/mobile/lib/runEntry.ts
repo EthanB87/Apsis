@@ -122,7 +122,16 @@ export async function saveRun(database: DB, input: RunEntryInput): Promise<strin
     await database.update(workout).set({ hss }).where(eq(workout.id, workoutId));
 
     await recomputeLoadDaily(database);
-    await recomputeNutritionTarget(database, todayLocalDate());
+    // WR-03: best-effort tail — the workout/segment rows are already persisted above, so a
+    // thrown nutrition recompute would fail the whole save and the user's natural retry would
+    // insert a DUPLICATE session. Core logging must never depend on the nutrition feature
+    // ("if everything else fails, this must work"); the nutrition TODAY screen's lazy-compute
+    // fallback self-heals a missed recompute on next focus.
+    try {
+      await recomputeNutritionTarget(database, todayLocalDate());
+    } catch (err: unknown) {
+      console.error('[Apsis] nutrition target recompute failed (non-fatal):', err);
+    }
 
     // HK-04/D-12: fire-and-forget write-back tail - never awaited in a way that can fail the
     // save; `getSyncState`/`writeBackRun` both already swallow their own errors internally.

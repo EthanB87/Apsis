@@ -53,7 +53,14 @@ import { recomputeNutritionTarget } from './recomputeNutritionTarget';
 export async function finishWorkout(database: DB, workoutId: string, finishedAt: Date): Promise<void> {
   await database.update(workout).set({ finishedAt }).where(eq(workout.id, workoutId));
   await recomputeLoadDaily(database);
-  await recomputeNutritionTarget(database, todayLocalDate());
+  // WR-03: best-effort tail — a nutrition recompute failure must never fail the core finish
+  // path (the session is already closed and load_daily recomputed above). The nutrition TODAY
+  // screen's lazy-compute fallback self-heals a missed recompute on next focus.
+  try {
+    await recomputeNutritionTarget(database, todayLocalDate());
+  } catch (err: unknown) {
+    console.error('[Apsis] nutrition target recompute failed (non-fatal):', err);
+  }
 
   const syncState = await getSyncState(database);
   if (syncState?.healthkitConnected) {
@@ -96,7 +103,12 @@ export async function discardWorkout(database: DB, workoutId: string, deletedAt:
 
   await softDeleteWorkout(database, workoutId, deletedAt);
   await recomputeLoadDaily(database);
-  await recomputeNutritionTarget(database, todayLocalDate());
+  // WR-03: best-effort tail, same rationale as finishWorkout — never fail the discard path.
+  try {
+    await recomputeNutritionTarget(database, todayLocalDate());
+  } catch (err: unknown) {
+    console.error('[Apsis] nutrition target recompute failed (non-fatal):', err);
+  }
 
   // D-14: only delete Apsis-authored HK samples — an imported session's healthkitUuid refers
   // to a sample we don't own and must never be deleted from Health.
