@@ -15,14 +15,14 @@
 import React from 'react';
 import { StyleSheet, Text } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useRouter } from 'expo-router';
+import { useRouter, type Href } from 'expo-router';
 import { ProfileReview, type ProfileReviewField } from '../../components/onboarding/ProfileReview';
 import { useOnboardingDraft } from '../../lib/onboardingDraft';
 import { useSaveProfile } from '../../hooks/useSaveProfile';
 import Colors from '../../constants/Colors';
 import { Spacing, Typography } from '../../constants/theme';
 
-const FIELD_ROUTE: Record<ProfileReviewField, string> = {
+const FIELD_ROUTE: Record<ProfileReviewField, Href> = {
   sex: '/onboarding/sex',
   bodyweightKg: '/onboarding/bodyweight',
   thresholdHr: '/onboarding/threshold-hr',
