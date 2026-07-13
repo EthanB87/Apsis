@@ -19,6 +19,11 @@
  * runs. Finishing OR discarding a lifting session now refreshes the full-history `load_daily`
  * rollup so Home's ring/band/chart stay consistent for lifting sessions too.
  *
+ * Both terminal actions also await `recomputeNutritionTarget` (Plan 07-05, NUTR-16/17)
+ * immediately AFTER `recomputeLoadDaily` so today's `dayHss` is fresh before the nutrition
+ * target folds it in -- today's adaptive kcal/macro target reflects this session the moment
+ * it finishes or is discarded, not just on the next app-open.
+ *
  * HealthKit write-back/delete-sync (HK-04, D-12/D-14/D-15): `finishWorkout` fires a
  * fire-and-forget `writeBackLift` tail (gated on `healthkitConnected`, go-forward only) and
  * stores the returned sample uuid; `discardWorkout` fires a fire-and-forget delete-sync tail,
@@ -36,7 +41,9 @@ import { eq } from 'drizzle-orm';
 import { softDeleteWorkout, workout, type DB } from '@apsis/db';
 import { getSyncState } from './healthkitSyncState';
 import { deleteHealthKitSample, writeBackLift } from './healthkitWriteback';
+import { todayLocalDate } from './localDate';
 import { recomputeLoadDaily } from './recomputeLoadDaily';
+import { recomputeNutritionTarget } from './recomputeNutritionTarget';
 
 /** Sets `workout.finishedAt` (D-14 invariant: an open session must never be left dangling
  * after a normal or crash-resume finish flow), then recomputes `load_daily` so Home reflects
@@ -46,6 +53,7 @@ import { recomputeLoadDaily } from './recomputeLoadDaily';
 export async function finishWorkout(database: DB, workoutId: string, finishedAt: Date): Promise<void> {
   await database.update(workout).set({ finishedAt }).where(eq(workout.id, workoutId));
   await recomputeLoadDaily(database);
+  await recomputeNutritionTarget(database, todayLocalDate());
 
   const syncState = await getSyncState(database);
   if (syncState?.healthkitConnected) {
@@ -88,6 +96,7 @@ export async function discardWorkout(database: DB, workoutId: string, deletedAt:
 
   await softDeleteWorkout(database, workoutId, deletedAt);
   await recomputeLoadDaily(database);
+  await recomputeNutritionTarget(database, todayLocalDate());
 
   // D-14: only delete Apsis-authored HK samples — an imported session's healthkitUuid refers
   // to a sample we don't own and must never be deleted from Health.

@@ -7,7 +7,9 @@
  * lifecycle like lifting (D-13 in RESEARCH). Steps: read profile thresholds, resolve the
  * segment's intensity factor (gated per activity type - Pitfall 6/T-04-10, see
  * `runEntryLogic.ts`), insert the finished `workout` + `endurance_segment` rows, write the
- * session HSS, then recompute `load_daily` so Home reflects the new session immediately.
+ * session HSS, then recompute `load_daily` so Home reflects the new session immediately, then
+ * `recomputeNutritionTarget` (Plan 07-05, NUTR-16/17) so today's adaptive target folds in this
+ * session's fresh `dayHss`.
  *
  * HealthKit write-back (HK-04/D-12): after a successful save, if HealthKit is connected
  * (`getSyncState`), fires a fire-and-forget `writeBackRun` tail and stores the returned
@@ -29,8 +31,9 @@ import { sessionHSSDetailed } from '@apsis/engine';
 import { eq } from 'drizzle-orm';
 import { getSyncState } from './healthkitSyncState';
 import { writeBackRun } from './healthkitWriteback';
-import { dateToLocalDateStr } from './localDate';
+import { dateToLocalDateStr, todayLocalDate } from './localDate';
 import { recomputeLoadDaily } from './recomputeLoadDaily';
+import { recomputeNutritionTarget } from './recomputeNutritionTarget';
 import { resolveRunSegment, type RunActivityType } from './runEntryLogic';
 
 export interface RunEntryInput {
@@ -119,6 +122,7 @@ export async function saveRun(database: DB, input: RunEntryInput): Promise<strin
     await database.update(workout).set({ hss }).where(eq(workout.id, workoutId));
 
     await recomputeLoadDaily(database);
+    await recomputeNutritionTarget(database, todayLocalDate());
 
     // HK-04/D-12: fire-and-forget write-back tail - never awaited in a way that can fail the
     // save; `getSyncState`/`writeBackRun` both already swallow their own errors internally.
