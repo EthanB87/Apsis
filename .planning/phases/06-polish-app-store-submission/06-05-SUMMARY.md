@@ -115,3 +115,13 @@ None - no external service configuration required. (App Store Connect entry itse
 ---
 *Phase: 06-polish-app-store-submission*
 *Completed: 2026-07-13*
+
+## Self-Check: PASSED
+
+- FOUND: apps/mobile/store/app-store-listing.md
+- FOUND: apps/mobile/eas.json
+- FOUND: .planning/phases/06-polish-app-store-submission/06-05-SUMMARY.md
+- FOUND commit: e3640af (Task 1)
+- FOUND commit: 2495cc8 (Task 2)
+- FOUND commit: 696c74d (Task 3 — keyword trim + approval)
+- FOUND commit: a828b2e (SUMMARY commit)
