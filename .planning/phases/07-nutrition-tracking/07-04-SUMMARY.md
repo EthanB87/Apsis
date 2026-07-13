@@ -160,3 +160,8 @@ None - no external service configuration required.
 ---
 *Phase: 07-nutrition-tracking*
 *Completed: 2026-07-13*
+
+## Self-Check: PASSED
+
+All 6 key-files present on disk; all 3 commits (8cf8f70, b9109bf, 0e97f49) found in
+`git log --oneline --all`.
