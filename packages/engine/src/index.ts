@@ -33,5 +33,8 @@ export * from './daily';
 // Rolling load trend: EWMA ATL/CTL/TSB + readiness banding
 export * from './trend';
 
+// Day-type adaptive daily kcal/macro targets (NUTR-16/17/18)
+export * from './nutrition';
+
 // Semantic version constant for the engine package
 export * from './version';
