@@ -21,15 +21,15 @@ function jsonResponse(body: unknown, status = 200): Response {
 }
 
 describe('offLookupBarcode', () => {
-  const originalFetch = global.fetch;
+  const originalFetch = globalThis.fetch;
 
   afterEach(() => {
-    global.fetch = originalFetch;
+    globalThis.fetch = originalFetch;
     vi.restoreAllMocks();
   });
 
   it('a status:1 product with complete macros parses to normalized fields', async () => {
-    global.fetch = vi.fn().mockResolvedValue(
+    globalThis.fetch = vi.fn().mockResolvedValue(
       jsonResponse({
         status: 1,
         product: {
@@ -64,7 +64,7 @@ describe('offLookupBarcode', () => {
   });
 
   it('a status:0 response yields null (not a zero-macro food)', async () => {
-    global.fetch = vi.fn().mockResolvedValue(jsonResponse({ status: 0 }));
+    globalThis.fetch = vi.fn().mockResolvedValue(jsonResponse({ status: 0 }));
 
     const result = await offLookupBarcode('9999999999999');
 
@@ -72,7 +72,7 @@ describe('offLookupBarcode', () => {
   });
 
   it('a status:1 product missing a core macro (e.g. fat) yields null, not a zero-macro food', async () => {
-    global.fetch = vi.fn().mockResolvedValue(
+    globalThis.fetch = vi.fn().mockResolvedValue(
       jsonResponse({
         status: 1,
         product: {
@@ -93,34 +93,34 @@ describe('offLookupBarcode', () => {
   });
 
   it('an aborted/timed-out fetch returns null without throwing', async () => {
-    global.fetch = vi.fn().mockRejectedValue(new DOMException('The operation was aborted.', 'AbortError'));
+    globalThis.fetch = vi.fn().mockRejectedValue(new DOMException('The operation was aborted.', 'AbortError'));
 
     await expect(offLookupBarcode('2222222222222')).resolves.toBeNull();
   });
 
   it('a malformed (non-JSON-object) response returns null without throwing', async () => {
-    global.fetch = vi.fn().mockResolvedValue(jsonResponse(null));
+    globalThis.fetch = vi.fn().mockResolvedValue(jsonResponse(null));
 
     await expect(offLookupBarcode('3333333333333')).resolves.toBeNull();
   });
 
   it('a non-OK HTTP status returns null without throwing', async () => {
-    global.fetch = vi.fn().mockResolvedValue(jsonResponse({}, 500));
+    globalThis.fetch = vi.fn().mockResolvedValue(jsonResponse({}, 500));
 
     await expect(offLookupBarcode('4444444444444')).resolves.toBeNull();
   });
 });
 
 describe('offSearch', () => {
-  const originalFetch = global.fetch;
+  const originalFetch = globalThis.fetch;
 
   afterEach(() => {
-    global.fetch = originalFetch;
+    globalThis.fetch = originalFetch;
     vi.restoreAllMocks();
   });
 
   it('parses multiple products, tolerating missing nutriment fields (Pitfall 7)', async () => {
-    global.fetch = vi.fn().mockResolvedValue(
+    globalThis.fetch = vi.fn().mockResolvedValue(
       jsonResponse({
         products: [
           {
@@ -149,36 +149,36 @@ describe('offSearch', () => {
   });
 
   it('an empty query returns [] without calling fetch', async () => {
-    global.fetch = vi.fn();
+    globalThis.fetch = vi.fn();
 
     const results = await offSearch('   ');
 
     expect(results).toEqual([]);
-    expect(global.fetch).not.toHaveBeenCalled();
+    expect(globalThis.fetch).not.toHaveBeenCalled();
   });
 
   it('a network failure returns [] without throwing', async () => {
-    global.fetch = vi.fn().mockRejectedValue(new Error('network down'));
+    globalThis.fetch = vi.fn().mockRejectedValue(new Error('network down'));
 
     await expect(offSearch('rice')).resolves.toEqual([]);
   });
 });
 
 describe('usdaSearch — Pitfall 8 dual-shape parsing', () => {
-  const originalFetch = global.fetch;
+  const originalFetch = globalThis.fetch;
 
   beforeEach(() => {
     vi.stubEnv('EXPO_PUBLIC_USDA_FDC_API_KEY', 'TEST_KEY');
   });
 
   afterEach(() => {
-    global.fetch = originalFetch;
+    globalThis.fetch = originalFetch;
     vi.restoreAllMocks();
     vi.unstubAllEnvs();
   });
 
   it('parses the flat foodNutrients shape (nutrientId/nutrientName/value)', async () => {
-    global.fetch = vi.fn().mockResolvedValue(
+    globalThis.fetch = vi.fn().mockResolvedValue(
       jsonResponse({
         foods: [
           {
@@ -206,7 +206,7 @@ describe('usdaSearch — Pitfall 8 dual-shape parsing', () => {
   });
 
   it('parses the nested foodNutrients shape (nutrient.{id,name} + amount) identically', async () => {
-    global.fetch = vi.fn().mockResolvedValue(
+    globalThis.fetch = vi.fn().mockResolvedValue(
       jsonResponse({
         foods: [
           {
@@ -233,13 +233,13 @@ describe('usdaSearch — Pitfall 8 dual-shape parsing', () => {
   });
 
   it('a 429 rate-limit response returns [] without throwing', async () => {
-    global.fetch = vi.fn().mockResolvedValue(jsonResponse({}, 429));
+    globalThis.fetch = vi.fn().mockResolvedValue(jsonResponse({}, 429));
 
     await expect(usdaSearch('rice')).resolves.toEqual([]);
   });
 
   it('an aborted/timed-out fetch returns [] without throwing', async () => {
-    global.fetch = vi.fn().mockRejectedValue(new DOMException('The operation was aborted.', 'AbortError'));
+    globalThis.fetch = vi.fn().mockRejectedValue(new DOMException('The operation was aborted.', 'AbortError'));
 
     await expect(usdaSearch('rice')).resolves.toEqual([]);
   });

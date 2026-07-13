@@ -22,6 +22,7 @@
 import React, { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
+  Linking,
   Modal,
   Pressable,
   ScrollView,
@@ -443,6 +444,25 @@ export default function SettingsScreen(): React.JSX.Element {
         )}
         <View style={styles.hairlineDivider} />
 
+        {/* NUTR-21 (07-08-PLAN.md Task 2, T-07-19): Open Food Facts license attribution —
+         * ships together with barcode scanning, which reads OFF's ODbL/CC-BY-SA data. */}
+        <Text style={styles.sectionLabel}>Data Sources</Text>
+        <View style={styles.attributionBlock}>
+          <Text style={styles.attributionText}>
+            Barcode and product data provided by Open Food Facts, used under the Open Database
+            License (ODbL) and Database Contents License (CC-BY-SA).
+          </Text>
+          <Pressable
+            onPress={() => {
+              void Linking.openURL('https://world.openfoodfacts.org');
+            }}
+            accessibilityRole="link"
+            accessibilityLabel="Open Food Facts website">
+            <Text style={styles.attributionLink}>world.openfoodfacts.org</Text>
+          </Pressable>
+        </View>
+        <View style={styles.hairlineDivider} />
+
         <View style={styles.footer}>
           <Text style={styles.footerText}>Apsis v{appVersion}</Text>
           <Text style={styles.footerText}>Engine v{ENGINE_VERSION}</Text>
@@ -780,6 +800,18 @@ const styles = StyleSheet.create({
     ...Mono,
     color: Colors.dark.mutedText,
     marginTop: Spacing.sm,
+  },
+  attributionBlock: {
+    paddingHorizontal: Spacing.lg,
+    gap: Spacing.sm,
+  },
+  attributionText: {
+    ...Typography.label,
+    color: Colors.dark.mutedText,
+  },
+  attributionLink: {
+    ...Typography.label,
+    color: Colors.dark.accent,
   },
   hkRowLabel: {
     ...Typography.body,

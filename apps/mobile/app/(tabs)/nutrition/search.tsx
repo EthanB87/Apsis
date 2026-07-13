@@ -168,6 +168,17 @@ export default function NutritionSearchScreen(): React.JSX.Element {
           </>
         )}
 
+        {/* Rule 2 deviation (Plan 07-08): the only entry point into scan.tsx — without this the
+         * barcode scan screen built in this plan is unreachable dead code, mirroring the
+         * "Custom food / quick add" button's own precedent below. */}
+        <Pressable
+          onPress={() => router.push('/(tabs)/nutrition/scan')}
+          accessibilityRole="button"
+          accessibilityLabel="Scan barcode"
+          style={({ pressed }) => [styles.customButton, pressed && styles.customButtonPressed]}>
+          <Text style={styles.customButtonLabel}>Scan barcode</Text>
+        </Pressable>
+
         <Pressable
           onPress={() => router.push('/(tabs)/nutrition/log')}
           accessibilityRole="button"
