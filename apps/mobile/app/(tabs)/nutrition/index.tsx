@@ -237,6 +237,17 @@ export default function NutritionScreen(): React.JSX.Element {
           style={({ pressed }) => [styles.logFoodButton, pressed && styles.logFoodButtonPressed]}>
           <Text style={styles.logFoodButtonLabel}>Log food</Text>
         </Pressable>
+
+        {/* Rule 2 deviation (Plan 07-10): the only entry point into recipes.tsx — without this
+         * the recipes list/create/log-one-serving flow built in this plan is unreachable dead
+         * code. Same ghost/bone style as the Log food button above. */}
+        <Pressable
+          onPress={() => router.push('/(tabs)/nutrition/recipes')}
+          accessibilityRole="button"
+          accessibilityLabel="Recipes"
+          style={({ pressed }) => [styles.logFoodButton, pressed && styles.logFoodButtonPressed]}>
+          <Text style={styles.logFoodButtonLabel}>Recipes</Text>
+        </Pressable>
       </ScrollView>
     </SafeAreaView>
   );
