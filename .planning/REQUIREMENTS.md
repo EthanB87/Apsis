@@ -84,9 +84,9 @@ Nutrition tracking, promoted from v2/v1.1 into v1.0 scope by owner decision 2026
 NUTRITION.md and 07-CONTEXT.md). Supersedes the stale v1.1 `NUTR-01` placeholder below.
 
 - [x] **NUTR-01**: `food`/`food_log`/`recipe`/`recipe_ingredient`/`nutrition_target` schema ships via committed drizzle migrations (extends DATA-03 pattern)
-- [ ] **NUTR-02**: Local-first food cache: every logged food (manual, barcode, OCR) is cached on-device; repeat logging works fully offline
+- [x] **NUTR-02**: Local-first food cache: every logged food (manual, barcode, OCR) is cached on-device; repeat logging works fully offline
 - [ ] **NUTR-03**: User can search cached/local foods inline with a debounced remote OFF/USDA fallback; usable result in <1s
-- [ ] **NUTR-04**: User can log a recent or favorite food in ≤3 taps
+- [x] **NUTR-04**: User can log a recent or favorite food in ≤3 taps
 - [ ] **NUTR-05**: User can create a custom food via full manual macro entry (kcal/P/C/F, serving)
 - [ ] **NUTR-06**: User can quick-add a macro-only log entry with no associated `food` row
 - [x] **NUTR-07**: Food log entries are tagged to a meal (breakfast/lunch/dinner/snack) and a local date
@@ -185,9 +185,9 @@ Which phase covers which requirement. Populated during roadmap creation.
 | REL-03 | Phase 06 | Complete |
 | REL-04 | Phase 06 | Complete |
 | NUTR-01 | Phase 07 | Complete |
-| NUTR-02 | Phase 07 | Pending |
+| NUTR-02 | Phase 07 | Complete |
 | NUTR-03 | Phase 07 | Pending |
-| NUTR-04 | Phase 07 | Pending |
+| NUTR-04 | Phase 07 | Complete |
 | NUTR-05 | Phase 07 | Pending |
 | NUTR-06 | Phase 07 | Pending |
 | NUTR-07 | Phase 07 | Complete |

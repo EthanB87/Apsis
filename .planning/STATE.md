@@ -5,15 +5,15 @@ milestone_name: milestone
 current_phase: 07
 current_phase_name: nutrition-tracking
 status: executing
-stopped_at: Completed 07-02-PLAN.md
-last_updated: "2026-07-13T21:03:10.746Z"
+stopped_at: Completed 07-03-PLAN.md
+last_updated: "2026-07-13T21:13:20.828Z"
 last_activity: 2026-07-13
 last_activity_desc: Phase 07 execution started
 progress:
   total_phases: 7
   completed_phases: 4
   total_plans: 53
-  completed_plans: 41
+  completed_plans: 42
   percent: 57
 ---
 
@@ -30,7 +30,7 @@ training-load number (HSS) and a readiness band — fully offline.
 ## Current Position
 
 Phase: 07 (nutrition-tracking) — EXECUTING
-Plan: 3 of 10
+Plan: 4 of 10
 Status: Ready to execute
 Last activity: 2026-07-13 — Phase 07 execution started
 
@@ -102,6 +102,7 @@ Progress: [█████████████░░░░░░░] 67% (4/
 | Phase 06 P05 | 6min | 3 tasks | 2 files |
 | Phase 07 P01 | 37min | 3 tasks | 9 files |
 | Phase 07 P02 | 12min | 2 tasks | 5 files |
+| Phase 07 P03 | 9min | 2 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -214,6 +215,8 @@ Recent decisions affecting current work:
 - [Phase ?]: [Phase 07 P02]: 07-RESEARCH.md Pattern 4 implemented verbatim as the adaptive-target model since NUTRITION.md's referenced PRD section 6 does not exist in this repo
 - [Phase ?]: [Phase 07 P02]: kcal is computed independently of the fat-floor clamp (only c/f adjusted), so cut/bulk kcal deltas and sessionKcal additivity hold exactly even when the clamp fires
 - [Phase ?]: [Phase 07 P02]: per-package tsc --noEmit resolves @apsis/shared against dist declarations (composite project-reference redirect); root pnpm typecheck (tsc --build) is the authoritative cross-package verification entry point, matching Phase 03 P04 precedent
+- [Phase ?]: [Phase 07 P03]: computeNutritionTargetRow derives a deterministic id (auto-{localDate}) rather than accepting an id param -- keeps the fold pure while giving the future upsert wrapper a stable onConflictDoUpdate target for the day's auto row, leaving any 'override' row untouched
+- [Phase ?]: [Phase 07 P03]: nutrition-queries.test.ts reuses nutrition-schema.test.ts's real in-memory better-sqlite3 + committed-migration harness instead of sqlite-proxy .toSQL()-shape tests, since search/ordering/aggregate correctness needs actual query results
 
 ### Roadmap Evolution
 
@@ -288,7 +291,7 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-07-13T21:03:10.734Z
-Stopped at: Completed 07-02-PLAN.md
+Last session: 2026-07-13T21:13:20.814Z
+Stopped at: Completed 07-03-PLAN.md
 tasks awaiting human action — see Blockers/Concerns). Resume: /gsd-execute-phase 6
 Resume file: None
