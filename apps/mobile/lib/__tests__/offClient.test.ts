@@ -232,6 +232,52 @@ describe('usdaSearch — Pitfall 8 dual-shape parsing', () => {
     expect(results[0]?.fatGPer100g).toBe(3);
   });
 
+  it('a kJ energy entry preceding the kcal entry never wins — exact id 1008 is preferred (WR-02)', async () => {
+    globalThis.fetch = vi.fn().mockResolvedValue(
+      jsonResponse({
+        foods: [
+          {
+            description: 'Oats, raw',
+            fdcId: 111,
+            foodNutrients: [
+              // kJ entry FIRST (nutrient id 1062) — the old single-pass name match returned
+              // this 502 kJ value as kcalPer100g (~4.2× inflation).
+              { nutrient: { id: 1062, name: 'Energy', unitName: 'kJ' }, amount: 502 },
+              { nutrient: { id: 1008, name: 'Energy', unitName: 'kcal' }, amount: 120 },
+            ],
+          },
+        ],
+      }),
+    );
+
+    const results = await usdaSearch('oats');
+
+    expect(results[0]?.kcalPer100g).toBe(120);
+  });
+
+  it('the name fallback rejects non-kcal energy units when no exact id matches (WR-02)', async () => {
+    globalThis.fetch = vi.fn().mockResolvedValue(
+      jsonResponse({
+        foods: [
+          {
+            description: 'Oats, raw',
+            fdcId: 111,
+            foodNutrients: [
+              // No entry carries the exact id 1008 — only the name fallback can resolve energy,
+              // and it must skip the kJ entry even though it comes first.
+              { nutrientName: 'Energy', unitName: 'kJ', value: 502 },
+              { nutrientName: 'Energy (Atwater General Factors)', unitName: 'kcal', value: 118 },
+            ],
+          },
+        ],
+      }),
+    );
+
+    const results = await usdaSearch('oats');
+
+    expect(results[0]?.kcalPer100g).toBe(118);
+  });
+
   it('a 429 rate-limit response returns [] without throwing', async () => {
     globalThis.fetch = vi.fn().mockResolvedValue(jsonResponse({}, 429));
 

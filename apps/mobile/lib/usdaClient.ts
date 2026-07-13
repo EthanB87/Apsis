@@ -46,8 +46,9 @@ interface RawUsdaFoodNutrient {
   nutrientId?: number;
   nutrientName?: string;
   value?: number;
+  unitName?: string;
   /** Nested shape (Pitfall 8). */
-  nutrient?: { id?: number; name?: string };
+  nutrient?: { id?: number; name?: string; unitName?: string };
   amount?: number;
 }
 
@@ -67,22 +68,37 @@ function toOptionalNumber(value: unknown): number | undefined {
 
 /**
  * Finds a nutrient's value by ID first (either shape, Pitfall 8), falling back to a
- * case-insensitive name substring match if the ID doesn't match — some USDA responses report
+ * case-insensitive name substring match if no ID matches — some USDA responses report
  * slightly different IDs for closely related nutrients (e.g. "Energy" vs "Energy (Atwater
  * General Factors)"), so the name fallback catches those without a hand-maintained ID list.
+ *
+ * WR-02: two-pass lookup — exact-id matches are exhausted across ALL entries before the name
+ * fallback runs, and energy entries whose `unitName` is not kcal are rejected in the fallback.
+ * USDA responses routinely carry a second energy entry in kilojoules (nutrient id 1062, name
+ * "Energy", unit kJ); the old single-pass name match could return that kJ value as
+ * `kcalPer100g` (~4.2× inflation) whenever it preceded the kcal entry in the array.
  */
 function findNutrientValue(
   nutrients: RawUsdaFoodNutrient[],
   id: number,
   nameSubstring: string,
 ): number | undefined {
+  // Pass 1: exact nutrient-id match, either shape, across all entries.
   for (const n of nutrients) {
     const nid = n.nutrient?.id ?? n.nutrientId;
-    const nname = (n.nutrient?.name ?? n.nutrientName ?? '').toLowerCase();
-    if (nid === id || nname.includes(nameSubstring)) {
+    if (nid === id) {
       const value = toOptionalNumber(n.amount ?? n.value);
       if (value != null) return value;
     }
+  }
+  // Pass 2: name-substring fallback — reject non-kcal energy entries (WR-02).
+  for (const n of nutrients) {
+    const nname = (n.nutrient?.name ?? n.nutrientName ?? '').toLowerCase();
+    if (!nname.includes(nameSubstring)) continue;
+    const unit = (n.nutrient?.unitName ?? n.unitName ?? '').toLowerCase();
+    if (nameSubstring === 'energy' && unit.length > 0 && unit !== 'kcal') continue;
+    const value = toOptionalNumber(n.amount ?? n.value);
+    if (value != null) return value;
   }
   return undefined;
 }
