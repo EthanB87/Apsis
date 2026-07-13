@@ -49,6 +49,11 @@ export interface ProfileUpdateInput {
   thresholdPaceSecPerKm?: number;
   units?: Units;
   restTimerDefaultSec?: number;
+  /** Phase 07 (NUTR-15/NUTR-20): stored metric cm, written by the Nutrition Setup prompt's
+   * single batched UPDATE — never touches strength_set/endurance_segment/workout/load_daily. */
+  heightCm?: number;
+  birthYear?: number;
+  goalMode?: 'cut' | 'maintain' | 'bulk';
 }
 
 export interface UseProfileResult {
