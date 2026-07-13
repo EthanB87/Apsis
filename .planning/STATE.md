@@ -2,19 +2,19 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-current_phase: 06
-current_phase_name: polish-app-store-submission
+current_phase: 07
+current_phase_name: nutrition-tracking
 status: executing
-stopped_at: Paused end of Wave 1 — 06-01 T3 (ASC app record) + 06-04 T3 (publish pages) awaiting user
-last_updated: "2026-07-13T13:53:15.249Z"
-last_activity: 2026-07-12
-last_activity_desc: Phase 06 execution started
+stopped_at: Completed 07-01-PLAN.md
+last_updated: "2026-07-13T20:51:08.821Z"
+last_activity: 2026-07-13
+last_activity_desc: Phase 07 execution started
 progress:
-  total_phases: 6
+  total_phases: 7
   completed_phases: 4
-  total_plans: 43
-  completed_plans: 39
-  percent: 67
+  total_plans: 53
+  completed_plans: 40
+  percent: 57
 ---
 
 # Project State — Apsis
@@ -25,14 +25,14 @@ See: .planning/PROJECT.md (updated 2026-07-12)
 
 **Core value:** Log lifting + running in one app, instantly see one honest combined
 training-load number (HSS) and a readiness band — fully offline.
-**Current focus:** Phase 06 — polish-app-store-submission
+**Current focus:** Phase 07 — nutrition-tracking
 
 ## Current Position
 
-Phase: 06 (polish-app-store-submission) — EXECUTING
-Plan: 4 of 7
+Phase: 07 (nutrition-tracking) — EXECUTING
+Plan: 2 of 10
 Status: Ready to execute
-Last activity: 2026-07-12 — Phase 06 execution started
+Last activity: 2026-07-13 — Phase 07 execution started
 
 Progress: [█████████████░░░░░░░] 67% (4/6 phases complete, 27/27 executed plans)
 
@@ -100,6 +100,7 @@ Progress: [█████████████░░░░░░░] 67% (4/
 | Phase 06 P02 | 15min | 3 tasks | 7 files |
 | Phase 06 P03 | 12min | 2 tasks | 2 files |
 | Phase 06 P05 | 6min | 3 tasks | 2 files |
+| Phase 07 P01 | 37min | 3 tasks | 9 files |
 
 ## Accumulated Context
 
@@ -207,6 +208,8 @@ Recent decisions affecting current work:
 - [Phase 06]: New timed catalog entries always use bwFactor: null even when bodyweight-moved (e.g. bear-crawl) — Matches the plan's explicit rule and the pre-existing TIMED_IDS test invariant that every timed movement has bwFactor null
 - [Phase 06]: App Store listing copy approved verbatim (name 26/30, subtitle 24/30); keywords trimmed to 94/100 chars per user amendment, dropping terms already indexed from name/subtitle in favor of HYROX/tactical/readiness/RPE/HSS/strength/conditioning/workout tracker/athlete/stress
 - [Phase 06]: eas.json build.production.ios configured with autoIncrement:true and cli.appVersionSource:remote (D-17) -- marketing version stays pinned at 1.0.0 in app.json
+- [Phase 07]: better-sqlite3 pinned to ^11.10.0 as @apsis/db devDependency only (v12 dropped Node 20 prebuilds; v11.10.0 ships node-v115-win32-x64 prebuilt) after package-legitimacy + native-toolchain checkpoints
+- [Phase 07]: Migration round-trip proof pattern: apply committed drizzle .sql files in journal order to in-memory better-sqlite3 with foreign_keys=ON — typecheck never proves the DB is migrated (schema_push_requirement)
 
 ### Roadmap Evolution
 
@@ -214,11 +217,13 @@ Recent decisions affecting current work:
   label OCR, custom recipes, day-type adaptive macro targets. Promoted from v2 to v1 scope
   by owner decision; spec lives in NUTRITION.md (repo root, edited from the original v2
   addendum).
+
 - Phase 7 re-sequenced (2026-07-13, owner decision): nutrition ships IN the July 28
   submission build, not as a v1.x update. Phase 7 executes NOW, before Phase 6's
   remaining waves — 06-06 (production build) and 06-07 (submission) wait for Phase 7.
   Cut line under deadline pressure: NUTRITION.md §7 build order (barcode/OCR/recipes
   drop first; manual logging + adaptive targets ship regardless).
+
 - ⚠ Ripple effects of nutrition-in-v1 to resolve before Phase 6 closes:
   (1) 06-04 privacy policy (drafted, unpublished) claims only Sentry diagnostics leave
   the device — with OFF/USDA lookups, food searches/barcodes now leave the device;
@@ -279,7 +284,7 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-07-13T13:53:02.700Z
-Stopped at: Phase 06 paused at end of Wave 1 (06-02/03/05 complete; 06-01 and 06-04 at 2/3
+Last session: 2026-07-13T20:51:08.810Z
+Stopped at: Completed 07-01-PLAN.md
 tasks awaiting human action — see Blockers/Concerns). Resume: /gsd-execute-phase 6
 Resume file: None

@@ -228,12 +228,12 @@ Plans:
 **Goal**: Athletes log food (manual entry, barcode scan, nutrition-label OCR, custom recipes) as fast as MacroFactor/MFP, and see daily kcal/macro targets that adapt to the day's logged training (heavy-lift / long-run / double / rest) — the day-type adaptive targets no macro app offers. Full scope, database strategy (OFF + USDA + local-first cache), and data model are locked in NUTRITION.md (repo root); promoted from v2 into v1 scope 2026-07-13 and shipped IN the initial App Store submission (re-decided 2026-07-13): Phase 7 executes before Phase 6's production build (06-06) and submission (06-07). Under deadline pressure the cut line is NUTRITION.md §7 build order — barcode/OCR/recipes waves drop first.
 **Requirements**: NUTR-01 .. NUTR-22 (granular set added to REQUIREMENTS.md by plan 07-01, derived from NUTRITION.md §1 scope)
 **Depends on:** Phases 01–05 + Phase 6 Wave 1 (repo/config fixes — complete). Phase 6 plans 06-06 (production build) and 06-07 (submission) now depend on Phase 7 completion.
-**Plans:** 10 plans
+**Plans:** 1/10 plans executed
 
 Plans:
 **Wave 1** *(foundation — parallel, no cross-file conflicts)*
 
-- [ ] 07-01-PLAN.md — Schema + [BLOCKING] migration + granular NUTR-01..22 requirements: 5 new tables + 3 user_profile fields, drizzle-kit generate + round-trip test (NUTR-01/07/15)
+- [x] 07-01-PLAN.md — Schema + [BLOCKING] migration + granular NUTR-01..22 requirements: 5 new tables + 3 user_profile fields, drizzle-kit generate + round-trip test (NUTR-01/07/15)
 - [ ] 07-02-PLAN.md — Engine adaptive-target functions (TDD golden-file): dailyMacroTarget/classifyDayType/trainingKcalFromHss + EngineConfig constants (NUTR-16/17/18)
 
 **Wave 2** *(DB service + profile gate — depends on Wave 1)*

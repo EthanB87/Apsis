@@ -83,13 +83,13 @@ Requirements for the v1.0 release. Each maps to exactly one roadmap phase.
 Nutrition tracking, promoted from v2/v1.1 into v1.0 scope by owner decision 2026-07-13 (see
 NUTRITION.md and 07-CONTEXT.md). Supersedes the stale v1.1 `NUTR-01` placeholder below.
 
-- [ ] **NUTR-01**: `food`/`food_log`/`recipe`/`recipe_ingredient`/`nutrition_target` schema ships via committed drizzle migrations (extends DATA-03 pattern)
+- [x] **NUTR-01**: `food`/`food_log`/`recipe`/`recipe_ingredient`/`nutrition_target` schema ships via committed drizzle migrations (extends DATA-03 pattern)
 - [ ] **NUTR-02**: Local-first food cache: every logged food (manual, barcode, OCR) is cached on-device; repeat logging works fully offline
 - [ ] **NUTR-03**: User can search cached/local foods inline with a debounced remote OFF/USDA fallback; usable result in <1s
 - [ ] **NUTR-04**: User can log a recent or favorite food in ≤3 taps
 - [ ] **NUTR-05**: User can create a custom food via full manual macro entry (kcal/P/C/F, serving)
 - [ ] **NUTR-06**: User can quick-add a macro-only log entry with no associated `food` row
-- [ ] **NUTR-07**: Food log entries are tagged to a meal (breakfast/lunch/dinner/snack) and a local date
+- [x] **NUTR-07**: Food log entries are tagged to a meal (breakfast/lunch/dinner/snack) and a local date
 - [ ] **NUTR-08**: User can scan a barcode via camera; app resolves it through local cache → OFF (Apsis DB / commercial fallback deferred)
 - [ ] **NUTR-09**: User confirms/edits serving size and quantity before a scanned/OCR'd product is logged
 - [ ] **NUTR-10**: Barcode/search misses fall back gracefully to manual/custom food entry — never a dead end
@@ -97,7 +97,7 @@ NUTRITION.md and 07-CONTEXT.md). Supersedes the stale v1.1 `NUTR-01` placeholder
 - [ ] **NUTR-12**: Every confirmed label scan saves as a custom food (`source:'user'`, provenance from OCR)
 - [ ] **NUTR-13**: User can combine foods into a custom recipe with a servings count; per-serving macros compute automatically
 - [ ] **NUTR-14**: User can log one recipe serving as a food-log entry
-- [ ] **NUTR-15**: `user_profile` gains `heightCm`, `birthYear`, `goalMode` fields required by the adaptive-target model
+- [x] **NUTR-15**: `user_profile` gains `heightCm`, `birthYear`, `goalMode` fields required by the adaptive-target model
 - [ ] **NUTR-16**: Engine computes daily kcal/P/C/F targets from profile + goal mode + day's logged training day-type — pure function, no I/O, tunable EngineConfig constants
 - [ ] **NUTR-17**: Day-type (`heavy_lift`/`long_run`/`double`/`rest`/`mixed`) is derived automatically from the day's logged workouts
 - [ ] **NUTR-18**: `dailyMacroTarget` and `classifyDayType` ship with golden-file tests, mirroring the HSS calibration precedent (D-13/D-14/D-20)
@@ -184,13 +184,13 @@ Which phase covers which requirement. Populated during roadmap creation.
 | REL-02 | Phase 06 | Pending |
 | REL-03 | Phase 06 | Complete |
 | REL-04 | Phase 06 | Complete |
-| NUTR-01 | Phase 07 | Pending |
+| NUTR-01 | Phase 07 | Complete |
 | NUTR-02 | Phase 07 | Pending |
 | NUTR-03 | Phase 07 | Pending |
 | NUTR-04 | Phase 07 | Pending |
 | NUTR-05 | Phase 07 | Pending |
 | NUTR-06 | Phase 07 | Pending |
-| NUTR-07 | Phase 07 | Pending |
+| NUTR-07 | Phase 07 | Complete |
 | NUTR-08 | Phase 07 | Pending |
 | NUTR-09 | Phase 07 | Pending |
 | NUTR-10 | Phase 07 | Pending |
@@ -198,7 +198,7 @@ Which phase covers which requirement. Populated during roadmap creation.
 | NUTR-12 | Phase 07 | Pending |
 | NUTR-13 | Phase 07 | Pending |
 | NUTR-14 | Phase 07 | Pending |
-| NUTR-15 | Phase 07 | Pending |
+| NUTR-15 | Phase 07 | Complete |
 | NUTR-16 | Phase 07 | Pending |
 | NUTR-17 | Phase 07 | Pending |
 | NUTR-18 | Phase 07 | Pending |
