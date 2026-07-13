@@ -140,3 +140,8 @@ None - no external service configuration required.
 ---
 *Phase: 07-nutrition-tracking*
 *Completed: 2026-07-13*
+
+## Self-Check: PASSED
+
+- Verified on disk: `packages/engine/src/nutrition.ts`, `packages/engine/src/__tests__/nutrition.test.ts`, `.planning/phases/07-nutrition-tracking/07-02-SUMMARY.md`
+- Verified in git log: `05effc6` (types+config), `51b777a` (RED test), `21b954f` (GREEN implementation), `91e702f` (SUMMARY commit)
