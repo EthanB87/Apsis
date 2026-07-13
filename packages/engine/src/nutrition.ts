@@ -57,9 +57,9 @@ function mifflinStJeorBmr(sex: Sex, weightKg: number, heightCm: number, age: num
 /**
  * Computes a day's adaptive kcal/protein/carb/fat targets from a profile, the day's
  * training day-type, and the day's training kcal add (NUTR-16/18). Pure; resolves
- * `cfg` via `mergeConfig` first, defends every input (D-15 — invalid bodyweight yields an
- * all-zero result with a warning rather than NaN/divide-by-zero; non-finite `sessionKcal`
- * clamps to 0), and never throws.
+ * `cfg` via `mergeConfig` first, defends every input (D-15 — invalid bodyweight OR invalid
+ * height/age yields an all-zero result with a warning rather than NaN/divide-by-zero;
+ * non-finite `sessionKcal` clamps to 0), and never throws.
  *
  * Formula (07-RESEARCH.md Pattern 4):
  * - `p` (protein) is anchored to bodyweight by goal mode (highest on a cut, per ISSN
@@ -87,6 +87,18 @@ export function dailyMacroTarget(
 
   if (!Number.isFinite(profile.bodyweightKg) || profile.bodyweightKg <= 0) {
     return { kcal: 0, p: 0, c: 0, f: 0, warnings: ['invalid bodyweight — cannot compute targets'] };
+  }
+
+  // WR-09: heightCm/age flow into mifflinStJeorBmr — a NaN/Infinity/non-positive value there
+  // yields bmr = NaN, which propagates through every kcal/macro field and would otherwise be
+  // upserted into nutrition_target as NaN garbage. Mirror the bodyweight guard (D-15).
+  if (
+    !Number.isFinite(profile.heightCm) ||
+    profile.heightCm <= 0 ||
+    !Number.isFinite(profile.age) ||
+    profile.age <= 0
+  ) {
+    return { kcal: 0, p: 0, c: 0, f: 0, warnings: ['invalid height/age — cannot compute targets'] };
   }
 
   const proteinPerKg =

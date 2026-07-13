@@ -112,6 +112,27 @@ describe('dailyMacroTarget (NUTR-16/18) — day-type adaptive kcal/macro golden 
     expect(Number.isNaN(result.f)).toBe(false);
   });
 
+  it('golden 4b: invalid height/age (<=0 or non-finite) → all-zero result + warning, never NaN (WR-09)', () => {
+    const base: NutritionProfile = { sex: 'male', bodyweightKg: 80, heightCm: 180, age: 30, goalMode: 'maintain' };
+    const expected = { kcal: 0, p: 0, c: 0, f: 0, warnings: ['invalid height/age — cannot compute targets'] };
+
+    expect(dailyMacroTarget({ ...base, heightCm: 0 }, 'rest', 0)).toEqual(expected);
+    expect(dailyMacroTarget({ ...base, heightCm: -170 }, 'rest', 0)).toEqual(expected);
+    expect(dailyMacroTarget({ ...base, heightCm: NaN }, 'rest', 0)).toEqual(expected);
+    expect(dailyMacroTarget({ ...base, heightCm: Infinity }, 'rest', 0)).toEqual(expected);
+    expect(dailyMacroTarget({ ...base, age: 0 }, 'rest', 0)).toEqual(expected);
+    expect(dailyMacroTarget({ ...base, age: -1 }, 'rest', 0)).toEqual(expected);
+    expect(dailyMacroTarget({ ...base, age: NaN }, 'rest', 0)).toEqual(expected);
+    expect(dailyMacroTarget({ ...base, age: Infinity }, 'rest', 0)).toEqual(expected);
+
+    // No field is ever NaN — a NaN here would be upserted into nutrition_target as garbage.
+    const result = dailyMacroTarget({ ...base, heightCm: NaN, age: NaN }, 'rest', 0);
+    expect(Number.isNaN(result.kcal)).toBe(false);
+    expect(Number.isNaN(result.p)).toBe(false);
+    expect(Number.isNaN(result.c)).toBe(false);
+    expect(Number.isNaN(result.f)).toBe(false);
+  });
+
   it('golden 5: extreme aggressive cut trips the fat-floor clamp — warnings populated, f pinned at fatFloorGPerKg*bodyweightKg', () => {
     // 55kg/160cm/35yo female, aggressive cut, long_run day, no session kcal — a deficit
     // small athlete scenario where protein (2.4 g/kg) + carb (7 g/kg long_run) alone
