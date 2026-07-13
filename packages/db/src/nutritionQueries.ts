@@ -1,10 +1,10 @@
 /**
- * @apsis/db — nutrition query builders (NUTR-02/04/07/17)
+ * @apsis/db — nutrition query builders (NUTR-02/04/07/13/14/17)
  *
  * Parameterized drizzle query-builder factories for the local-first food cache (search,
- * recents, favorites), the joinless day-totals aggregate, and the day-type session query —
- * mirroring queries.ts's builder-factory shapes exactly (`previousSessionSet`,
- * `recentExerciseIds`, `sessionCountsByDate`).
+ * recents, favorites), the joinless day-totals aggregate, the day-type session query, and
+ * recipe CRUD + per-serving macro aggregation — mirroring queries.ts's builder-factory shapes
+ * exactly (`previousSessionSet`, `recentExerciseIds`, `sessionCountsByDate`).
  *
  * Security (T-1-01/T-07-05): every builder here uses drizzle's parameterized query API
  * exclusively — search text is always bound as a `like()` value, never interpolated into a
@@ -15,7 +15,7 @@
 
 import { and, desc, eq, isNotNull, like, or, sql } from 'drizzle-orm';
 import { activeWorkoutFilter, type QueryableDB } from './queries';
-import { food, foodLog, workout } from './schema';
+import { food, foodLog, recipe, recipeIngredient, workout } from './schema';
 
 // ---------------------------------------------------------------------------
 // Food cache search (NUTR-02)
@@ -137,4 +137,124 @@ export function sessionTypesForDate(db: QueryableDB, localDate: string) {
     .where(
       and(eq(workout.localDate, localDate), isNotNull(workout.finishedAt), activeWorkoutFilter),
     );
+}
+
+// ---------------------------------------------------------------------------
+// Recipes (NUTR-13/14)
+// ---------------------------------------------------------------------------
+
+export interface CreateRecipeInput {
+  id: string;
+  name: string;
+  servings: number;
+}
+
+/**
+ * Insert-builder for a new `recipe` row — mirrors `softDeleteWorkout`'s unexecuted-builder
+ * shape (queries.ts): the caller `await`s this directly, `id` is assigned by the caller via
+ * the platform random-UUID helper (matches `workout`/`strengthSet`/`food` insert convention).
+ */
+export function createRecipe(db: QueryableDB, input: CreateRecipeInput) {
+  return db.insert(recipe).values({ id: input.id, name: input.name, servings: input.servings });
+}
+
+export interface AddRecipeIngredientInput {
+  id: string;
+  recipeId: string;
+  foodId: string;
+  qtyGrams: number;
+}
+
+/**
+ * Insert-builder for a `recipe_ingredient` row. `recipeId` cascades on the owning recipe's
+ * delete (schema onDelete cascade, 07-01); `foodId` does not (mirrors `strengthSet.exerciseId`
+ * — a food is never deleted by deleting a recipe).
+ */
+export function addRecipeIngredient(db: QueryableDB, input: AddRecipeIngredientInput) {
+  return db.insert(recipeIngredient).values({
+    id: input.id,
+    recipeId: input.recipeId,
+    foodId: input.foodId,
+    qtyGrams: input.qtyGrams,
+  });
+}
+
+/** All saved recipes, alphabetical — the recipes list screen's source. */
+export function listRecipes(db: QueryableDB) {
+  return db.select().from(recipe).orderBy(recipe.name);
+}
+
+export interface RecipeServingMacros {
+  kcal: number;
+  p: number;
+  c: number;
+  f: number;
+}
+
+/**
+ * Per-serving macro aggregation for a recipe (NUTR-13, 07-RESEARCH.md "Recipe Per-Serving
+ * Macro Aggregation"): inner-joins `recipe_ingredient` -> `food`, sums each ingredient's
+ * `per100g x (qtyGrams / 100)`, then divides the totals by `recipe.servings`.
+ *
+ * Unlike every other builder in this file, this is an executing function (not an unexecuted
+ * query builder) — it needs two sequential reads (ingredients, then the recipe's own
+ * `servings`) folded into one computed result, mirroring the RESEARCH sketch exactly. The
+ * exported signature is deliberately not declared `async` itself (it delegates to an internal
+ * async helper) so it stays a plain `export function` matching this file's builder-factory
+ * convention; it still returns a `Promise` the caller awaits exactly like every other async
+ * db call in this codebase.
+ *
+ * T-07-24 (Tampering/data-integrity, mitigate): `servings` is guarded against <= 0 or
+ * non-finite values (treated as 1) so a zero/garbage `servings` value can never divide-by-zero
+ * or produce a NaN/Infinity per-serving macro.
+ */
+export function computeRecipeServingMacros(
+  db: QueryableDB,
+  recipeId: string,
+): Promise<RecipeServingMacros> {
+  return computeRecipeServingMacrosAsync(db, recipeId);
+}
+
+async function computeRecipeServingMacrosAsync(
+  db: QueryableDB,
+  recipeId: string,
+): Promise<RecipeServingMacros> {
+  const ingredients = await db
+    .select({
+      qtyGrams: recipeIngredient.qtyGrams,
+      kcalPer100g: food.kcalPer100g,
+      proteinGPer100g: food.proteinGPer100g,
+      carbGPer100g: food.carbGPer100g,
+      fatGPer100g: food.fatGPer100g,
+    })
+    .from(recipeIngredient)
+    .innerJoin(food, eq(recipeIngredient.foodId, food.id))
+    .where(eq(recipeIngredient.recipeId, recipeId));
+
+  const recipeRows = await db
+    .select({ servings: recipe.servings })
+    .from(recipe)
+    .where(eq(recipe.id, recipeId))
+    .limit(1);
+  const rawServings = recipeRows[0]?.servings;
+  const servings = Number.isFinite(rawServings) && (rawServings as number) > 0 ? (rawServings as number) : 1;
+
+  const totals = ingredients.reduce(
+    (acc, ing) => {
+      const factor = ing.qtyGrams / 100;
+      acc.kcal += ing.kcalPer100g * factor;
+      acc.p += ing.proteinGPer100g * factor;
+      acc.c += ing.carbGPer100g * factor;
+      acc.f += ing.fatGPer100g * factor;
+      return acc;
+    },
+    { kcal: 0, p: 0, c: 0, f: 0 },
+  );
+
+  return {
+    kcal: totals.kcal / servings,
+    p: totals.p / servings,
+    c: totals.c / servings,
+    f: totals.f / servings,
+  };
 }

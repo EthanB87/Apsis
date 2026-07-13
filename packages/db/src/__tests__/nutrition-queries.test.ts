@@ -12,6 +12,7 @@
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import Database from 'better-sqlite3';
+import { eq } from 'drizzle-orm';
 import { drizzle } from 'drizzle-orm/better-sqlite3';
 import * as schema from '../schema';
 import { food, foodLog, workout } from '../schema';
@@ -21,7 +22,12 @@ import {
   favoriteFoods,
   dayTotals,
   sessionTypesForDate,
+  createRecipe,
+  addRecipeIngredient,
+  listRecipes,
+  computeRecipeServingMacros,
 } from '../nutritionQueries';
+import { recipe, recipeIngredient } from '../schema';
 import { computeNutritionTargetRow } from '../nutritionTarget';
 import type { NutritionProfile } from '@apsis/shared';
 
@@ -355,6 +361,83 @@ describe('sessionTypesForDate', () => {
 
     const results = sessionTypesForDate(db, '2026-07-13').all();
     expect(results.map((r) => r.type).sort()).toEqual(['endurance', 'strength']);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Recipes (NUTR-13/14, 07-10-PLAN.md Task 1)
+// ---------------------------------------------------------------------------
+
+describe('recipe builders + computeRecipeServingMacros', () => {
+  let harness: ReturnType<typeof openMigratedDb>;
+  beforeEach(() => {
+    harness = openMigratedDb();
+  });
+  afterEach(() => {
+    harness.sqlite.close();
+  });
+
+  it('a 2-ingredient recipe with 2 servings computes correct per-serving macros', async () => {
+    const { db } = harness;
+    db.insert(food)
+      .values([
+        { id: 'f-a', name: 'Chicken breast', ...BASE_FOOD, kcalPer100g: 200, proteinGPer100g: 20, carbGPer100g: 20, fatGPer100g: 5 },
+        { id: 'f-b', name: 'Rice', ...BASE_FOOD, kcalPer100g: 100, proteinGPer100g: 5, carbGPer100g: 10, fatGPer100g: 2 },
+      ])
+      .run();
+
+    await createRecipe(db, { id: 'r1', name: 'Chicken & rice bowl', servings: 2 });
+    await addRecipeIngredient(db, { id: 'ri-1', recipeId: 'r1', foodId: 'f-a', qtyGrams: 150 });
+    await addRecipeIngredient(db, { id: 'ri-2', recipeId: 'r1', foodId: 'f-b', qtyGrams: 200 });
+
+    // f-a @150g: 300 kcal / 30 p / 30 c / 7.5 f
+    // f-b @200g: 200 kcal / 10 p / 20 c / 4 f
+    // totals: 500 kcal / 40 p / 50 c / 11.5 f -> / 2 servings
+    const perServing = await computeRecipeServingMacros(db, 'r1');
+    expect(perServing).toEqual({ kcal: 250, p: 20, c: 25, f: 5.75 });
+  });
+
+  it('listRecipes returns saved recipes alphabetically', async () => {
+    const { db } = harness;
+    await createRecipe(db, { id: 'r-z', name: 'Zucchini soup', servings: 1 });
+    await createRecipe(db, { id: 'r-a', name: 'Apple oat bowl', servings: 1 });
+
+    const results = listRecipes(db).all();
+    expect(results.map((r) => r.id)).toEqual(['r-a', 'r-z']);
+  });
+
+  it('deleting a recipe cascades its recipe_ingredient rows (07-01 FK cascade)', async () => {
+    const { db } = harness;
+    db.insert(food).values({ id: 'f-c', name: 'Oats', ...BASE_FOOD }).run();
+    await createRecipe(db, { id: 'r2', name: 'Oat bowl', servings: 1 });
+    await addRecipeIngredient(db, { id: 'ri-3', recipeId: 'r2', foodId: 'f-c', qtyGrams: 100 });
+
+    const beforeCount = db
+      .select()
+      .from(recipeIngredient)
+      .where(eq(recipeIngredient.recipeId, 'r2'))
+      .all();
+    expect(beforeCount).toHaveLength(1);
+
+    db.delete(recipe).where(eq(recipe.id, 'r2')).run();
+
+    const afterCount = db
+      .select()
+      .from(recipeIngredient)
+      .where(eq(recipeIngredient.recipeId, 'r2'))
+      .all();
+    expect(afterCount).toHaveLength(0);
+  });
+
+  it('a servings=0 recipe does not divide-by-zero (treated as 1)', async () => {
+    const { db } = harness;
+    db.insert(food).values({ id: 'f-d', name: 'Peanut butter', ...BASE_FOOD, kcalPer100g: 600, proteinGPer100g: 25, carbGPer100g: 20, fatGPer100g: 50 }).run();
+    await createRecipe(db, { id: 'r3', name: 'Zero-servings edge case', servings: 0 });
+    await addRecipeIngredient(db, { id: 'ri-4', recipeId: 'r3', foodId: 'f-d', qtyGrams: 100 });
+
+    const perServing = await computeRecipeServingMacros(db, 'r3');
+    expect(perServing).toEqual({ kcal: 600, p: 25, c: 20, f: 50 });
+    expect(Number.isFinite(perServing.kcal)).toBe(true);
   });
 });
 
