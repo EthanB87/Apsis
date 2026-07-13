@@ -6,14 +6,14 @@ current_phase: 07
 current_phase_name: nutrition-tracking
 status: executing
 stopped_at: Completed 07-07-PLAN.md
-last_updated: "2026-07-13T22:21:05.713Z"
+last_updated: "2026-07-13T22:38:25.743Z"
 last_activity: 2026-07-13
 last_activity_desc: Phase 07 execution started
 progress:
   total_phases: 7
   completed_phases: 4
   total_plans: 53
-  completed_plans: 47
+  completed_plans: 48
   percent: 57
 ---
 
@@ -30,7 +30,7 @@ training-load number (HSS) and a readiness band — fully offline.
 ## Current Position
 
 Phase: 07 (nutrition-tracking) — EXECUTING
-Plan: 9 of 10
+Plan: 10 of 10
 Status: Ready to execute
 Last activity: 2026-07-13 — Phase 07 execution started
 
@@ -108,6 +108,7 @@ Progress: [█████████████░░░░░░░] 67% (4/
 | Phase 07 P06 | 25min | 2 tasks | 6 files |
 | Phase 07 P10 | 20min | 2 tasks | 6 files |
 | Phase 07 P07 | 9min | 2 tasks | 4 files |
+| Phase 07 P08 | 26min | 2 tasks | 10 files |
 
 ## Accumulated Context
 
@@ -234,6 +235,8 @@ Recent decisions affecting current work:
 - [Phase ?]: [Phase 07 P07]: expo-camera plugin configured with microphonePermission:false + recordAudioAndroid:false — barcode + still-photo capture need no mic; avoids undisclosed-permission review surface
 - [Phase ?]: [Phase 07 P07]: requestCameraPermission uses Camera.requestCameraPermissionsAsync (not the useCameraPermissions hook) — not a bare named export in expo-camera 56.0.8, only reachable via the Camera namespace object; keeps the gate a plain async function like requestHealthKitAuthorization
 - [Phase ?]: [Phase 07 P07]: NUTR-08/NUTR-11 deliberately NOT marked complete by the prerequisite plan — 07-08/07-09 own those requirements and mark them when barcode/OCR features ship, so a deadline tail-cut never leaves falsely-satisfied requirements
+- [Phase 07]: [Phase 07 P08]: offLookupBarcode returns null (not a partial candidate) whenever any core macro is missing/non-finite -- keeps scan.tsx's hit/miss branch a simple null check and guarantees a resolved food is always immediately loggable
+- [Phase 07]: [Phase 07 P08]: Added findFoodByBarcode to nutritionQueries.ts (Rule 2 deviation, outside 07-08's declared files) -- the barcode chain's local-cache step had no query builder anywhere in the codebase
 
 ### Roadmap Evolution
 
@@ -308,7 +311,7 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-07-13T22:21:05.699Z
+Last session: 2026-07-13T22:37:59.129Z
 Stopped at: Completed 07-07-PLAN.md
 tasks awaiting human action — see Blockers/Concerns). Resume: /gsd-execute-phase 6
 Resume file: None

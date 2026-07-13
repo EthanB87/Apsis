@@ -90,9 +90,9 @@ NUTRITION.md and 07-CONTEXT.md). Supersedes the stale v1.1 `NUTR-01` placeholder
 - [x] **NUTR-05**: User can create a custom food via full manual macro entry (kcal/P/C/F, serving)
 - [x] **NUTR-06**: User can quick-add a macro-only log entry with no associated `food` row
 - [x] **NUTR-07**: Food log entries are tagged to a meal (breakfast/lunch/dinner/snack) and a local date
-- [ ] **NUTR-08**: User can scan a barcode via camera; app resolves it through local cache → OFF (Apsis DB / commercial fallback deferred)
-- [ ] **NUTR-09**: User confirms/edits serving size and quantity before a scanned/OCR'd product is logged
-- [ ] **NUTR-10**: Barcode/search misses fall back gracefully to manual/custom food entry — never a dead end
+- [x] **NUTR-08**: User can scan a barcode via camera; app resolves it through local cache → OFF (Apsis DB / commercial fallback deferred)
+- [x] **NUTR-09**: User confirms/edits serving size and quantity before a scanned/OCR'd product is logged
+- [x] **NUTR-10**: Barcode/search misses fall back gracefully to manual/custom food entry — never a dead end
 - [ ] **NUTR-11**: User can photograph a nutrition label; on-device OCR (Apple Vision via expo-text-extractor) extracts kcal/P/C/F/serving into a pre-filled custom food
 - [ ] **NUTR-12**: Every confirmed label scan saves as a custom food (`source:'user'`, provenance from OCR)
 - [x] **NUTR-13**: User can combine foods into a custom recipe with a servings count; per-serving macros compute automatically
@@ -103,7 +103,7 @@ NUTRITION.md and 07-CONTEXT.md). Supersedes the stale v1.1 `NUTR-01` placeholder
 - [x] **NUTR-18**: `dailyMacroTarget` and `classifyDayType` ship with golden-file tests, mirroring the HSS calibration precedent (D-13/D-14/D-20)
 - [x] **NUTR-19**: Nutrition screen shows today's targets vs. logged totals (kcal + P/C/F progress)
 - [x] **NUTR-20**: Existing users (onboarded in Phases 03-06, before Phase 7 shipped) are prompted for the new profile fields the first time they open nutrition, gated like ONB-03
-- [ ] **NUTR-21**: App displays Open Food Facts ODbL/CC-BY-SA attribution in Settings (legal requirement of API use)
+- [x] **NUTR-21**: App displays Open Food Facts ODbL/CC-BY-SA attribution in Settings (legal requirement of API use)
 - [x] **NUTR-22**: Nutrition values are scrubbed from crash/analytics reporting like HealthKit values (extends REL-03 pattern)
 
 ## v1.1 Requirements
@@ -191,9 +191,9 @@ Which phase covers which requirement. Populated during roadmap creation.
 | NUTR-05 | Phase 07 | Complete |
 | NUTR-06 | Phase 07 | Complete |
 | NUTR-07 | Phase 07 | Complete |
-| NUTR-08 | Phase 07 | Pending |
-| NUTR-09 | Phase 07 | Pending |
-| NUTR-10 | Phase 07 | Pending |
+| NUTR-08 | Phase 07 | Complete |
+| NUTR-09 | Phase 07 | Complete |
+| NUTR-10 | Phase 07 | Complete |
 | NUTR-11 | Phase 07 | Pending |
 | NUTR-12 | Phase 07 | Pending |
 | NUTR-13 | Phase 07 | Complete |
@@ -204,7 +204,7 @@ Which phase covers which requirement. Populated during roadmap creation.
 | NUTR-18 | Phase 07 | Complete |
 | NUTR-19 | Phase 07 | Complete |
 | NUTR-20 | Phase 07 | Complete |
-| NUTR-21 | Phase 07 | Pending |
+| NUTR-21 | Phase 07 | Complete |
 | NUTR-22 | Phase 07 | Complete |
 
 **Coverage:**
