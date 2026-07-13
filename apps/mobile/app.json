@@ -11,7 +11,8 @@
       "supportsTablet": false,
       "bundleIdentifier": "com.apsis.app",
       "infoPlist": {
-        "ITSAppUsesNonExemptEncryption": false
+        "ITSAppUsesNonExemptEncryption": false,
+        "NSCameraUsageDescription": "Apsis uses the camera only to scan food barcodes and photograph nutrition labels so you can log foods faster."
       }
     },
     "android": {
@@ -47,6 +48,14 @@
           "NSHealthShareUsageDescription": "Apsis reads your runs, heart rate, and bodyweight from Health so they count toward your training load automatically.",
           "NSHealthUpdateUsageDescription": "Apsis writes your logged lifting and running sessions to Health so they show up alongside your other workouts.",
           "background": false
+        }
+      ],
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Apsis uses the camera only to scan food barcodes and photograph nutrition labels so you can log foods faster.",
+          "microphonePermission": false,
+          "recordAudioAndroid": false
         }
       ],
       [
