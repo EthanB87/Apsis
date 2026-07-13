@@ -189,11 +189,10 @@ export default function NutritionScreen(): React.JSX.Element {
             A few more profile details are needed to compute your daily calorie and macro targets.
           </Text>
           <Pressable
-            // '/nutrition-setup/index' (not the collapsed '/nutrition-setup') is the literal
-            // expo-router's generated typed-routes currently emit for this standalone top-level
-            // index route (Phase 06 precedent: adapt to the generated .d.ts shape rather than
-            // fighting it) -- both resolve to the same screen at runtime.
-            onPress={() => router.push('/nutrition-setup/index')}
+            // Typed-routes emit the collapsed '/nutrition-setup' form for this standalone
+            // top-level index route; the generated .d.ts shape shifts between regenerations
+            // (Phase 06 precedent: adapt to the generated shape rather than fighting it).
+            onPress={() => router.push('/nutrition-setup')}
             accessibilityRole="button"
             accessibilityLabel="Set up nutrition targets"
             style={styles.setupButton}>
