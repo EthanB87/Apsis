@@ -208,6 +208,14 @@ Recent decisions affecting current work:
 - [Phase 06]: App Store listing copy approved verbatim (name 26/30, subtitle 24/30); keywords trimmed to 94/100 chars per user amendment, dropping terms already indexed from name/subtitle in favor of HYROX/tactical/readiness/RPE/HSS/strength/conditioning/workout tracker/athlete/stress
 - [Phase 06]: eas.json build.production.ios configured with autoIncrement:true and cli.appVersionSource:remote (D-17) -- marketing version stays pinned at 1.0.0 in app.json
 
+### Roadmap Evolution
+
+- Phase 7 added (2026-07-13): Nutrition tracking — manual food logging, barcode scanning,
+  label OCR, custom recipes, day-type adaptive macro targets. Promoted from v2 to v1 scope
+  by owner decision; spec lives in NUTRITION.md (repo root, edited from the original v2
+  addendum). Sequenced after Phase 6 submission — ships as the first v1.x update; the
+  ~July 28 submission build is unaffected.
+
 ### Pending Todos
 
 None yet.

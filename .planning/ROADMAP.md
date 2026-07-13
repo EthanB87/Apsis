@@ -31,6 +31,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 04: Run Logger & Home Dashboard** - Run/conditioning logger plus the home screen readiness band and 28-day trend (completed 2026-07-10)
 - [x] **Phase 05: HealthKit Integration** - Import runs/HR/bodyweight, write logged sessions back, dedupe against manual entries — lowest priority, first to cut (completed 2026-07-12)
 - [ ] **Phase 06: Polish & App Store Submission** - Icon, screenshots, privacy label/policy, Sentry health-data audit, EAS submission by ~July 25
+- [ ] **Phase 07: Nutrition Tracking** - Manual food logging, barcode scanning, label OCR, custom recipes, day-type adaptive macro targets (per NUTRITION.md; promoted from v2 into v1, ships as first post-submission update)
 
 ## Phase Details
 
@@ -221,6 +222,17 @@ Plans:
 - [x] 05-09-PLAN.md — Run-form dedupe hint (D-09) + transient TODAY import notice (D-10) (HK-03)
 
 **UI hint**: no (adapter/import logic; no new screens beyond the permission prompt)
+
+### Phase 07: Nutrition Tracking
+
+**Goal**: Athletes log food (manual entry, barcode scan, nutrition-label OCR, custom recipes) as fast as MacroFactor/MFP, and see daily kcal/macro targets that adapt to the day's logged training (heavy-lift / long-run / double / rest) — the day-type adaptive targets no macro app offers. Full scope, database strategy (OFF + USDA + local-first cache), and data model are locked in NUTRITION.md (repo root); promoted from v2 into v1 scope 2026-07-13, sequenced after the Phase 6 App Store submission so it ships as the first v1.x update.
+**Requirements**: TBD (nutrition requirements not yet in REQUIREMENTS.md — derive during planning from NUTRITION.md §1 scope)
+**Depends on:** Phase 6
+**Plans:** 0 plans
+
+Plans:
+
+- [ ] TBD (run /gsd-plan-phase 7 to break down)
 
 ---
 
