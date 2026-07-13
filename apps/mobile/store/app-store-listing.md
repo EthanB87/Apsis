@@ -48,8 +48,12 @@ what it's actually costing them.
 
 ## Keywords
 
-hybrid training, HYROX, tactical fitness, training load, readiness, lifting log, running log,
-strength and conditioning, workout tracker, hybrid athlete, RPE, training stress
+HYROX, tactical, readiness, RPE, HSS, strength, conditioning, workout tracker, athlete, stress
+
+Character count: 94 / 100 — fits the App Store Connect keyword field limit (comma-separated,
+count includes commas). Trimmed from the original draft to drop terms already indexed from the
+App Name/Subtitle ("hybrid", "training", "log", "score", "lift"/"run" variants) per user approval
+amendment, in favor of unique search terms.
 
 ## Promotional Text
 
@@ -73,6 +77,7 @@ or health information is included.
 
 ---
 
-**Status:** Drafted — awaiting user approval (Task 3). These strings are the source of truth
-for App Store Connect entry in plan 06-07. Edit directly in this file if any wording should
-change before approval.
+**Status:** Approved 2026-07-13. Name, subtitle, description, promotional text, category, price,
+and App Review notes approved verbatim. Keywords amended per approval: trimmed to <= 100 chars
+(94/100), dropping terms already indexed from the App Name/Subtitle in favor of unique search
+terms. This is the source of truth for App Store Connect entry in plan 06-07.
