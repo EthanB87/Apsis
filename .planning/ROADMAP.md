@@ -31,7 +31,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 04: Run Logger & Home Dashboard** - Run/conditioning logger plus the home screen readiness band and 28-day trend (completed 2026-07-10)
 - [x] **Phase 05: HealthKit Integration** - Import runs/HR/bodyweight, write logged sessions back, dedupe against manual entries — lowest priority, first to cut (completed 2026-07-12)
 - [ ] **Phase 06: Polish & App Store Submission** - Icon, screenshots, privacy label/policy, Sentry health-data audit, EAS submission by ~July 25
-- [ ] **Phase 07: Nutrition Tracking** - Manual food logging, barcode scanning, label OCR, custom recipes, day-type adaptive macro targets (per NUTRITION.md; promoted from v2 into v1, ships as first post-submission update)
+- [ ] **Phase 07: Nutrition Tracking** - Manual food logging, barcode scanning, label OCR, custom recipes, day-type adaptive macro targets (per NUTRITION.md; promoted from v2 into v1, ships IN the July 28 submission build — executes before Phase 6's build/submission waves)
 
 ## Phase Details
 
@@ -225,9 +225,9 @@ Plans:
 
 ### Phase 07: Nutrition Tracking
 
-**Goal**: Athletes log food (manual entry, barcode scan, nutrition-label OCR, custom recipes) as fast as MacroFactor/MFP, and see daily kcal/macro targets that adapt to the day's logged training (heavy-lift / long-run / double / rest) — the day-type adaptive targets no macro app offers. Full scope, database strategy (OFF + USDA + local-first cache), and data model are locked in NUTRITION.md (repo root); promoted from v2 into v1 scope 2026-07-13, sequenced after the Phase 6 App Store submission so it ships as the first v1.x update.
+**Goal**: Athletes log food (manual entry, barcode scan, nutrition-label OCR, custom recipes) as fast as MacroFactor/MFP, and see daily kcal/macro targets that adapt to the day's logged training (heavy-lift / long-run / double / rest) — the day-type adaptive targets no macro app offers. Full scope, database strategy (OFF + USDA + local-first cache), and data model are locked in NUTRITION.md (repo root); promoted from v2 into v1 scope 2026-07-13 and shipped IN the initial App Store submission (re-decided 2026-07-13): Phase 7 executes before Phase 6's production build (06-06) and submission (06-07). Under deadline pressure the cut line is NUTRITION.md §7 build order — barcode/OCR/recipes waves drop first.
 **Requirements**: NUTR-01 .. NUTR-22 (granular set added to REQUIREMENTS.md by plan 07-01, derived from NUTRITION.md §1 scope)
-**Depends on:** Phase 6
+**Depends on:** Phases 01–05 + Phase 6 Wave 1 (repo/config fixes — complete). Phase 6 plans 06-06 (production build) and 06-07 (submission) now depend on Phase 7 completion.
 **Plans:** 10 plans
 
 Plans:

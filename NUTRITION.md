@@ -1,10 +1,12 @@
 # APSIS — Nutrition Tracking Spec (Addendum to BUILD.md)
 
 > Companion to BUILD.md. **Scope change (2026-07-13): nutrition tracking is now v1 scope,
-> built as Phase 7 of the v1.0 milestone.** Originally written as v1.1/v2 scope; promoted
-> to v1 by decision of the owner. Phase 7 is sequenced after Phase 6 (App Store submission)
-> — the ~July 28 submission build ships without nutrition; nutrition lands in the first
-> v1.x update unless explicitly re-decided.
+> built as Phase 7 of the v1.0 milestone and shipped IN the initial App Store submission.**
+> Originally written as v1.1/v2 scope; promoted to v1 by owner decision, then re-decided
+> same day: Phase 7 executes BEFORE Phase 6's production build (06-06) and submission
+> (06-07), so the ~July 28 submission build includes nutrition. If the deadline compresses,
+> the cut line is §7's build order — waves covering barcode/OCR/recipes drop first; manual
+> logging + adaptive targets ship no matter what.
 > Positioning: nutrition is INCLUDED in the single premium tier (no add-on SKU).
 
 ---
@@ -130,13 +132,11 @@ Engine addition (`packages/engine`): `dailyMacroTarget(profile, dayType, session
 
 - **One premium tier. Nutrition included. No add-on SKU.** An add-on recreates the
   fragmentation Apsis sells against.
-- Nutrition now ships inside v1, so the original "raise price at v2 launch + grandfather
-  founding users" mechanics no longer apply as written. Carry-over intent: premium pricing
-  (e.g. $9.99/mo · $59.99/yr) is justified by nutrition being included from the start; if
-  the July 28 submission ships before Phase 7 completes, the pre-nutrition early adopters
-  are the "founding users" — honor the grandfather promise for anyone who subscribes
-  before nutrition lands, and announce it BEFORE the nutrition update ships ("lock your
-  price before nutrition drops") as a conversion lever and build-in-public story.
+- Nutrition ships in the initial v1.0 submission, so the original "raise price at v2
+  launch + grandfather founding users" mechanics are moot — there is no pre-nutrition
+  subscriber cohort. Carry-over intent: premium pricing (e.g. $9.99/mo · $59.99/yr) is
+  justified from day one by nutrition being included; the "lock your price early"
+  grandfather lever can still be used later for future major capability drops.
 - Comparison anchor for marketing: MacroFactor is ~$72/yr for nutrition alone; Apsis
   premium = training load + readiness + nutrition for less.
 

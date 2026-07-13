@@ -11,8 +11,11 @@ Nutrition tracking for hybrid athletes, promoted from v2 into v1 scope (owner de
 2026-07-13). Delivers: manual food logging (search/recents/favorites/custom foods/quick-add),
 barcode scanning with a staged lookup chain, nutrition-label OCR into custom foods, custom
 recipes/meals, and day-type adaptive daily kcal/macro targets driven by the day's logged
-training. Sequenced AFTER Phase 6 (App Store submission) — ships as the first v1.x update.
-Phase 7 code must NOT land on the branch/commit range used for the Phase 6 production build.
+training. RE-SEQUENCED (owner decision 2026-07-13): nutrition ships IN the initial July 28
+submission build. Phase 7 executes BEFORE Phase 6's remaining waves — 06-06 (production
+build) and 06-07 (submission) wait for Phase 7 code to land on master. Under deadline
+pressure, cut from the tail of NUTRITION.md §7 build order (recipes → OCR → barcode);
+manual logging + adaptive targets ship regardless.
 
 **Supersedes:** BUILD.md §5's "No nutrition tables in v1.0" line — that constraint reflected
 the pre-promotion scope and is overridden by NUTRITION.md.

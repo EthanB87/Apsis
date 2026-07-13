@@ -213,8 +213,19 @@ Recent decisions affecting current work:
 - Phase 7 added (2026-07-13): Nutrition tracking — manual food logging, barcode scanning,
   label OCR, custom recipes, day-type adaptive macro targets. Promoted from v2 to v1 scope
   by owner decision; spec lives in NUTRITION.md (repo root, edited from the original v2
-  addendum). Sequenced after Phase 6 submission — ships as the first v1.x update; the
-  ~July 28 submission build is unaffected.
+  addendum).
+- Phase 7 re-sequenced (2026-07-13, owner decision): nutrition ships IN the July 28
+  submission build, not as a v1.x update. Phase 7 executes NOW, before Phase 6's
+  remaining waves — 06-06 (production build) and 06-07 (submission) wait for Phase 7.
+  Cut line under deadline pressure: NUTRITION.md §7 build order (barcode/OCR/recipes
+  drop first; manual logging + adaptive targets ship regardless).
+- ⚠ Ripple effects of nutrition-in-v1 to resolve before Phase 6 closes:
+  (1) 06-04 privacy policy (drafted, unpublished) claims only Sentry diagnostics leave
+  the device — with OFF/USDA lookups, food searches/barcodes now leave the device;
+  copy must be corrected before publishing. (2) 06-05 approved listing copy has the
+  same "100% offline" claim and doesn't mention nutrition — needs re-approval edits
+  before 06-07 enters it into App Store Connect. (3) 06-07 App Store privacy label
+  answers may change (network requests for food lookup, still no accounts/tracking).
 
 ### Pending Todos
 
