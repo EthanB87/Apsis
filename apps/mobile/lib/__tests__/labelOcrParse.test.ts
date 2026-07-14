@@ -40,6 +40,32 @@ const REPRESENTATIVE_LABEL_LINES = [
   'Protein 3g',
 ];
 
+/** Every visual row split into separate array elements, as Apple's on-device text recognizer
+ * (Vision, via expo-text-extractor) actually fragments a REAL printed label on-device — not the
+ * idealized single-line macro rows above. This is the primary regression fixture for the UAT
+ * Test 2 gap ("it doesn't parse out anything other than calories very well"): the right-aligned
+ * serving row, and every macro row's name/value/percent are three separate recognized lines. */
+const FRAGMENTED_LABEL_LINES = [
+  'Serving size',
+  '2/3 cup (55g)',
+  'Calories',
+  '230',
+  'Total Fat',
+  '8g',
+  '10%',
+  'Saturated Fat',
+  '1g',
+  '5%',
+  'Total Carbohydrate',
+  '37g',
+  '13%',
+  'Dietary Fiber',
+  '4g',
+  '14%',
+  'Protein',
+  '3g',
+];
+
 describe('labelOcrParse', () => {
   it('extracts kcal/P/C/F normalized to per-100g from a representative per-serving label (CR-01)', () => {
     const result = labelOcrParse(REPRESENTATIVE_LABEL_LINES);
@@ -119,5 +145,59 @@ describe('labelOcrParse', () => {
     const result = labelOcrParse(['Serving size 30g']);
     expect(result.servingName).toBeUndefined();
     expect(result.servingGrams).toBe(30);
+  });
+});
+
+describe('labelOcrParse — fragmented Vision output (gap closure, UAT Test 2)', () => {
+  it('extracts kcal/P/C/F/serving from a REAL fragmented label (every row split into separate lines), normalized to per-100g (CR-01 engages from a fragmented serving row)', () => {
+    const result = labelOcrParse(FRAGMENTED_LABEL_LINES);
+
+    // servingGrams=55 -> scale = 100/55. kcal 230*100/55=418.18.. -> 418.2 (proves CR-01
+    // normalization engaged from a FRAGMENTED serving row, not the raw per-serving 230).
+    expect(result.kcalPer100g).toBe(418.2);
+    expect(result.fatGPer100g).toBe(14.5); // 8 * 100/55 = 14.545.. -> 14.5
+    expect(result.carbGPer100g).toBe(67.3); // 37 * 100/55 = 67.27.. -> 67.3
+    expect(result.proteinGPer100g).toBe(5.5); // 3 * 100/55 = 5.4545.. -> 5.5
+    expect(result.servingGrams).toBe(55);
+    expect(result.servingName).toBe('2/3 cup');
+  });
+
+  it('still parses a row Apple Vision left merged with its %DV column (regression guard for the previously-working single-line/merged path)', () => {
+    const result = labelOcrParse(['Total Fat 8g 10%', 'Total Carbohydrate 37g 13%', 'Protein 3g']);
+    expect(result.fatGPer100g).toBe(8);
+    expect(result.carbGPer100g).toBe(37);
+    expect(result.proteinGPer100g).toBe(3);
+  });
+
+  it('never steals the Dietary Fiber value for Total Carbohydrate when the carb row has no adjacent gram value before the next nutrient anchor', () => {
+    const result = labelOcrParse(['Total Carbohydrate', 'Dietary Fiber', '4g']);
+    expect(result.carbGPer100g).toBeUndefined();
+  });
+
+  it('still picks up an adjacent carb value that precedes the Dietary Fiber anchor (fiber is never mistaken for carbs)', () => {
+    const result = labelOcrParse(['Total Carbohydrate', '37g', 'Dietary Fiber', '4g']);
+    expect(result.carbGPer100g).toBe(37);
+  });
+
+  it('recognizes the "Total Carb." abbreviation, merged or fragmented', () => {
+    const merged = labelOcrParse(['Total Carb. 37g 13%']);
+    expect(merged.carbGPer100g).toBe(37);
+
+    const fragmented = labelOcrParse(['Total Carb.', '37g']);
+    expect(fragmented.carbGPer100g).toBe(37);
+  });
+
+  it('tolerates an OCR "Og" misread as a genuine 0g value, merged or fragmented', () => {
+    const merged = labelOcrParse(['Total Fat Og']);
+    expect(merged.fatGPer100g).toBe(0);
+
+    const fragmented = labelOcrParse(['Total Fat', 'Og']);
+    expect(fragmented.fatGPer100g).toBe(0);
+  });
+
+  it('extracts a split, nameless serving size (anchor and gram value on separate lines)', () => {
+    const result = labelOcrParse(['Serving size', '30g']);
+    expect(result.servingGrams).toBe(30);
+    expect(result.servingName).toBeUndefined();
   });
 });
