@@ -14,10 +14,15 @@
  * number. This module never throws — every code path degrades to `undefined` fields on
  * malformed/garbage input, mirroring `computePaceSecPerKm`'s never-divide-by-zero discipline.
  *
- * `Calories` on many printed labels is a large standalone number rendered as its own visual
- * block — Apple's on-device text recognizer commonly returns that number as a *separate* line
- * from the "Calories" label itself. `labelOcrParse` accounts for this by also checking the line
- * immediately following a bare "Calories" line for a standalone numeric value.
+ * FRAGMENTED ROWS: Apple's on-device text recognizer (Vision, via expo-text-extractor) commonly
+ * returns a single visual label row as *separate* OCR text lines — a nutrient name on one line
+ * and its gram/percent value on the next (e.g. "Total Fat" / "8g" / "10%"), and a right-aligned
+ * serving value on its own line (e.g. "Serving size" / "2/3 cup (55g)"). Every extractor below
+ * (kcal/protein/carb/fat/serving) uses the same anchor + bounded-forward-scan strategy: find the
+ * nutrient's anchor line, try an inline capture on that line first, and if that fails scan the
+ * next 1-2 lines for a standalone value — ABORTING the moment a scanned line matches a *different*
+ * nutrient's anchor keyword. That boundary guard is what stops the carb scan from stealing
+ * "Dietary Fiber"'s value, and "Total Fat" from stealing "Saturated Fat"/"Trans Fat"'s.
  *
  * PER-SERVING → PER-100G NORMALIZATION (CR-01): US "Nutrition Facts" labels state kcal/macros
  * PER SERVING, not per 100g, while this parser's result fields (and the `food` row they
@@ -58,54 +63,119 @@ function boundedNonNegative(value: number | undefined, max: number): number | un
   return value;
 }
 
+/** Keyword set used as the scan-stop boundary: a scanned forward line matching any of these is
+ * treated as the START of a DIFFERENT nutrient's row, not a continuation of the current one. This
+ * is what stops the carb scan from stealing "Dietary Fiber"'s value, and "Total Fat" from
+ * stealing "Saturated Fat"/"Trans Fat"'s. */
+const NUTRIENT_ANCHOR_KEYWORDS = ['calories', 'protein', 'fat', 'carb', 'fiber', 'sugar', 'sodium', 'cholesterol', 'serving'];
+
+function isNutrientAnchorLine(line: string): boolean {
+  const lower = line.toLowerCase();
+  return NUTRIENT_ANCHOR_KEYWORDS.some((k) => lower.includes(k));
+}
+
+function isPercentOrBlankLine(line: string): boolean {
+  return /^\s*$/.test(line) || /^\s*-?\d+(?:\.\d+)?\s*%\s*$/.test(line);
+}
+
+/** Normalizes a leading "Og"/"O g" OCR misread to "0g" so a genuine 0g label value reads as a
+ * real `0`, not an un-extractable `undefined`. Confined to the whole-token "Og" shape. */
+function normalizeOgMisread(line: string): string {
+  return line.replace(/\bO\s?g\b/gi, '0g');
+}
+
+/**
+ * Anchor + bounded-forward-scan (shared by kcal/protein/carb/fat): `lines[anchorIndex]` is a
+ * line already known to be this nutrient's anchor. Tries `inlinePattern` against the anchor line
+ * itself first (the previously-working merged/single-line path), then scans up to the next 2
+ * lines — skipping blank/%-only lines — for `valueLinePattern`, ABORTING (returns `undefined`)
+ * the instant a scanned line matches a *different* nutrient's anchor keyword.
+ */
+function scanAnchoredValue(
+  lines: string[],
+  anchorIndex: number,
+  inlinePattern: RegExp,
+  valueLinePattern: RegExp,
+): number | undefined {
+  const anchorLine = normalizeOgMisread(lines[anchorIndex]);
+  const inline = inlinePattern.exec(anchorLine);
+  if (inline != null) return parseNumber(inline[1]);
+
+  for (let i = anchorIndex + 1; i <= anchorIndex + 2 && i < lines.length; i++) {
+    const line = normalizeOgMisread(lines[i]);
+    if (isPercentOrBlankLine(line)) continue;
+    if (isNutrientAnchorLine(line)) return undefined; // boundary guard — stop, don't steal
+    const m = valueLinePattern.exec(line);
+    return m != null ? parseNumber(m[1]) : undefined;
+  }
+  return undefined;
+}
+
+const CALORIES_INLINE_RE = /calories\s*:?\s*(-?\d+(?:\.\d+)?)/i;
+const CALORIES_VALUE_LINE_RE = /^\s*(-?\d+(?:\.\d+)?)\s*$/;
+
 function extractKcal(lines: string[]): number | undefined {
   for (let i = 0; i < lines.length; i++) {
-    const line = lines[i];
-    if (!/calories/i.test(line)) continue;
-    const inline = /calories\s*:?\s*(-?\d+(?:\.\d+)?)/i.exec(line);
-    if (inline != null) return parseNumber(inline[1]);
-    // "Calories" label with the number rendered as its own OCR text block — check the next
-    // recognized line for a standalone number before giving up on this "Calories" line.
-    const next = lines[i + 1];
-    if (next != null) {
-      const standalone = /^\s*(-?\d+(?:\.\d+)?)\s*$/.exec(next);
-      if (standalone != null) return parseNumber(standalone[1]);
+    if (/calories/i.test(lines[i])) {
+      return scanAnchoredValue(lines, i, CALORIES_INLINE_RE, CALORIES_VALUE_LINE_RE);
     }
   }
   return undefined;
 }
 
+const PROTEIN_INLINE_RE = /protein\s*:?\s*(-?\d+(?:\.\d+)?)\s*g/i;
+const GRAM_VALUE_LINE_RE = /^\s*(-?\d+(?:\.\d+)?)\s*g\b/i;
+
 function extractProteinG(lines: string[]): number | undefined {
-  for (const line of lines) {
-    const m = /protein\s*:?\s*(-?\d+(?:\.\d+)?)\s*g/i.exec(line);
-    if (m != null) return parseNumber(m[1]);
+  for (let i = 0; i < lines.length; i++) {
+    if (/\bprotein\b/i.test(lines[i])) {
+      return scanAnchoredValue(lines, i, PROTEIN_INLINE_RE, GRAM_VALUE_LINE_RE);
+    }
   }
   return undefined;
 }
+
+// "Total Carb." is a common label abbreviation for "Total Carbohydrate" — accept an optional
+// trailing "." in place of "ohydrate[s]".
+const TOTAL_CARB_ANCHOR_RE = /total\s+carb(?:ohydrate)?s?\.?/i;
+const TOTAL_CARB_INLINE_RE = /total\s+carb(?:ohydrate)?s?\.?\s*:?\s*(-?\d+(?:\.\d+)?)\s*g/i;
+const BARE_CARB_ANCHOR_RE = /carb(?:ohydrate)?s?\.?/i;
+const BARE_CARB_INLINE_RE = /carb(?:ohydrate)?s?\.?\s*:?\s*(-?\d+(?:\.\d+)?)\s*g/i;
 
 function extractCarbG(lines: string[]): number | undefined {
-  for (const line of lines) {
-    const m = /total\s+carbohydrate[s]?\s*:?\s*(-?\d+(?:\.\d+)?)\s*g/i.exec(line);
-    if (m != null) return parseNumber(m[1]);
+  for (let i = 0; i < lines.length; i++) {
+    if (TOTAL_CARB_ANCHOR_RE.test(lines[i])) {
+      // Total-Carbohydrate precedence: once the headline row is found, its own scan result
+      // (even if undefined — e.g. the boundary guard hit "Dietary Fiber") wins outright; never
+      // fall through to a bare "Carbohydrate" line elsewhere on the label.
+      return scanAnchoredValue(lines, i, TOTAL_CARB_INLINE_RE, GRAM_VALUE_LINE_RE);
+    }
   }
-  for (const line of lines) {
-    const m = /carbohydrate[s]?\s*:?\s*(-?\d+(?:\.\d+)?)\s*g/i.exec(line);
-    if (m != null) return parseNumber(m[1]);
+  for (let i = 0; i < lines.length; i++) {
+    if (BARE_CARB_ANCHOR_RE.test(lines[i])) {
+      return scanAnchoredValue(lines, i, BARE_CARB_INLINE_RE, GRAM_VALUE_LINE_RE);
+    }
   }
   return undefined;
 }
 
+const TOTAL_FAT_ANCHOR_RE = /total\s+fat/i;
+const TOTAL_FAT_INLINE_RE = /total\s+fat\s*:?\s*(-?\d+(?:\.\d+)?)\s*g/i;
+const BARE_FAT_INLINE_RE = /\bfat\s*:?\s*(-?\d+(?:\.\d+)?)\s*g/i;
+
 function extractFatG(lines: string[]): number | undefined {
-  for (const line of lines) {
-    const m = /total\s+fat\s*:?\s*(-?\d+(?:\.\d+)?)\s*g/i.exec(line);
-    if (m != null) return parseNumber(m[1]);
+  for (let i = 0; i < lines.length; i++) {
+    if (TOTAL_FAT_ANCHOR_RE.test(lines[i])) {
+      return scanAnchoredValue(lines, i, TOTAL_FAT_INLINE_RE, GRAM_VALUE_LINE_RE);
+    }
   }
   // Fallback generic "Fat" line — explicitly skip "Saturated Fat"/"Trans Fat" sub-lines so they
   // never get mistaken for the label's headline total-fat figure.
-  for (const line of lines) {
-    if (/saturated|trans/i.test(line)) continue;
-    const m = /\bfat\s*:?\s*(-?\d+(?:\.\d+)?)\s*g/i.exec(line);
-    if (m != null) return parseNumber(m[1]);
+  for (let i = 0; i < lines.length; i++) {
+    if (/saturated|trans/i.test(lines[i])) continue;
+    if (/\bfat\b/i.test(lines[i])) {
+      return scanAnchoredValue(lines, i, BARE_FAT_INLINE_RE, GRAM_VALUE_LINE_RE);
+    }
   }
   return undefined;
 }
@@ -115,16 +185,36 @@ interface RawServing {
   servingGrams?: number;
 }
 
+const SERVING_INLINE_RE = /serving\s*size\s*:?\s*(.+?)??\(?(-?\d+(?:\.\d+)?)\s*g\)?/i;
+const SERVING_VALUE_LINE_RE = /^\s*(.+?)??\(?(-?\d+(?:\.\d+)?)\s*g\)?\s*$/i;
+
+function rawServingFromMatch(m: RegExpExecArray): RawServing {
+  const rawName = m[1]?.trim().replace(/[,(]+$/, '').trim();
+  return {
+    servingName: rawName != null && rawName.length > 0 ? rawName : undefined,
+    servingGrams: parseNumber(m[2]),
+  };
+}
+
 function extractServing(lines: string[]): RawServing {
-  for (const line of lines) {
-    const m = /serving\s*size\s*:?\s*(.+?)??\(?(-?\d+(?:\.\d+)?)\s*g\)?/i.exec(line);
-    if (m != null) {
-      const rawName = m[1]?.trim().replace(/[,(]+$/, '').trim();
-      return {
-        servingName: rawName != null && rawName.length > 0 ? rawName : undefined,
-        servingGrams: parseNumber(m[2]),
-      };
+  for (let i = 0; i < lines.length; i++) {
+    if (!/serving\s*size/i.test(lines[i])) continue;
+
+    const anchorLine = normalizeOgMisread(lines[i]);
+    const inline = SERVING_INLINE_RE.exec(anchorLine);
+    if (inline != null && inline[2] != null) return rawServingFromMatch(inline);
+
+    // Fragmented: the "Serving size" anchor line carries no gram value (common on new-format
+    // FDA labels, which right-align the serving value) — scan the next 1-2 lines, stopping at
+    // any other nutrient anchor, for the value line (e.g. "2/3 cup (55g)" or a bare "30g").
+    for (let j = i + 1; j <= i + 2 && j < lines.length; j++) {
+      const line = normalizeOgMisread(lines[j]);
+      if (isPercentOrBlankLine(line)) continue;
+      if (isNutrientAnchorLine(line)) return {};
+      const m = SERVING_VALUE_LINE_RE.exec(line);
+      return m != null && m[2] != null ? rawServingFromMatch(m) : {};
     }
+    return {};
   }
   return {};
 }
