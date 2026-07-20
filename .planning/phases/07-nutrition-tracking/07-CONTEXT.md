@@ -29,8 +29,9 @@ the pre-promotion scope and is overridden by NUTRITION.md.
 - Manual food logging: search, recents, favorites, custom foods, full manual macro entry.
   Speed bar: match MacroFactor/MFP entry speed or better; repeat food ≤3 taps.
 - Barcode scanning: camera scan → product lookup → confirm serving → log.
-- Nutrition label scanning: photo of printed nutrition-facts label → on-device OCR →
-  pre-filled custom food the user confirms (kcal/P/C/F, serving size).
+- ~~Nutrition label scanning: photo of printed nutrition-facts label → on-device OCR →
+  pre-filled custom food.~~ DESCOPED 2026-07-20 (owner decision) — Vision OCR too
+  unreliable on real labels; removed from v1.0. Barcode + manual entry cover food logging.
 - Custom recipes/meals: combine ingredients into a saved meal with per-serving macros.
 - Day-type adaptive targets: daily kcal/P/C/F computed from bodyweight, goal mode, AND the
   day's logged training day-type (heavy_lift / long_run / double / rest / mixed).

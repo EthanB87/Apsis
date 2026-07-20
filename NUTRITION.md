@@ -18,8 +18,12 @@
   ingredient/macro entry (user types name + macros). Fast entry is the bar: match
   MacroFactor/MFP speed or better.
 - **Barcode scanning** — camera scan → product lookup → confirm serving → log.
-- **Nutrition label scanning** — photograph the printed nutrition-facts label; OCR the
-  macros (kcal/P/C/F, serving size) into a pre-filled custom food the user confirms.
+- ~~**Nutrition label scanning** — photograph the printed nutrition-facts label; OCR the
+  macros into a pre-filled custom food.~~ **DESCOPED 2026-07-20** (owner decision): built
+  and tested on-device twice (Apple Vision via expo-text-extractor); Vision fragmented real
+  labels too unreliably to extract anything beyond calories, and shipping mis-parsed food
+  data is worse than omitting the feature. Removed from v1.0. Barcode scanning + manual
+  entry are the food-entry paths. May revisit post-launch with a different OCR approach.
 - **Custom recipes/meals** — combine ingredients into a saved meal with per-serving macros.
 - **Day-type adaptive targets** — the differentiator: daily kcal/P/C/F targets computed
   from bodyweight, goal mode, AND the day's logged training (heavy-lift / long-run /

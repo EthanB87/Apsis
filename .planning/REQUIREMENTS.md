@@ -93,8 +93,8 @@ NUTRITION.md and 07-CONTEXT.md). Supersedes the stale v1.1 `NUTR-01` placeholder
 - [x] **NUTR-08**: User can scan a barcode via camera; app resolves it through local cache → OFF (Apsis DB / commercial fallback deferred)
 - [x] **NUTR-09**: User confirms/edits serving size and quantity before a scanned/OCR'd product is logged
 - [x] **NUTR-10**: Barcode/search misses fall back gracefully to manual/custom food entry — never a dead end
-- [x] **NUTR-11**: User can photograph a nutrition label; on-device OCR (Apple Vision via expo-text-extractor) extracts kcal/P/C/F/serving into a pre-filled custom food
-- [x] **NUTR-12**: Every confirmed label scan saves as a custom food (`source:'user'`, provenance from OCR)
+- [~] **NUTR-11**: ~~User can photograph a nutrition label; on-device OCR extracts kcal/P/C/F/serving into a pre-filled custom food~~ — **DESCOPED 2026-07-20** (owner decision): Apple Vision fragmented real labels too unreliably to extract macros/serving accurately; shipping mis-parsed food data is worse than omitting the feature. Manual logging + barcode scanning cover food entry. expo-text-extractor removed; label-scan screen deleted.
+- [~] **NUTR-12**: ~~Every confirmed label scan saves as a custom food~~ — **DESCOPED 2026-07-20** with NUTR-11 (depended on it).
 - [x] **NUTR-13**: User can combine foods into a custom recipe with a servings count; per-serving macros compute automatically
 - [x] **NUTR-14**: User can log one recipe serving as a food-log entry
 - [x] **NUTR-15**: `user_profile` gains `heightCm`, `birthYear`, `goalMode` fields required by the adaptive-target model
@@ -194,8 +194,8 @@ Which phase covers which requirement. Populated during roadmap creation.
 | NUTR-08 | Phase 07 | Complete |
 | NUTR-09 | Phase 07 | Complete |
 | NUTR-10 | Phase 07 | Complete |
-| NUTR-11 | Phase 07 | Complete |
-| NUTR-12 | Phase 07 | Complete |
+| NUTR-11 | Phase 07 | Descoped (2026-07-20) |
+| NUTR-12 | Phase 07 | Descoped (2026-07-20) |
 | NUTR-13 | Phase 07 | Complete |
 | NUTR-14 | Phase 07 | Complete |
 | NUTR-15 | Phase 07 | Complete |

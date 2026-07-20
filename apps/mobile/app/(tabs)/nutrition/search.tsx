@@ -337,17 +337,6 @@ export default function NutritionSearchScreen(): React.JSX.Element {
           <Text style={styles.customButtonLabel}>Scan barcode</Text>
         </Pressable>
 
-        {/* Rule 2 deviation (Plan 07-09): the only entry point into label-scan.tsx — without
-         * this the nutrition-label OCR screen built in this plan is unreachable dead code,
-         * mirroring the "Scan barcode" button's own precedent above. */}
-        <Pressable
-          onPress={() => router.push('/(tabs)/nutrition/label-scan')}
-          accessibilityRole="button"
-          accessibilityLabel="Scan nutrition label"
-          style={({ pressed }) => [styles.customButton, pressed && styles.customButtonPressed]}>
-          <Text style={styles.customButtonLabel}>Scan nutrition label</Text>
-        </Pressable>
-
         <Pressable
           onPress={() => router.push('/(tabs)/nutrition/log')}
           accessibilityRole="button"

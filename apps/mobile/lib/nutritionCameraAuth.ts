@@ -2,16 +2,15 @@
  * apps/mobile/lib/nutritionCameraAuth.ts
  *
  * Camera-permission wrapper for the nutrition camera features — barcode scanning (07-08,
- * NUTR-08) and nutrition-label OCR photo capture (07-09, NUTR-11). Both consume this one
- * gate rather than calling expo-camera's permission API ad hoc, mirroring how
- * `healthkitAuth.ts` centralizes the HealthKit authorization request.
+ * NUTR-08). Consumes this one gate rather than calling expo-camera's permission API ad hoc,
+ * mirroring how `healthkitAuth.ts` centralizes the HealthKit authorization request.
  *
  * House convention (healthkitAuth.ts analog): a native-capability permission gate never
  * throws — a rejected/failed request is logged (`[Apsis]`-prefixed, Error object only) and
  * reported as `false` so callers render a permission-denied UX instead of crashing.
  *
  * Privacy (T-07-13, Repudiation/privacy — mitigate): the camera is used ONLY for barcode
- * scan and label photo capture, as disclosed by app.json's NSCameraUsageDescription. No
+ * scan, as disclosed by app.json's NSCameraUsageDescription. No
  * microphone permission is requested (the expo-camera config plugin is configured with
  * `microphonePermission: false` / `recordAudioAndroid: false`).
  *
@@ -28,7 +27,7 @@ import { Camera } from 'expo-camera';
  * Requests iOS camera permission (presents the system prompt on first call; afterwards
  * resolves from the recorded grant state). Resolves `true` only when permission is
  * granted. Never throws: any failure is logged and reported as `false` so the calling
- * screen (scan / label-scan) can show its permission-denied state instead of crashing.
+ * screen (scan) can show its permission-denied state instead of crashing.
  */
 export async function requestCameraPermission(): Promise<boolean> {
   try {
