@@ -31,7 +31,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 04: Run Logger & Home Dashboard** - Run/conditioning logger plus the home screen readiness band and 28-day trend (completed 2026-07-10)
 - [x] **Phase 05: HealthKit Integration** - Import runs/HR/bodyweight, write logged sessions back, dedupe against manual entries — lowest priority, first to cut (completed 2026-07-12)
 - [ ] **Phase 06: Polish & App Store Submission** - Icon, screenshots, privacy label/policy, Sentry health-data audit, EAS submission by ~July 25
-- [x] **Phase 07: Nutrition Tracking** - Manual food logging, barcode scanning, label OCR, custom recipes, day-type adaptive macro targets (per NUTRITION.md; promoted from v2 into v1, ships IN the July 28 submission build — executes before Phase 6's build/submission waves) (completed 2026-07-13)
+- [x] **Phase 07: Nutrition Tracking** - Manual food logging, barcode scanning, custom recipes, day-type adaptive macro targets (per NUTRITION.md; promoted from v2 into v1, ships IN the July 28 submission build — executes before Phase 6's build/submission waves). Label OCR descoped 2026-07-20 after failing on-device. (completed 2026-07-20)
 
 ## Phase Details
 
