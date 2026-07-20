@@ -12,10 +12,10 @@ Character count: 26 / 30 — fits.
 
 ## Subtitle
 
-**One score for lift + run**
+**Lift, run + fuel in one app**
 
-Character count: 24 / 30 — fits. (Replaces the over-length "One score for lifting + running" —
-31 chars — per the 06-UI-SPEC.md Copywriting Contract resolved gap.)
+Character count: 27 / 30 — fits. Updated 2026-07-20 to signal the v1 nutrition feature
+("fuel") alongside lifting and running; replaces the training-only "One score for lift + run".
 
 ## Description
 
@@ -30,8 +30,12 @@ it. Apsis combines both into a single Hybrid Stress Score (HSS): one honest numb
 training stress, whether it came from a barbell or a road.
 
 See your HSS trend and a readiness read — green, amber, red — right on the home screen, so you
-know when to push and when to back off. Everything works fully offline. Your log is the source
-of truth, not a server.
+know when to push and when to back off. Your log is the source of truth, not a server — logging
+works offline, and your data stays on your device.
+
+Then fuel it. Log food by barcode scan, quick search, or fast manual entry — and Apsis sets daily
+calorie and macro targets that adapt to what you actually trained that day: more on a heavy lift
+or long run, less on a rest day. No other tracker ties your fuel to your training load.
 
 Connect Apple Health and Apsis pulls in your runs, heart rate, and bodyweight automatically, and
 pushes your logged sessions back so they show up alongside your other workouts. HealthKit is
@@ -41,23 +45,25 @@ Built for HYROX and tactical athletes who train two disciplines and need one sha
 what it's actually costing them.
 
 - One combined training-load number for lifting and running (HSS)
+- Nutrition with day-type adaptive calorie & macro targets — barcode scan, search, or manual entry
 - Fast, tap-to-type set logging — no unnecessary steppers or screens
 - Readiness trend (green/amber/red) over your last 14–30 days
 - Apple Health import and write-back, fully optional
-- 100% offline — your data never leaves your device except anonymous crash diagnostics
+- Offline-first — your logged data stays on your device (barcode/online food lookups aside)
 
 ## Keywords
 
-HYROX, tactical, readiness, RPE, HSS, strength, conditioning, workout tracker, athlete, stress
+HYROX, tactical, readiness, macros, nutrition, calories, RPE, HSS, strength, conditioning
 
-Character count: 94 / 100 — fits the App Store Connect keyword field limit (comma-separated,
-count includes commas). Trimmed from the original draft to drop terms already indexed from the
-App Name/Subtitle ("hybrid", "training", "log", "score", "lift"/"run" variants) per user approval
-amendment, in favor of unique search terms.
+Character count: 89 / 100 — fits the App Store Connect keyword field limit (comma-separated,
+count includes commas). Adds nutrition search terms (macros, nutrition, calories) for the v1
+nutrition feature; dropped "workout tracker", "athlete", "stress" to make room. Still avoids
+terms already indexed from the App Name/Subtitle ("hybrid", "training", "log", "score",
+"lift"/"run" variants).
 
 ## Promotional Text
 
-One score for everything you did today — lifting and running, combined.
+Lift, run, and fuel — one training-load score, a readiness read, and macro targets that adapt to your training.
 
 ## Primary Category
 
@@ -69,15 +75,26 @@ Free — no in-app purchases.
 
 ## App Review Notes
 
-Apsis works fully offline — no account or login is required. HealthKit access is optional and
-can be skipped during onboarding; it can be connected later from Settings → Apple Health. All
-health data (workouts, heart rate, bodyweight) stays on-device and is never transmitted anywhere.
-The only data that ever leaves the device is anonymous crash diagnostics (Sentry) — no personal
-or health information is included.
+Apsis requires no account or login. All logged data (workouts, nutrition, heart rate, bodyweight)
+is stored on-device and is never transmitted to us or any server.
+
+HealthKit access is optional and can be skipped during onboarding; it can be connected later from
+Settings → Apple Health. All health data stays on-device.
+
+The camera is used only for scanning food barcodes (nutrition feature). When you scan a barcode or
+search for a food not already on your device, the app queries public food databases (Open Food Facts
+and USDA FoodData Central), sending only the barcode number or typed search text — never any personal,
+health, or logged data. Food logging works offline via manual entry.
+
+The only diagnostic data that leaves the device is anonymous crash reports (Sentry) — error type,
+stack trace, device/OS model, and app version only; no personal or health information.
 
 ---
 
-**Status:** Approved 2026-07-13. Name, subtitle, description, promotional text, category, price,
-and App Review notes approved verbatim. Keywords amended per approval: trimmed to <= 100 chars
-(94/100), dropping terms already indexed from the App Name/Subtitle in favor of unique search
-terms. This is the source of truth for App Store Connect entry in plan 06-07.
+**Status:** Approved 2026-07-13; revised & re-approved 2026-07-20 after nutrition shipped in v1.
+Changes (owner-approved): subtitle → "Lift, run + fuel in one app" (nutrition signal); description
+gains a nutrition paragraph + bullet; keywords add macros/nutrition/calories (89/100); promotional
+text mentions fuel + adaptive macro targets; App Review notes disclose camera-for-barcode + the
+Open Food Facts / USDA food-lookup network calls; "100% offline" claims corrected to "offline-first"
+(logging is local; barcode/online food search query external food databases). App name unchanged.
+This is the source of truth for App Store Connect entry in plan 06-07.

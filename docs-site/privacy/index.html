@@ -72,21 +72,37 @@
 <body>
 <main>
   <h1>Privacy Policy</h1>
-  <p class="updated">Last updated July 12, 2026</p>
+  <p class="updated">Last updated July 20, 2026</p>
   <hr class="title-hairline">
 
   <p>
-    Apsis is a fully offline-first training tracker. This page explains, plainly, what data
-    the app touches and what — if anything — ever leaves your device.
+    Apsis is an offline-first training and nutrition tracker. Everything you log stays on your
+    device. This page explains, plainly, what data the app touches and the few limited cases
+    where the app talks to an outside service.
   </p>
 
-  <h2>Your training data stays on your device</h2>
+  <h2>Your training and nutrition data stays on your device</h2>
   <p>
     Every workout you log — lifting sets, runs, heart rate, bodyweight, distances, durations,
-    and your computed Hybrid Stress Score (HSS) — is stored locally on your iPhone in a local
-    database. None of it is ever transmitted to us or to any third party. There are no
-    accounts, no sign-in, and no server that your training data is sent to. Apsis works the
-    same with or without an internet connection.
+    and your computed Hybrid Stress Score (HSS) — and everything you log in nutrition — foods,
+    quantities, calories, macros, and your daily targets — is stored locally on your iPhone in
+    a local database. None of it is ever transmitted to us or to any third party. There are no
+    accounts, no sign-in, and no server that your logged data is sent to. Core logging works
+    fully offline, the same with or without an internet connection.
+  </p>
+
+  <h2>Food lookups (barcode scanning and online food search)</h2>
+  <p>
+    When you scan a product barcode or search for a food that isn't already on your device,
+    Apsis looks it up in public food databases — <a href="https://world.openfoodfacts.org">Open
+    Food Facts</a> and the U.S. Department of Agriculture's <a href="https://fdc.nal.usda.gov">FoodData
+    Central</a>. To do this, the app sends only the scanned barcode number or the words you
+    typed in the search box to those services so they can return matching nutrition facts. It
+    never sends your identity, your logged foods, your diary, or any health or training data,
+    and there is no account tied to these lookups. These lookups need an internet connection;
+    if you're offline, or a product isn't found, you can always enter the food manually.
+    Results you choose to log are saved to your on-device database so repeat logging works
+    offline.
   </p>
 
   <h2>Apple Health (HealthKit)</h2>
@@ -99,7 +115,7 @@
     connect (or disconnect) it later from Settings at any time without losing any functionality.
   </p>
 
-  <h2>The only thing that ever leaves your device</h2>
+  <h2>Anonymous crash diagnostics</h2>
   <p>
     Apsis uses Sentry, a crash-reporting service, to help us find and fix bugs. If the app
     crashes or hits an unhandled error, a small, anonymous crash diagnostics report is sent
