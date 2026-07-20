@@ -61,8 +61,8 @@
       [
         "@sentry/react-native",
         {
-          "organization": "apsis",
-          "project": "apsis-mobile",
+          "organization": "apsis-training",
+          "project": "react-native",
           "url": "https://sentry.io/"
         }
       ]
