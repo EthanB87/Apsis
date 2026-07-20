@@ -244,6 +244,15 @@ Recent decisions affecting current work:
 
 ### Roadmap Evolution
 
+- Nutrition label OCR DESCOPED (2026-07-20, owner decision): after two on-device UAT
+  attempts (07-09 original parser, 07-11 fragmented-line rewrite), Apple Vision extracted
+  only calories reliably from real printed labels — macros/serving parsing was unusable.
+  Rather than ship a feature that mis-parses food data, label OCR was removed: label-scan.tsx,
+  labelOcrParse.ts + tests deleted, expo-text-extractor dependency removed, NUTR-11/NUTR-12
+  marked Descoped. Manual logging + barcode scanning remain the food-entry paths. The native
+  module fully leaves the binary on the next EAS build (already required for 06-06). Phase 07
+  otherwise complete: 4/5 UAT passed, 1 descoped, 0 open issues.
+
 - Phase 7 added (2026-07-13): Nutrition tracking — manual food logging, barcode scanning,
   label OCR, custom recipes, day-type adaptive macro targets. Promoted from v2 to v1 scope
   by owner decision; spec lives in NUTRITION.md (repo root, edited from the original v2

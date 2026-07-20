@@ -1,17 +1,18 @@
 ---
 phase: 07-nutrition-tracking
 verified: 2026-07-13T20:00:00Z
-status: human_needed
-score: 41/41 must-haves verified (code-level); 5 items require on-device human verification
+status: passed
+score: 41/41 must-haves verified (code-level); on-device UAT completed 2026-07-20 (4 passed, 1 descoped)
 behavior_unverified: 0
 overrides_applied: 0
+uat_resolution: "On-device UAT (07-UAT.md) run 2026-07-20 on EAS dev build 560e0521. Barcode scan, first-migration, and repeat-log speed all PASSED; USDA key confirmed set. Label OCR was descoped (owner decision) after it failed on-device twice — NUTR-11/NUTR-12 removed from scope, feature deleted from the codebase. No open issues remain."
 human_verification:
   - test: "Scan a real product barcode (EAN-13/UPC-A) on a physical device dev build"
     expected: "Local cache miss → OFF network lookup → product resolves → FoodConfirmSheet opens with correct serving/macros → confirm logs a food_log row"
-    why_human: "expo-camera CameraView.onBarcodeScanned requires physical camera hardware; simulator has no camera. Requires a fresh EAS dev build (expo-camera/expo-text-extractor are new native modules not in the current dev client, per 07-07's user_setup note)."
-  - test: "Photograph a real printed US 'Nutrition Facts' label and a real EU per-100g label"
-    expected: "Apple Vision OCR extracts text; labelOcrParse normalizes per-serving figures to per-100g (CR-01 fix) when a serving size is found, passes through unchanged for per-100g-style labels; confirm sheet pre-fills sane values the user can verify against the physical label"
-    why_human: "expo-text-extractor wraps on-device Apple Vision; requires physical camera + a real printed label + the same EAS dev build gate as barcode scanning. Unit tests (labelOcrParse.test.ts) prove the parsing math is correct against fixture text, but not that Apple Vision produces usable line-recognition output from a real photo."
+    result: "PASSED (UAT 2026-07-20)"
+  - test: "[DESCOPED 2026-07-20] Nutrition label OCR"
+    expected: "Removed from v1.0 scope — Apple Vision extracted only calories reliably from real labels; label-scan screen + labelOcrParse deleted, expo-text-extractor removed, NUTR-11/NUTR-12 descoped."
+    result: "DESCOPED (not a gap)"
   - test: "Complete first on-device migration run: install the new build, open the app, confirm the 5 nutrition tables + 3 profile columns are created without error"
     expected: "useMigrations() applies 0000-0004 cleanly on a fresh or upgraded device install; PRAGMA foreign_keys=ON (client.ts) does not trip on existing data"
     why_human: "packages/db/src/__tests__/nutrition-schema.test.ts proves the migration SQL is well-formed and round-trips in a test harness, but the actual op-sqlite JSI path (client.ts) is explicitly excluded from vitest (see its own doc comment: 'NOT imported in vitest'). Needs a real device or simulator run."
