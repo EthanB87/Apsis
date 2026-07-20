@@ -2,7 +2,7 @@
 
 **Generated:** 2026-07-12
 **Phase:** 06-polish-app-store-submission
-**Status:** Incomplete
+**Status:** Complete (2026-07-20)
 
 Complete these items for Sentry crash reporting (REL-03) to function. Claude installed and
 wired the SDK, the allowlist sanitizer, the Expo config plugin, and the metro wrap — these
@@ -13,8 +13,8 @@ token retrieval).
 
 | Status | Variable | Source | Add to |
 |--------|----------|--------|--------|
-| [ ] | `EXPO_PUBLIC_SENTRY_DSN` | Sentry → Settings → Projects → (project) → Client Keys (DSN) | `.env` (apps/mobile) or EAS env var |
-| [ ] | `SENTRY_AUTH_TOKEN` | Sentry → Settings → Auth Tokens | EAS secret only — **never commit, never put in `.env`** |
+| [x] | `EXPO_PUBLIC_SENTRY_DSN` | Sentry → Settings → Projects → (project) → Client Keys (DSN) | `.env` (apps/mobile) or EAS env var |
+| [x] | `SENTRY_AUTH_TOKEN` | Sentry → Settings → Auth Tokens | EAS secret only — **never commit, never put in `.env`** |
 
 ## Account Setup
 
