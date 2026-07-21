@@ -1,0 +1,8 @@
+# Intentional detection stub — do NOT delete.
+# EAS Build's package-manager resolver checks for a lockfile IN the app directory
+# (apps/mobile) and defaults to yarn when none is found, which breaks this pnpm
+# monorepo (eas-cli#2978: "EAS mistakes pnpm for yarn workspace"). This minimal file
+# makes EAS resolve pnpm. pnpm itself is workspace-aware and ignores this file — it
+# uses the real root ../../pnpm-lock.yaml (verified: `pnpm install --frozen-lockfile`
+# from here installs all 5 workspace projects from the root lockfile).
+lockfileVersion: '9.0'
