@@ -55,7 +55,8 @@
     "android": "expo run:android",
     "ios": "expo run:ios",
     "web": "expo start --web",
-    "test": "vitest run"
+    "test": "vitest run",
+    "eas-build-pre-install": "corepack enable"
   },
   "private": true
 }
