@@ -5,15 +5,15 @@ milestone_name: milestone
 current_phase: 08
 current_phase_name: share-card-social-overlay
 status: executing
-stopped_at: Completed 08-01-PLAN.md
-last_updated: "2026-08-03T17:32:02.657Z"
+stopped_at: Completed 08-02-PLAN.md (on-device checkpoint approved)
+last_updated: "2026-08-03T18:49:27.789Z"
 last_activity: 2026-08-03
 last_activity_desc: Phase 08 execution started
 progress:
   total_phases: 7
   completed_phases: 5
   total_plans: 58
-  completed_plans: 51
+  completed_plans: 52
 ---
 
 # Project State — Apsis
@@ -29,11 +29,11 @@ training-load number (HSS) and a readiness band — fully offline.
 ## Current Position
 
 Phase: 08 (share-card-social-overlay) — EXECUTING
-Plan: 2 of 4
+Plan: 3 of 4
 Status: Ready to execute
 Last activity: 2026-08-03 — Phase 08 execution started
 
-Progress: [█████████░] 88% (4/6 phases complete, 27/27 executed plans)
+Progress: [█████████░] 90% (4/6 phases complete, 27/27 executed plans)
 
 ## Performance Metrics
 
@@ -116,6 +116,7 @@ Progress: [█████████░] 88% (4/6 phases complete, 27/27 execu
 | Plan | Duration | Tasks | Files |
 |------|----------|-------|-------|
 | Phase 08 P01 | 8min | 2 tasks | 3 files |
+| Phase 08 P02 | 8min | 2 tasks | 6 files |
 
 ## Accumulated Context
 
@@ -247,6 +248,8 @@ Recent decisions affecting current work:
 - [Phase 07 P09]: labelOcrParse's field names mirror the food table's per-100g columns directly (no serving-to-100g conversion) -- the mandatory editable review step in label-scan.tsx is the correctness backstop, not the parser
 - [Phase 07 P09]: label-scan.tsx builds its own editable macro-review form (mirrors nutrition/log.tsx's Custom food mode) rather than pre-filling FoodConfirmSheet directly -- FoodConfirmSheet has no macro-editing UI and food.kcalPer100g/etc are NOT NULL, so undefined OCR fields cannot reach an insert without a fill-in step
 - [Phase ?]: Installed via npx expo install (not pnpm add) so each package resolved to its SDK-56-compatible line; expo-image-picker cameraPermission/microphonePermission left unset to preserve existing expo-camera-owned NSCameraUsageDescription string; expo-sharing self-registered its plugin entry with no permission needed
+- [Phase ?]: [Phase 08 P02] Phase 08's D-XX decision codes (08-CONTEXT.md) are phase-local, not REQUIREMENTS.md REQ-IDs -- requirements.mark-complete correctly no-ops on them
+- [Phase ?]: [Phase 08 P02] Share-edition HSS ring recomposed as a standalone 1080px Skia Circle (not a re-mount of HssRing), reusing RING_FILL_REFERENCE_HSS and the capped fillFraction formula -- Skia Canvas trees cannot embed react-native-svg components
 
 ### Roadmap Evolution
 
@@ -339,8 +342,8 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-08-03T17:32:02.615Z
-Stopped at: Completed 08-01-PLAN.md
+Last session: 2026-08-03T18:49:27.761Z
+Stopped at: Completed 08-02-PLAN.md (on-device checkpoint approved)
 to roadmap, sequenced before 06-06/06-07. Next: /gsd-plan-phase 8 (or discuss first),
 then resume Phase 06 Wave 2 (06-06 production build — last EAS pnpm-detection fix
 87b5a3d unverified).

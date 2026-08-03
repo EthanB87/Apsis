@@ -273,7 +273,7 @@ RN core `Share` / existing expo-file-system) — a new native module is acceptab
 research shows Skia snapshot is unworkable, and must be flagged as a 06-06 gate.
 **Requirements**: TBD (no v1.0 requirement IDs map to Phase 8 — scoped by 08-CONTEXT.md D-01..D-16)
 **Depends on:** Phase 7
-**Plans:** 1/4 plans executed
+**Plans:** 2/4 plans executed
 
 Plans:
 **Wave 1**
@@ -282,7 +282,7 @@ Plans:
 
 **Wave 2** *(blocked on 08-01)*
 
-- [ ] 08-02-PLAN.md — TRACER: end-to-end void-card share (finish button → compose → Skia snapshot → file → iOS share sheet) + on-device pipeline spike (D-01/D-02/D-05/D-07/D-11/D-12/D-13/D-14)
+- [x] 08-02-PLAN.md — TRACER: end-to-end void-card share (finish button → compose → Skia snapshot → file → iOS share sheet) + on-device pipeline spike (D-01/D-02/D-05/D-07/D-11/D-12/D-13/D-14)
 
 **Wave 3** *(blocked on 08-02)*
 
