@@ -65,6 +65,13 @@
           "project": "react-native",
           "url": "https://sentry.io/"
         }
+      ],
+      "expo-sharing",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Apsis uses your photo library only to let you pick a background photo for a share card image."
+        }
       ]
     ],
     "experiments": {
