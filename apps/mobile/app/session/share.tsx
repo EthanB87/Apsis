@@ -17,8 +17,15 @@
  * summed endurance_segment distance/duration with pace derived from distance/duration
  * (divide-by-zero guarded, matching finish.tsx's formatEnduranceSummary convention).
  *
- * This screen renders only the D-07 no-photo void card -- the photo-pick flow (D-06/D-08/
- * D-15/D-16) is added by 08-04 on top of this same compose route.
+ * 08-04 makes the compose flow photo-first (D-06): on mount, the screen auto-launches the
+ * photo-permission + pick flow (mirrors `scan.tsx`'s guard-flag + try/catch/finally shape,
+ * substituting `requestPhotoLibraryPermission`/`pickShareBackgroundPhoto` for the camera
+ * equivalents), tracks the picked `selectedPhotoUri`, and offers a pick/swap affordance plus
+ * an explicit skip. Denied permission shows an alert with an Open Settings deep-link
+ * (`scan.tsx`'s denied-UI shape, D-16); denied, limited-access-empty, or an explicit skip all
+ * fall back to the SAME void card (D-07) -- sharing is never blocked by any photo-pick edge
+ * case. This is a one-time-pushed screen (like `detail.tsx`), so a plain mount-once
+ * `useEffect` + ref guard is used, not `useFocusEffect`.
  *
  * The Share button is the primary CTA on this screen, so it is volt-filled (the
  * one-volt-per-screen rule is scoped per-screen, and this screen has no other volt fill).
@@ -27,8 +34,8 @@
  * layout/paint has flushed).
  */
 
-import { useEffect, useState } from 'react';
-import { Pressable, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
+import { useEffect, useRef, useState } from 'react';
+import { Alert, Linking, Pressable, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { eq } from 'drizzle-orm';
@@ -39,7 +46,7 @@ import ShareCardCanvas, { SHARE_CARD_SIZE } from '../../components/share/ShareCa
 import Colors from '../../constants/Colors';
 import { DISABLED_OPACITY, HIT_TARGET_MIN, Radius, Spacing, Typography } from '../../constants/theme';
 import { fetchProfileSummary } from '../../lib/commitSet';
-import { exportAndShareCard } from '../../lib/shareCardExport';
+import { exportAndShareCard, pickShareBackgroundPhoto, requestPhotoLibraryPermission } from '../../lib/shareCardExport';
 import {
   buildEnduranceStatTrio,
   buildShareCaption,
@@ -64,6 +71,11 @@ export default function ShareScreen(): React.JSX.Element {
   const [statTrio, setStatTrio] = useState<ShareStatPair[]>([]);
   const [canvasReady, setCanvasReady] = useState(false);
   const [sharing, setSharing] = useState(false);
+
+  // D-06: photo-first background pick state.
+  const [selectedPhotoUri, setSelectedPhotoUri] = useState<string | null>(null);
+  const [pickingPhoto, setPickingPhoto] = useState(false);
+  const autoPromptedRef = useRef(false);
 
   useEffect(() => {
     if (!workoutId) return;
@@ -173,6 +185,57 @@ export default function ShareScreen(): React.JSX.Element {
     return () => clearTimeout(timer);
   }, [hss]);
 
+  // D-06: the compose flow leads with picking a photo -- auto-launch once on mount. One-time
+  // pushed screen (matches detail.tsx's plain-useEffect precedent), guarded by a ref so a
+  // re-render never re-triggers the native picker a second time.
+  useEffect(() => {
+    if (autoPromptedRef.current) return;
+    autoPromptedRef.current = true;
+    void handleChoosePhoto();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  async function handleChoosePhoto(): Promise<void> {
+    if (pickingPhoto) return;
+    setPickingPhoto(true);
+    try {
+      const { usable } = await requestPhotoLibraryPermission();
+      if (!usable) {
+        // D-16: explain with an alert + Open Settings deep-link, THEN fall back to the void
+        // card -- sharing never hard-blocks on a denied/limited-empty photo permission.
+        Alert.alert(
+          'Photo access needed',
+          'Enable Photos access in Settings to add a background photo to your share card.',
+          [
+            { text: 'Not now', style: 'cancel' },
+            {
+              text: 'Open Settings',
+              onPress: () => {
+                void Linking.openSettings();
+              },
+            },
+          ]
+        );
+        setSelectedPhotoUri(null);
+        return;
+      }
+
+      // Pitfall 5: limited access can still yield a canceled/empty pick -- null falls back to
+      // the void card exactly like an explicit skip (D-07).
+      const uri = await pickShareBackgroundPhoto();
+      setSelectedPhotoUri(uri);
+    } catch (err: unknown) {
+      console.error('[Apsis] share.tsx photo pick flow failed:', err);
+      setSelectedPhotoUri(null);
+    } finally {
+      setPickingPhoto(false);
+    }
+  }
+
+  function handleSkipPhoto(): void {
+    setSelectedPhotoUri(null);
+  }
+
   async function handleShare(): Promise<void> {
     if (!canvasReady || sharing) return;
     setSharing(true);
@@ -210,9 +273,42 @@ export default function ShareScreen(): React.JSX.Element {
               styles.previewScale,
               { width: SHARE_CARD_SIZE, height: SHARE_CARD_SIZE, transform: [{ scale: previewScale }] },
             ]}>
-            <ShareCardCanvas hss={hss ?? 0} caption={caption} statTrio={statTrio} canvasRef={canvasRef} />
+            <ShareCardCanvas
+              hss={hss ?? 0}
+              caption={caption}
+              statTrio={statTrio}
+              backgroundPhotoUri={selectedPhotoUri}
+              canvasRef={canvasRef}
+            />
           </View>
         </View>
+      </View>
+
+      <View style={styles.photoControlsRow}>
+        <Pressable
+          onPress={() => void handleChoosePhoto()}
+          disabled={pickingPhoto}
+          accessibilityRole="button"
+          accessibilityLabel={selectedPhotoUri ? 'Swap photo' : 'Choose photo'}
+          style={({ pressed }) => [
+            styles.photoButton,
+            pickingPhoto && styles.photoButtonDisabled,
+            pressed && !pickingPhoto && styles.photoButtonPressed,
+          ]}>
+          <Text style={styles.photoButtonLabel}>
+            {pickingPhoto ? 'Choosing…' : selectedPhotoUri ? 'Swap photo' : 'Choose photo'}
+          </Text>
+        </Pressable>
+        {selectedPhotoUri == null ? (
+          <Pressable
+            onPress={handleSkipPhoto}
+            disabled={pickingPhoto}
+            accessibilityRole="button"
+            accessibilityLabel="Skip photo"
+            style={styles.skipLink}>
+            <Text style={styles.skipLinkLabel}>Skip</Text>
+          </Pressable>
+        ) : null}
       </View>
 
       <Pressable
@@ -268,6 +364,46 @@ const styles = StyleSheet.create({
     // transformOrigin keeps the scaled-down 1080x1080 canvas anchored to the clip
     // container's top-left corner rather than scaling around its own center.
     transformOrigin: 'top left',
+  },
+  // D-06/D-12: bone-outlined pick/swap affordance (mirrors scan.tsx's manualButton shape),
+  // plus a muted "Skip" text link (mirrors scan.tsx's manualLink) shown only pre-pick.
+  photoControlsRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: Spacing.lg,
+    marginBottom: Spacing.lg,
+    paddingHorizontal: Spacing.xl,
+  },
+  photoButton: {
+    minHeight: HIT_TARGET_MIN,
+    paddingHorizontal: Spacing.xl,
+    borderRadius: Radius.lg,
+    borderWidth: 1,
+    borderColor: Colors.dark.border,
+    backgroundColor: 'transparent',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  photoButtonDisabled: {
+    opacity: DISABLED_OPACITY,
+  },
+  photoButtonPressed: {
+    backgroundColor: Colors.dark.surface,
+  },
+  photoButtonLabel: {
+    ...Typography.body,
+    color: Colors.dark.text,
+  },
+  skipLink: {
+    minHeight: HIT_TARGET_MIN,
+    paddingHorizontal: Spacing.md,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  skipLinkLabel: {
+    ...Typography.body,
+    color: Colors.dark.mutedText,
   },
   shareButton: {
     minHeight: 48,
