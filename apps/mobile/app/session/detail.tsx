@@ -19,9 +19,9 @@
  */
 
 import { useEffect, useState } from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Stack, useLocalSearchParams } from 'expo-router';
+import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { eq } from 'drizzle-orm';
 import { db, enduranceSegment, exercise as exerciseTable, strengthSet, workout } from '@apsis/db';
 import { carryStressDetailed, enduranceStressDetailed, strengthStressDetailed } from '@apsis/engine';
@@ -34,7 +34,16 @@ import {
 
 import { SourceChip } from '../../components/SourceChip';
 import Colors from '../../constants/Colors';
-import { HAIRLINE_WIDTH, Mono, Spacing, Typography, tabularNums } from '../../constants/theme';
+import {
+  DISABLED_OPACITY,
+  HAIRLINE_WIDTH,
+  HIT_TARGET_MIN,
+  Mono,
+  Radius,
+  Spacing,
+  Typography,
+  tabularNums,
+} from '../../constants/theme';
 import { fetchProfileSummary } from '../../lib/commitSet';
 
 const MONTH_ABBR = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
@@ -111,6 +120,7 @@ function formatEnduranceMeta(
 export default function SessionDetailScreen(): React.JSX.Element {
   const params = useLocalSearchParams<{ workoutId: string }>();
   const workoutId = params.workoutId;
+  const router = useRouter();
 
   const [loading, setLoading] = useState(true);
   const [title, setTitle] = useState('Session');
@@ -310,6 +320,21 @@ export default function SessionDetailScreen(): React.JSX.Element {
           <Text style={styles.totalLabel}>Total</Text>
           <Text style={[styles.total, tabularNums]}>{Math.round(total)}</Text>
         </View>
+
+        {/* D-11: second Share entry point -- pushes the same compose route (D-12) finish.tsx's
+            "Share card" button uses. Bone-filled (Colors.dark.text / onAccent) so the volt
+            total row above keeps sole ownership of the volt fill on this screen. */}
+        <Pressable
+          onPress={() => {
+            if (!workoutId) return;
+            router.push({ pathname: '/session/share', params: { workoutId } });
+          }}
+          disabled={!workoutId}
+          accessibilityRole="button"
+          accessibilityLabel="Share card"
+          style={({ pressed }) => [styles.shareButton, pressed && styles.shareButtonPressed]}>
+          <Text style={styles.shareButtonLabel}>Share card</Text>
+        </Pressable>
       </ScrollView>
     </SafeAreaView>
   );
@@ -379,5 +404,22 @@ const styles = StyleSheet.create({
   total: {
     ...Typography.heading,
     color: Colors.dark.accent,
+  },
+  // D-11 Share entry point -- bone-filled (mirrors finish.tsx's shareButton/shareButtonLabel
+  // convention exactly) so the volt totalRow above keeps sole ownership of the volt fill.
+  shareButton: {
+    minHeight: HIT_TARGET_MIN,
+    marginTop: Spacing.xl,
+    borderRadius: Radius.md,
+    backgroundColor: Colors.dark.text,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  shareButtonPressed: {
+    opacity: DISABLED_OPACITY,
+  },
+  shareButtonLabel: {
+    ...Typography.body,
+    color: Colors.dark.onAccent,
   },
 });
