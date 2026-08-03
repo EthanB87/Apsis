@@ -271,13 +271,28 @@ Executes BEFORE 06-06 (production EAS build) so any native dependency lands in t
 fresh build; prefer a zero-new-native-dep approach (existing Skia `makeImageSnapshot` +
 RN core `Share` / existing expo-file-system) — a new native module is acceptable only if
 research shows Skia snapshot is unworkable, and must be flagged as a 06-06 gate.
-**Requirements**: TBD
+**Requirements**: TBD (no v1.0 requirement IDs map to Phase 8 — scoped by 08-CONTEXT.md D-01..D-16)
 **Depends on:** Phase 7
-**Plans:** 0 plans
+**Plans:** 4 plans
 
 Plans:
+**Wave 1**
 
-- [ ] TBD (run /gsd-plan-phase 8 to break down)
+- [ ] 08-01-PLAN.md — Native dep gate: expo-image-picker/expo-file-system/expo-sharing install (SUS legitimacy checkpoint) + app.json photo permission + 06-06 build gate (D-06/D-08/D-15)
+
+**Wave 2** *(blocked on 08-01)*
+
+- [ ] 08-02-PLAN.md — TRACER: end-to-end void-card share (finish button → compose → Skia snapshot → file → iOS share sheet) + on-device pipeline spike (D-01/D-02/D-05/D-07/D-11/D-12/D-13/D-14)
+
+**Wave 3** *(blocked on 08-02)*
+
+- [ ] 08-03-PLAN.md — Full card composition: fixed stat trio + branded footer + recomposed sizing + History detail entry point (D-03/D-04/D-09/D-11)
+
+**Wave 4** *(blocked on 08-03)*
+
+- [ ] 08-04-PLAN.md — Photo-first flow: library pick + native square crop + bottom scrim + permission fallbacks + full on-device UAT (D-06/D-07/D-08/D-10/D-15/D-16)
+
+**UI hint**: yes (new compose screen + Skia card render)
 
 ---
 
