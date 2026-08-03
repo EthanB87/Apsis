@@ -28,13 +28,29 @@
  * there is no `band` prop and no steel-only calibrating variant, since a single-session ring
  * never carries readiness-band semantics.
  *
- * All Skia font resolution is guarded try/catch (TrendChart.tsx pattern) -- a font-resolution
- * miss must never crash card render/export; the affected text element simply doesn't draw.
- * `useImage` (the plate-mark asset) never throws -- it resolves to `null` on failure, which
- * this component treats the same way (skip drawing the icon, everything else still renders).
+ * Font loading: `useFont(require(...).ttf, size)`, NOT `matchFont({ fontFamily, fontSize })`.
+ * `matchFont` resolves a family name through Skia's SYSTEM font manager
+ * (`Skia.FontMgr.System().matchFamilyStyle`), which only sees fonts registered with the OS's
+ * own font database. `app/_layout.tsx`'s `useFonts()` (expo-font) registers
+ * `Archivo_900Black`/`JetBrainsMono_500Medium` as RN-bridge-only aliases usable by React
+ * Native's own `<Text>` -- that registration is invisible to Skia's system font manager, so
+ * `matchFamilyStyle` cannot find them and every `<Text>` in this canvas silently failed to
+ * draw (caught by a try/catch around `matchFont`, font stayed `undefined`) while the ring
+ * (Path/Circle, no font dependency) and plate-mark (`useImage`, no font dependency) rendered
+ * fine -- this was diagnosed from an on-device UAT report where only the ring + plate-mark
+ * showed and every stat/caption/wordmark was blank. `useFont` loads the SAME physical TTF
+ * files (the exact asset modules `@expo-google-fonts/archivo`/`@expo-google-fonts/jetbrains-mono`
+ * export, and that `_layout.tsx` already bundles) directly into Skia's OWN typeface system via
+ * `Skia.Data.fromURI` + `MakeFreeTypeFaceFromData`, bypassing OS/system font registration
+ * entirely -- Shopify's documented approach for custom fonts in a Skia canvas, and reliable
+ * regardless of whether the OS has that family registered. `useFont` never throws: it resolves
+ * to `null` while loading or on a genuine load failure, which every `<Text>` below already
+ * guards against (skip drawing, don't crash). `useImage` (the plate-mark asset) never throws
+ * either -- it resolves to `null` on failure, treated the same way (skip the icon, everything
+ * else still renders).
  */
 
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import type { RefObject } from 'react';
 import {
   Canvas,
@@ -46,11 +62,13 @@ import {
   Path,
   Rect,
   Text,
-  matchFont,
+  useFont,
   useImage,
   vec,
   type CanvasRef,
 } from '@shopify/react-native-skia';
+import { Archivo_900Black } from '@expo-google-fonts/archivo';
+import { JetBrainsMono_500Medium } from '@expo-google-fonts/jetbrains-mono';
 
 import Colors from '../../constants/Colors';
 import { RING_FILL_REFERENCE_HSS } from '../home/HssRing';
@@ -105,6 +123,13 @@ export interface ShareCardCanvasProps {
   backgroundPhotoUri?: string | null;
   /** From `useCanvasRef()`, passed by the compose screen so it can call `makeImageSnapshot()`. */
   canvasRef?: RefObject<CanvasRef | null>;
+  /**
+   * Fires whenever the all-fonts-loaded state changes. The compose screen gates the Share
+   * button on this (in addition to its existing Pitfall-4 settle timer) so an export can never
+   * fire while any card text is still fontless -- a blank-text PNG would otherwise be
+   * indistinguishable from a successful share.
+   */
+  onFontsReady?: (ready: boolean) => void;
 }
 
 /**
@@ -124,6 +149,7 @@ export default function ShareCardCanvas({
   statTrio,
   backgroundPhotoUri,
   canvasRef,
+  onFontsReady,
 }: ShareCardCanvasProps): React.JSX.Element {
   // D-02: same capped-arc formula as the in-app ring, imported (not redefined).
   const fillFraction = Math.min(hss / RING_FILL_REFERENCE_HSS, 1);
@@ -138,43 +164,19 @@ export default function ShareCardCanvas({
   // so it needs no tint to match the palette. useImage never throws; null just skips the icon.
   const plateMarkImage = useImage(require('../../assets/images/apsis-plate-mark.png'));
 
-  // Guarded matchFont (TrendChart.tsx pattern, 08-PATTERNS.md) -- a font-resolution failure
-  // must never crash card render/export; the text simply doesn't draw.
-  const numberFont = useMemo(() => {
-    try {
-      return matchFont({ fontFamily: 'Archivo_900Black', fontSize: NUMBER_FONT_SIZE });
-    } catch {
-      return undefined;
-    }
-  }, []);
-  const captionFont = useMemo(() => {
-    try {
-      return matchFont({ fontFamily: 'JetBrainsMono_500Medium', fontSize: CAPTION_FONT_SIZE });
-    } catch {
-      return undefined;
-    }
-  }, []);
-  const statValueFont = useMemo(() => {
-    try {
-      return matchFont({ fontFamily: 'Archivo_900Black', fontSize: STAT_VALUE_FONT_SIZE });
-    } catch {
-      return undefined;
-    }
-  }, []);
-  const statLabelFont = useMemo(() => {
-    try {
-      return matchFont({ fontFamily: 'JetBrainsMono_500Medium', fontSize: STAT_LABEL_FONT_SIZE });
-    } catch {
-      return undefined;
-    }
-  }, []);
-  const wordmarkFont = useMemo(() => {
-    try {
-      return matchFont({ fontFamily: 'JetBrainsMono_500Medium', fontSize: FOOTER_WORDMARK_FONT_SIZE });
-    } catch {
-      return undefined;
-    }
-  }, []);
+  // useFont loads the raw TTF directly into Skia's own typeface system (see file-header doc
+  // comment) -- resolves to `null` while loading or on a genuine load failure, which every
+  // `<Text>` below already guards against.
+  const numberFont = useFont(Archivo_900Black, NUMBER_FONT_SIZE);
+  const captionFont = useFont(JetBrainsMono_500Medium, CAPTION_FONT_SIZE);
+  const statValueFont = useFont(Archivo_900Black, STAT_VALUE_FONT_SIZE);
+  const statLabelFont = useFont(JetBrainsMono_500Medium, STAT_LABEL_FONT_SIZE);
+  const wordmarkFont = useFont(JetBrainsMono_500Medium, FOOTER_WORDMARK_FONT_SIZE);
+
+  const fontsReady = Boolean(numberFont && captionFont && statValueFont && statLabelFont && wordmarkFont);
+  useEffect(() => {
+    onFontsReady?.(fontsReady);
+  }, [fontsReady, onFontsReady]);
 
   const numberText = `${Math.round(hss)}`;
   const numberWidth = numberFont ? numberFont.measureText(numberText).width : 0;

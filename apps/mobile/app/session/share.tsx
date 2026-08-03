@@ -70,6 +70,7 @@ export default function ShareScreen(): React.JSX.Element {
   const [caption, setCaption] = useState('');
   const [statTrio, setStatTrio] = useState<ShareStatPair[]>([]);
   const [canvasReady, setCanvasReady] = useState(false);
+  const [fontsReady, setFontsReady] = useState(false);
   const [sharing, setSharing] = useState(false);
 
   // D-06: photo-first background pick state.
@@ -178,12 +179,15 @@ export default function ShareScreen(): React.JSX.Element {
     };
   }, [workoutId]);
 
-  // Pitfall 4: only enable Share once the card has real data AND the canvas has settled.
+  // Pitfall 4 + font-load guard: only enable Share once the card has real data, the Skia
+  // fonts have finished loading (a blank-text export would be indistinguishable from a
+  // successful share -- see ShareCardCanvas.tsx's onFontsReady doc comment), AND the canvas
+  // has settled.
   useEffect(() => {
-    if (hss == null) return;
+    if (hss == null || !fontsReady) return;
     const timer = setTimeout(() => setCanvasReady(true), CANVAS_SETTLE_MS);
     return () => clearTimeout(timer);
-  }, [hss]);
+  }, [hss, fontsReady]);
 
   // D-06: the compose flow leads with picking a photo -- auto-launch once on mount. One-time
   // pushed screen (matches detail.tsx's plain-useEffect precedent), guarded by a ref so a
@@ -279,6 +283,7 @@ export default function ShareScreen(): React.JSX.Element {
               statTrio={statTrio}
               backgroundPhotoUri={selectedPhotoUri}
               canvasRef={canvasRef}
+              onFontsReady={setFontsReady}
             />
           </View>
         </View>
