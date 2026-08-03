@@ -19,7 +19,8 @@ findings:
   warning: 2
   info: 2
   total: 5
-status: issues_found
+status: fixed
+fixed_at: 2026-08-03T00:00:00Z
 ---
 
 # Phase 08: Code Review Report
@@ -27,7 +28,7 @@ status: issues_found
 **Reviewed:** 2026-08-03T00:00:00Z
 **Depth:** standard
 **Files Reviewed:** 10
-**Status:** issues_found
+**Status:** fixed (see REVIEW-FIX below; originally issues_found)
 
 ## Summary
 
@@ -54,6 +55,11 @@ directory are never cleaned up.
 ## Critical Issues
 
 ### CR-01: Share button isn't re-gated after a photo swap, risking a stale/blank export
+
+**Status:** fixed (commit `1ffe6a7`) -- `ShareCardCanvas` now surfaces `onBackgroundReady`
+(mirroring `onFontsReady`), and `share.tsx` gates `canvasReady` on it, resetting to `false`
+whenever `hss`/`fontsReady`/`backgroundReady` flips back to not-ready. See
+`apps/mobile/components/share/ShareCardCanvas.tsx` and `apps/mobile/app/session/share.tsx`.
 
 **File:** `apps/mobile/app/session/share.tsx:186-200, 229-230, 243-244`
 
@@ -114,6 +120,11 @@ and reset `canvasReady` to `false` at the top of that effect (or via a separate 
 
 ### WR-01: `exportAndShareCard`'s failure result is silently discarded
 
+**Status:** fixed (commit `1ffe6a7`) -- `handleShare` now alerts the user
+(`Alert.alert('Share failed', ...)`) when `exportAndShareCard` resolves `false`, and the
+existing (documented-dead) catch block gives the same feedback for an unexpected exception.
+This also resolves IN-02 below. See `apps/mobile/app/session/share.tsx`.
+
 **File:** `apps/mobile/app/session/share.tsx:243-254`
 **Issue:** `exportAndShareCard` (per its own doc comment in `shareCardExport.ts:34-36`) "resolves
 `true` only when the share sheet was actually presented; `false` on any failure ... never
@@ -147,6 +158,11 @@ if (!shared) {
 
 ### WR-02: Exported share-card PNGs accumulate in the cache directory with no cleanup
 
+**Status:** fixed (commit `ac34eba`) -- `exportAndShareCard` now deletes the exported file in a
+`finally` block once the share sheet has resolved (or the pipeline bailed out early); the
+`delete()` call is itself guarded so a cleanup failure never overrides the share result. See
+`apps/mobile/lib/shareCardExport.ts`.
+
 **File:** `apps/mobile/lib/shareCardExport.ts:44-49`
 **Issue:** Every successful (and every attempted) export writes a new uniquely-named file
 (`apsis-share-${Date.now()}.png`) into `Paths.cache` and never removes it — not after the share
@@ -173,6 +189,10 @@ convention).
 
 ### IN-01: Three near-duplicate duration-formatting helpers
 
+**Status:** left alone (out of fix scope) -- the in-file comments explicitly acknowledge this
+duplication as the established "small-presentation-helper" convention; not urgent per the
+finding's own fix note. No change made.
+
 **File:** `apps/mobile/app/session/finish.tsx:74-81` (`formatSessionDuration`), `apps/mobile/app/session/detail.tsx:74-81` (`formatDuration`), `apps/mobile/lib/shareCard.ts:67-74` (`formatShareDuration`)
 **Issue:** All three implement the identical `h>0 ? "h:mm:ss" : "m:ss"` formatting logic, each
 re-implemented rather than shared. The in-file comments acknowledge this is an intentional
@@ -184,6 +204,10 @@ third near-identical copy has been added; not urgent given the explicit existing
 worth reconsidering before a fourth copy appears.
 
 ### IN-02: `handleShare`'s `try/catch` documents a promise contract that can't fire
+
+**Status:** resolved automatically by the WR-01 fix (commit `1ffe6a7`) -- the `catch` block now
+gives the same user-facing feedback as the `!shared` branch, so it's no longer the sole
+(unreachable) code path handling failure.
 
 **File:** `apps/mobile/app/session/share.tsx:243-254`
 **Issue:** The comment above the catch block says "Defense in depth -- exportAndShareCard never
