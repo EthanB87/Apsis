@@ -3,12 +3,12 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 current_phase: 06
-current_phase_name: Polish & App Store Submission
+current_phase_name: polish-app-store-submission
 status: executing
-stopped_at: Completed 08-04-PLAN.md (phase 08 complete, ready for verification)
-last_updated: "2026-08-03T23:33:08.060Z"
+stopped_at: "06-08: Tasks 1-2 committed, paused at Task 3 blocking checkpoint (re-approve corrected privacy + listing copy)"
+last_updated: "2026-08-03T23:53:08.334Z"
 last_activity: 2026-08-03
-last_activity_desc: Phase 08 complete, transitioned to Phase 06
+last_activity_desc: Phase 06 execution started
 progress:
   total_phases: 7
   completed_phases: 6
@@ -24,14 +24,14 @@ See: .planning/PROJECT.md (updated 2026-07-12)
 
 **Core value:** Log lifting + running in one app, instantly see one honest combined
 training-load number (HSS) and a readiness band — fully offline.
-**Current focus:** Phase 08 — share-card-social-overlay
+**Current focus:** Phase 06 — polish-app-store-submission
 
 ## Current Position
 
-Phase: 06 — Polish & App Store Submission
-Plan: Not started
-Status: Ready to execute
-Last activity: 2026-08-03 — Phase 08 complete, transitioned to Phase 06
+Phase: 06 (polish-app-store-submission) — EXECUTING
+Plan: 1 of 8
+Status: Executing Phase 06
+Last activity: 2026-08-03 — Phase 06 execution started
 
 Progress: [█████████░] 93% (4/6 phases complete, 27/27 executed plans)
 
@@ -336,6 +336,8 @@ None yet.
   out-of-sync lockfile (fixed ec76663, 2026-07-11). Phase 05's HealthKit dep will hit
   the same gate: budget an EAS build cycle into the phase.
 
+- 06-08 Task 3 (blocking checkpoint): human must re-read docs-site/privacy/index.html and apps/mobile/store/app-store-listing.md and confirm the new share-card/photo disclosures are accurate before the paused 06-04 Task 3 publish and 06-07 ASC entry proceed.
+
 ### Quick Tasks Completed
 
 | # | Description | Date | Commit | Directory |
@@ -354,9 +356,9 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-08-03T19:51:13.639Z
-Stopped at: Completed 08-04-PLAN.md (phase 08 complete, ready for verification)
+Last session: 2026-08-03T23:53:01.870Z
+Stopped at: 06-08: Tasks 1-2 committed, paused at Task 3 blocking checkpoint (re-approve corrected privacy + listing copy)
 to roadmap, sequenced before 06-06/06-07. Next: /gsd-plan-phase 8 (or discuss first),
 then resume Phase 06 Wave 2 (06-06 production build — last EAS pnpm-detection fix
 87b5a3d unverified).
-Resume file: None
+Resume file: .planning/phases/06-polish-app-store-submission/06-08-PLAN.md
