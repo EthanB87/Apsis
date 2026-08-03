@@ -6,11 +6,11 @@
  * (one render tree, no preview/export drift, per 08-RESEARCH.md's recommended project
  * structure).
  *
- * This tracer plan (08-02) renders ONLY the D-07 no-photo void-black card: a solid void
- * background, the share-edition HSS ring, the big session number, and the mono
- * session-type + date caption. The D-03 stat trio and D-04 footer wordmark/plate-mark are
- * deliberately NOT rendered here -- reserved visual space below the ring is left for 08-03
- * to fill in (a functionality gap, not an architectural one; see 08-02-PLAN.md Task 1).
+ * 08-03 expands the 08-02 tracer's void-black-only card (ring + number + caption) with the
+ * full fixed composition: the D-03 stat trio (bottom-anchored, 3 columns) and the D-04
+ * subtle footer (plate-mark + APSIS wordmark + mono session-type/date caption). The photo
+ * background + void->transparent scrim (D-10) is deliberately NOT rendered here -- that is
+ * 08-04's scope.
  *
  * Ring: a NEW, separately-sized Skia element recomposed at 1080px scale (D-09) -- NOT a
  * re-mount of the react-native-svg-based `HssRing.tsx` component, since Skia `<Canvas>`
@@ -20,31 +20,54 @@
  * (08-PATTERNS.md "Capped-ring-fill formula"). Per D-05, this ring is ALWAYS a volt arc --
  * there is no `band` prop and no steel-only calibrating variant, since a single-session ring
  * never carries readiness-band semantics.
+ *
+ * All Skia font resolution is guarded try/catch (TrendChart.tsx pattern) -- a font-resolution
+ * miss must never crash card render/export; the affected text element simply doesn't draw.
+ * `useImage` (the plate-mark asset) never throws -- it resolves to `null` on failure, which
+ * this component treats the same way (skip drawing the icon, everything else still renders).
  */
 
 import { useMemo } from 'react';
 import type { RefObject } from 'react';
-import { Canvas, Circle, Fill, Path, Text, matchFont, type CanvasRef } from '@shopify/react-native-skia';
+import { Canvas, Circle, Fill, Group, Image, Path, Text, matchFont, useImage, type CanvasRef } from '@shopify/react-native-skia';
 
 import Colors from '../../constants/Colors';
 import { RING_FILL_REFERENCE_HSS } from '../home/HssRing';
+import type { ShareStatPair } from '../../lib/shareCard';
 
 /** D-01: single output format, square 1080x1080. */
 export const SHARE_CARD_SIZE = 1080;
 
-const RING_RADIUS = 320;
-const RING_STROKE_WIDTH = 32;
+const RING_RADIUS = 280;
+const RING_STROKE_WIDTH = 28;
 const RING_CENTER_X = SHARE_CARD_SIZE / 2;
-const RING_CENTER_Y = 460;
+const RING_CENTER_Y = 420;
 
 // D-09: bigger, more dramatic type than the in-app 200px/84px rings -- tuned for 1080px social.
-const NUMBER_FONT_SIZE = 260;
-const CAPTION_FONT_SIZE = 44;
-const CAPTION_Y = 940;
+const NUMBER_FONT_SIZE = 220;
+const CAPTION_FONT_SIZE = 34;
+
+// D-03 stat trio row -- three equal columns spanning the full card width, value on top of
+// label, both centered within their column.
+const STAT_COL_CENTERS = [SHARE_CARD_SIZE / 6, SHARE_CARD_SIZE / 2, (SHARE_CARD_SIZE * 5) / 6];
+const STAT_VALUE_FONT_SIZE = 52;
+const STAT_LABEL_FONT_SIZE = 24;
+const STAT_VALUE_Y = 800;
+const STAT_LABEL_Y = 844;
+
+// D-04 subtle footer -- plate-mark + APSIS wordmark bottom-left, mono caption bottom-right.
+// Kept visually quiet: small icon/wordmark, caption size well below the ring number.
+const FOOTER_Y = 970;
+const FOOTER_MARGIN = 90;
+const FOOTER_ICON_SIZE = 44;
+const FOOTER_WORDMARK_FONT_SIZE = 32;
+const FOOTER_WORDMARK_GAP = 16;
 
 export interface ShareCardCanvasProps {
   hss: number;
   caption: string;
+  /** D-03: exactly 3 { label, value } pairs from buildStrengthStatTrio/buildEnduranceStatTrio. */
+  statTrio: ShareStatPair[];
   /** From `useCanvasRef()`, passed by the compose screen so it can call `makeImageSnapshot()`. */
   canvasRef?: RefObject<CanvasRef | null>;
 }
@@ -63,12 +86,17 @@ function fullCirclePath(cx: number, cy: number, r: number): string {
 export default function ShareCardCanvas({
   hss,
   caption,
+  statTrio,
   canvasRef,
 }: ShareCardCanvasProps): React.JSX.Element {
   // D-02: same capped-arc formula as the in-app ring, imported (not redefined).
   const fillFraction = Math.min(hss / RING_FILL_REFERENCE_HSS, 1);
 
   const ringPath = useMemo(() => fullCirclePath(RING_CENTER_X, RING_CENTER_Y, RING_RADIUS), []);
+
+  // D-04: plate-mark asset -- already bone/ash/volt colored (same asset as the tab bar icon),
+  // so it needs no tint to match the palette. useImage never throws; null just skips the icon.
+  const plateMarkImage = useImage(require('../../assets/images/apsis-plate-mark.png'));
 
   // Guarded matchFont (TrendChart.tsx pattern, 08-PATTERNS.md) -- a font-resolution failure
   // must never crash card render/export; the text simply doesn't draw.
@@ -86,15 +114,37 @@ export default function ShareCardCanvas({
       return undefined;
     }
   }, []);
+  const statValueFont = useMemo(() => {
+    try {
+      return matchFont({ fontFamily: 'Archivo_900Black', fontSize: STAT_VALUE_FONT_SIZE });
+    } catch {
+      return undefined;
+    }
+  }, []);
+  const statLabelFont = useMemo(() => {
+    try {
+      return matchFont({ fontFamily: 'JetBrainsMono_500Medium', fontSize: STAT_LABEL_FONT_SIZE });
+    } catch {
+      return undefined;
+    }
+  }, []);
+  const wordmarkFont = useMemo(() => {
+    try {
+      return matchFont({ fontFamily: 'JetBrainsMono_500Medium', fontSize: FOOTER_WORDMARK_FONT_SIZE });
+    } catch {
+      return undefined;
+    }
+  }, []);
 
   const numberText = `${Math.round(hss)}`;
   const numberWidth = numberFont ? numberFont.measureText(numberText).width : 0;
   const captionWidth = captionFont ? captionFont.measureText(caption).width : 0;
+  const wordmarkWidth = wordmarkFont ? wordmarkFont.measureText('APSIS').width : 0;
 
   return (
     <Canvas ref={canvasRef} style={{ width: SHARE_CARD_SIZE, height: SHARE_CARD_SIZE }}>
-      {/* D-07: void-black background -- the only background this tracer renders; 08-03/08-04
-          add the photo-background + void->transparent scrim variant (D-10). */}
+      {/* D-07: void-black background -- 08-04 adds the photo-background + void->transparent
+          scrim variant (D-10); this plan's fixed composition still renders on the void card. */}
       <Fill color={Colors.dark.background} />
 
       {/* Track: full steel circle, drawn first -- always visible (mirrors HssRing.tsx). */}
@@ -127,13 +177,63 @@ export default function ShareCardCanvas({
         />
       ) : null}
 
+      {/* D-03: fixed core stat trio, 3 equal columns, value over label. */}
+      {statTrio.slice(0, 3).map((pair, index) => {
+        const colCenterX = STAT_COL_CENTERS[index] ?? SHARE_CARD_SIZE / 2;
+        const valueWidth = statValueFont ? statValueFont.measureText(pair.value).width : 0;
+        const labelWidth = statLabelFont ? statLabelFont.measureText(pair.label).width : 0;
+        return (
+          <Group key={pair.label}>
+            {statValueFont ? (
+              <Text
+                x={colCenterX - valueWidth / 2}
+                y={STAT_VALUE_Y}
+                text={pair.value}
+                font={statValueFont}
+                color={Colors.dark.text}
+              />
+            ) : null}
+            {statLabelFont ? (
+              <Text
+                x={colCenterX - labelWidth / 2}
+                y={STAT_LABEL_Y}
+                text={pair.label}
+                font={statLabelFont}
+                color={Colors.dark.mutedText}
+              />
+            ) : null}
+          </Group>
+        );
+      })}
+
+      {/* D-04: subtle footer -- plate-mark + APSIS wordmark (bottom-left), mono session-type/
+          date caption (bottom-right). Kept quiet: the athlete's stats stay the visual star. */}
+      {plateMarkImage ? (
+        <Image
+          image={plateMarkImage}
+          x={FOOTER_MARGIN}
+          y={FOOTER_Y - FOOTER_ICON_SIZE / 2}
+          width={FOOTER_ICON_SIZE}
+          height={FOOTER_ICON_SIZE}
+          fit="contain"
+        />
+      ) : null}
+      {wordmarkFont ? (
+        <Text
+          x={FOOTER_MARGIN + FOOTER_ICON_SIZE + FOOTER_WORDMARK_GAP}
+          y={FOOTER_Y + FOOTER_WORDMARK_FONT_SIZE * 0.32}
+          text="APSIS"
+          font={wordmarkFont}
+          color={Colors.dark.mutedText}
+        />
+      ) : null}
       {captionFont ? (
         <Text
-          x={RING_CENTER_X - captionWidth / 2}
-          y={CAPTION_Y}
+          x={SHARE_CARD_SIZE - FOOTER_MARGIN - captionWidth}
+          y={FOOTER_Y + CAPTION_FONT_SIZE * 0.32}
           text={caption}
           font={captionFont}
-          color={Colors.dark.text}
+          color={Colors.dark.mutedText}
         />
       ) : null}
     </Canvas>
