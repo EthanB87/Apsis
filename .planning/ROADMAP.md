@@ -308,24 +308,25 @@ Plans:
   3. Any crash/analytics reporting (Sentry) is audited and confirmed to scrub all HealthKit-derived values (HR, HSS, workout details) before any event or breadcrumb is sent.
   4. The binary is built via EAS and submitted to App Store review by ~July 25, 2026, leaving a 1–3 day buffer before July 28.
 
-**Plans**: 3/7 plans executed
+**Plans**: 3/8 plans executed — submission logistics replanned 2026-08-03 (06-06/06-07 rewritten, 06-08 added) to absorb the Phase 7 nutrition + Phase 8 share-card ripple. The original ~July 25/28 deadline has PASSED; new target: submit ASAP within days of 2026-08-03.
 
 Plans:
 **Wave 1** *(parallel — no cross-file conflicts)*
 
-- [ ] 06-01-PLAN.md — Pre-flight: delete stray root app.json/eas.json (Pitfall 2) + fix icon alpha channel (Pitfall 1) + confirm Apple Developer enrollment & create ASC app record (REL-01/REL-04)
+- [ ] 06-01-PLAN.md — Pre-flight: delete stray root app.json/eas.json (Pitfall 2) + fix icon alpha channel (Pitfall 1) + confirm Apple Developer enrollment & create ASC app record (REL-01/REL-04) *(paused on human checkpoint; ascAppId 6792933794 already in eas.json)*
 - [x] 06-02-PLAN.md — REL-03 crash reporting: pure Sentry allowlist sanitizer + @sentry/react-native install + config plugin/metro wrap + Sentry.init/wrap in root layout (REL-03)
 - [x] 06-03-PLAN.md — Folded catalog: expand STARTER_EXERCISES 43→~150 (D-13) + ab-wheel/hanging-leg-raise bwFactor fix (D-14), migration-free (REL-01)
-- [ ] 06-04-PLAN.md — REL-02 static pages: privacy policy + support page (Pitfall 5), reviewed & deployed HTTPS on apsistraining.com (REL-02)
+- [ ] 06-04-PLAN.md — REL-02 static pages: privacy policy + support page (Pitfall 5), reviewed & deployed HTTPS on apsistraining.com (REL-02) *(paused pre-publish; publish AFTER 06-08 lands the photo/share-card copy correction)*
 - [x] 06-05-PLAN.md — Store copy + build config: App Store listing strings + review notes (D-07/D-08/D-16) + eas.json autoIncrement (D-17) (REL-01/REL-04)
+- [ ] 06-08-PLAN.md — Corrective copy: add Phase 8 share-card/photo-library disclosure to privacy policy + listing copy (verify Phase 7 nutrition copy intact) + human re-approval, before 06-04 publish / 06-07 ASC entry (REL-01/REL-02)
 
 **Wave 2** *(blocked on 06-01/02/03/05)*
 
-- [ ] 06-06-PLAN.md — EAS production build (Sentry + catalog, Pitfall 3) + external TestFlight beta + D-12 beta gate + on-device Sentry scrub confirmation (REL-04)
+- [ ] 06-06-PLAN.md — REWRITTEN: single EAS production build carrying ALL Phase 1-8 native modules (Sentry + camera + image-picker/file-system/sharing; expo-text-extractor removed) + frozen-lockfile gate + external TestFlight beta + D-12 gate + on-device Sentry scrub confirmation for health AND nutrition (REL-04)
 
-**Wave 3** *(blocked on 06-04/05/06)*
+**Wave 3** *(blocked on 06-04/06/08)*
 
-- [ ] 06-07-PLAN.md — ASC submission: fill submit profile (ascAppId) + screenshots + metadata + privacy nutrition label (D-06) + submit for review by ~July 25, manual release (REL-01/REL-02/REL-04)
+- [ ] 06-07-PLAN.md — REWRITTEN: ASC submission — verify ascAppId + screenshots + 06-08 re-approved metadata + privacy nutrition label reflecting nutrition egress + photo posture (D-06) + one-way-door decision gate + submit ASAP, manual release (REL-01/REL-02/REL-04)
 
 **UI hint**: no (submission logistics; no new app screens)
 

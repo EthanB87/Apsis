@@ -4,15 +4,15 @@ milestone: v1.0
 milestone_name: milestone
 current_phase: 06
 current_phase_name: Polish & App Store Submission
-status: planning
+status: executing
 stopped_at: Completed 08-04-PLAN.md (phase 08 complete, ready for verification)
-last_updated: "2026-08-03T20:22:30.883Z"
+last_updated: "2026-08-03T23:33:08.060Z"
 last_activity: 2026-08-03
 last_activity_desc: Phase 08 complete, transitioned to Phase 06
 progress:
   total_phases: 7
   completed_phases: 6
-  total_plans: 58
+  total_plans: 59
   completed_plans: 54
 ---
 
@@ -30,7 +30,7 @@ training-load number (HSS) and a readiness band — fully offline.
 
 Phase: 06 — Polish & App Store Submission
 Plan: Not started
-Status: Ready to plan
+Status: Ready to execute
 Last activity: 2026-08-03 — Phase 08 complete, transitioned to Phase 06
 
 Progress: [█████████░] 93% (4/6 phases complete, 27/27 executed plans)
@@ -324,6 +324,9 @@ None yet.
   06-07's submit profile). Gates Wave 2 (06-06 production build).
   (2) 06-04 Task 3 — review `docs-site/privacy/index.html` copy, publish docs-site/ to
   apsistraining.com over HTTPS, verify /privacy and /support return 200. Gates Wave 3 (06-07).
+  HARD GATE: do not resume/publish 06-04 Task 3 until 06-08-PLAN.md (corrective privacy/
+  listing copy, incl. the Phase 8 photo-library/share-card disclosure) reports complete —
+  publishing first would put an inaccurate privacy policy live (REL-02 ripple, replan 2026-08-03).
   Also pending (non-gating until 06-06): Sentry project + EXPO_PUBLIC_SENTRY_DSN /
   SENTRY_AUTH_TOKEN per 06-USER-SETUP.md.
 
