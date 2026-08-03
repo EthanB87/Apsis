@@ -35,13 +35,14 @@ import * as ImagePicker from 'expo-image-picker';
  * a thrown error from any step, or sharing unavailable on this device) -- never throws.
  */
 export async function exportAndShareCard(canvasRef: RefObject<CanvasRef | null>): Promise<boolean> {
+  let file: File | undefined;
   try {
     const image = canvasRef.current?.makeImageSnapshot();
     if (!image) return false; // Pitfall 4 -- canvas not yet mounted/measured
 
     const bytes = image.encodeToBytes(ImageFormat.PNG);
 
-    const file = new File(Paths.cache, `apsis-share-${Date.now()}.png`);
+    file = new File(Paths.cache, `apsis-share-${Date.now()}.png`);
     file.create({ overwrite: true }); // Pitfall 2 -- always create before write, defensively
     file.write(bytes);
 
@@ -53,6 +54,16 @@ export async function exportAndShareCard(canvasRef: RefObject<CanvasRef | null>)
   } catch (err: unknown) {
     console.error('[Apsis] shareCardExport failed:', err);
     return false;
+  } finally {
+    // WR-02: the exported PNG has served its purpose once the share sheet has resolved (or the
+    // pipeline bailed out early) -- delete it so cache PNGs don't accumulate unboundedly.
+    // Best-effort only: a cleanup failure must never surface to the caller or override the
+    // already-decided share result (this file's never-throws convention).
+    try {
+      file?.delete();
+    } catch (err: unknown) {
+      console.error('[Apsis] shareCardExport cache cleanup failed:', err);
+    }
   }
 }
 
