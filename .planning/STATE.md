@@ -4,16 +4,16 @@ milestone: v1.0
 milestone_name: milestone
 current_phase: 08
 current_phase_name: share-card-social-overlay
-status: executing
-stopped_at: Completed 08-03-PLAN.md
-last_updated: "2026-08-03T19:01:08.162Z"
+status: verifying
+stopped_at: Completed 08-04-PLAN.md (phase 08 complete, ready for verification)
+last_updated: "2026-08-03T19:51:13.665Z"
 last_activity: 2026-08-03
 last_activity_desc: Phase 08 execution started
 progress:
   total_phases: 7
-  completed_phases: 5
+  completed_phases: 6
   total_plans: 58
-  completed_plans: 53
+  completed_plans: 54
 ---
 
 # Project State — Apsis
@@ -30,10 +30,10 @@ training-load number (HSS) and a readiness band — fully offline.
 
 Phase: 08 (share-card-social-overlay) — EXECUTING
 Plan: 4 of 4
-Status: Ready to execute
+Status: Phase complete — ready for verification
 Last activity: 2026-08-03 — Phase 08 execution started
 
-Progress: [█████████░] 91% (4/6 phases complete, 27/27 executed plans)
+Progress: [█████████░] 93% (4/6 phases complete, 27/27 executed plans)
 
 ## Performance Metrics
 
@@ -118,6 +118,7 @@ Progress: [█████████░] 91% (4/6 phases complete, 27/27 execu
 | Phase 08 P01 | 8min | 2 tasks | 3 files |
 | Phase 08 P02 | 8min | 2 tasks | 6 files |
 | Phase 08 P03 | 10min | 3 tasks | 5 files |
+| Phase 08 P04 | 55min | 3 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -254,6 +255,9 @@ Recent decisions affecting current work:
 - [Phase ?]: [Phase 08 P03] Work-set count (D-03) excludes warmup sets across both reps-mode and timed-mode strength sets, diverging from finish.tsx's per-exercise setCount which includes warmups
 - [Phase ?]: [Phase 08 P03] Lift session duration derives from workout.createdAt -> workout.finishedAt, degrading to 0 rather than throwing if finishedAt is still null (D-14 crash-resume path)
 - [Phase ?]: [Phase 08 P03] Plate-mark footer asset rendered undyed via useImage -- the PNG is already bone/ash/volt colored, matching the palette with no Skia ColorFilter tint needed
+- [Phase ?]: Skia card fonts load via useFont(raw TTF from @expo-google-fonts), not matchFont(family name) — expo-font registration is invisible to Skia's system font manager (fixed phase-wide silent blank-text bug)
+- [Phase ?]: Share export gated on onFontsReady + canvas-settle so a blank-text PNG can never be shared
+- [Phase ?]: Photo share cards render a compact top-left ring badge (photo stays the hero); void cards keep the large centered hero ring — user-approved on-device
 
 ### Roadmap Evolution
 
@@ -346,8 +350,8 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-08-03T19:01:08.132Z
-Stopped at: Completed 08-03-PLAN.md
+Last session: 2026-08-03T19:51:13.639Z
+Stopped at: Completed 08-04-PLAN.md (phase 08 complete, ready for verification)
 to roadmap, sequenced before 06-06/06-07. Next: /gsd-plan-phase 8 (or discuss first),
 then resume Phase 06 Wave 2 (06-06 production build — last EAS pnpm-detection fix
 87b5a3d unverified).

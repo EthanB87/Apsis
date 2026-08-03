@@ -273,7 +273,7 @@ RN core `Share` / existing expo-file-system) — a new native module is acceptab
 research shows Skia snapshot is unworkable, and must be flagged as a 06-06 gate.
 **Requirements**: TBD (no v1.0 requirement IDs map to Phase 8 — scoped by 08-CONTEXT.md D-01..D-16)
 **Depends on:** Phase 7
-**Plans:** 3/4 plans executed
+**Plans:** 4/4 plans executed
 
 Plans:
 **Wave 1**
@@ -290,7 +290,7 @@ Plans:
 
 **Wave 4** *(blocked on 08-03)*
 
-- [ ] 08-04-PLAN.md — Photo-first flow: library pick + native square crop + bottom scrim + permission fallbacks + full on-device UAT (D-06/D-07/D-08/D-10/D-15/D-16)
+- [x] 08-04-PLAN.md — Photo-first flow: library pick + native square crop + bottom scrim + permission fallbacks + full on-device UAT (D-06/D-07/D-08/D-10/D-15/D-16)
 
 **UI hint**: yes (new compose screen + Skia card render)
 
