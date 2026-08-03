@@ -262,6 +262,23 @@ Plans:
 
 - [x] 07-10-PLAN.md — Custom recipes: per-serving macro aggregation builders + recipes list/edit screens + log-one-serving (NUTR-13/14)
 
+### Phase 8: Share Card Social Overlay
+
+**Goal:** After finishing a workout (lift or run), the athlete can generate a Strava-style
+shareable summary image — Apsis branding, session HSS, key stats (exercises/volume or
+distance/pace/duration) — and post it to social media via the iOS share sheet.
+Executes BEFORE 06-06 (production EAS build) so any native dependency lands in the single
+fresh build; prefer a zero-new-native-dep approach (existing Skia `makeImageSnapshot` +
+RN core `Share` / existing expo-file-system) — a new native module is acceptable only if
+research shows Skia snapshot is unworkable, and must be flagged as a 06-06 gate.
+**Requirements**: TBD
+**Depends on:** Phase 7
+**Plans:** 0 plans
+
+Plans:
+
+- [ ] TBD (run /gsd-plan-phase 8 to break down)
+
 ---
 
 ### Phase 06: Polish & App Store Submission

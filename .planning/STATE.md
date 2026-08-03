@@ -245,6 +245,15 @@ Recent decisions affecting current work:
 
 ### Roadmap Evolution
 
+- Phase 8 added (2026-08-03, owner decision): Share Card Social Overlay — Strava-style
+  shareable workout-summary image (branding, session HSS, key stats) posted via the iOS
+  share sheet. Ships IN the App Store submission build: Phase 8 executes NOW, before
+  Phase 06's remaining waves (06-06 production build, 06-07 submission), mirroring the
+  Phase 7 re-sequencing precedent. Constraint: prefer zero new native deps (existing
+  Skia makeImageSnapshot + RN core Share); any new native module must land before the
+  single fresh 06-06 build. Note: original July 28 deadline has passed — new target is
+  submission within days of Phase 8 completion.
+
 - Nutrition label OCR DESCOPED (2026-07-20, owner decision): after two on-device UAT
   attempts (07-09 original parser, 07-11 fragmented-line rewrite), Apple Vision extracted
   only calories reliably from real printed labels — macros/serving parsing was unusable.
@@ -325,7 +334,9 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-07-14T02:12:49.894Z
-Stopped at: Completed 07-07-PLAN.md
-tasks awaiting human action — see Blockers/Concerns). Resume: /gsd-execute-phase 6
+Last session: 2026-08-03
+Stopped at: Session resumed after ~2-week gap; Phase 8 (Share Card Social Overlay) added
+to roadmap, sequenced before 06-06/06-07. Next: /gsd-plan-phase 8 (or discuss first),
+then resume Phase 06 Wave 2 (06-06 production build — last EAS pnpm-detection fix
+87b5a3d unverified).
 Resume file: None
