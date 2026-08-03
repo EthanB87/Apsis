@@ -71,6 +71,10 @@ export default function ShareScreen(): React.JSX.Element {
   const [statTrio, setStatTrio] = useState<ShareStatPair[]>([]);
   const [canvasReady, setCanvasReady] = useState(false);
   const [fontsReady, setFontsReady] = useState(false);
+  // CR-01: mirrors ShareCardCanvas's onFontsReady gate -- true when there's no photo (or the
+  // current photo's async decode has settled), false the instant a photo swap starts. Starts
+  // `true` to match the initial void-card state (no photo picked yet).
+  const [backgroundReady, setBackgroundReady] = useState(true);
   const [sharing, setSharing] = useState(false);
 
   // D-06: photo-first background pick state.
@@ -179,15 +183,22 @@ export default function ShareScreen(): React.JSX.Element {
     };
   }, [workoutId]);
 
-  // Pitfall 4 + font-load guard: only enable Share once the card has real data, the Skia
-  // fonts have finished loading (a blank-text export would be indistinguishable from a
-  // successful share -- see ShareCardCanvas.tsx's onFontsReady doc comment), AND the canvas
-  // has settled.
+  // Pitfall 4 + font-load + background-load guard: only enable Share once the card has real
+  // data, the Skia fonts have finished loading (a blank-text export would be indistinguishable
+  // from a successful share -- see ShareCardCanvas.tsx's onFontsReady doc comment), the
+  // background photo's decode has settled (CR-01 -- ShareCardCanvas's onBackgroundReady, same
+  // reasoning: a stale/blank frame mid photo-swap would otherwise be indistinguishable from a
+  // successful share), AND the canvas has settled. Re-arms whenever ANY of these flips back to
+  // not-ready (in practice: a photo swap flips `backgroundReady` false) -- the guard is not a
+  // one-way latch.
   useEffect(() => {
-    if (hss == null || !fontsReady) return;
+    if (hss == null || !fontsReady || !backgroundReady) {
+      setCanvasReady(false);
+      return;
+    }
     const timer = setTimeout(() => setCanvasReady(true), CANVAS_SETTLE_MS);
     return () => clearTimeout(timer);
-  }, [hss, fontsReady]);
+  }, [hss, fontsReady, backgroundReady]);
 
   // D-06: the compose flow leads with picking a photo -- auto-launch once on mount. One-time
   // pushed screen (matches detail.tsx's plain-useEffect precedent), guarded by a ref so a
@@ -244,10 +255,18 @@ export default function ShareScreen(): React.JSX.Element {
     if (!canvasReady || sharing) return;
     setSharing(true);
     try {
-      await exportAndShareCard(canvasRef);
+      // WR-01: exportAndShareCard's documented contract is a `false` resolution (never a
+      // throw) on any failure -- surface that to the user instead of silently discarding it.
+      const shared = await exportAndShareCard(canvasRef);
+      if (!shared) {
+        Alert.alert('Share failed', 'Could not share this card. Please try again.');
+      }
     } catch (err: unknown) {
-      // Defense in depth -- exportAndShareCard never throws, but this screen still guards.
+      // Defense in depth -- exportAndShareCard never throws per its documented contract, but
+      // this screen still guards against an unexpected exception, with the same user-facing
+      // feedback as the documented `false` failure path above (IN-02).
       console.error('[Apsis] share.tsx export failed:', err);
+      Alert.alert('Share failed', 'Could not share this card. Please try again.');
     } finally {
       setSharing(false);
     }
@@ -284,6 +303,7 @@ export default function ShareScreen(): React.JSX.Element {
               backgroundPhotoUri={selectedPhotoUri}
               canvasRef={canvasRef}
               onFontsReady={setFontsReady}
+              onBackgroundReady={setBackgroundReady}
             />
           </View>
         </View>

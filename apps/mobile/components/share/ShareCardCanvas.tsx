@@ -58,7 +58,7 @@
  * else still renders).
  */
 
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import type { RefObject } from 'react';
 import {
   Canvas,
@@ -74,6 +74,7 @@ import {
   useImage,
   vec,
   type CanvasRef,
+  type SkImage,
 } from '@shopify/react-native-skia';
 import { Archivo_900Black } from '@expo-google-fonts/archivo';
 import { JetBrainsMono_500Medium } from '@expo-google-fonts/jetbrains-mono';
@@ -152,6 +153,16 @@ export interface ShareCardCanvasProps {
    * indistinguishable from a successful share.
    */
   onFontsReady?: (ready: boolean) => void;
+  /**
+   * CR-01 fix: fires `false` the instant `backgroundPhotoUri` changes (a fresh async photo
+   * decode has just started) and `true` once that decode has settled for the CURRENT uri --
+   * either resolved to an image, or a confirmed failure (which falls back to the void
+   * composition, D-07). Also fires `true` immediately when there is no photo to wait on. The
+   * compose screen gates the Share button on this (alongside `onFontsReady` and its Pitfall-4
+   * settle timer) so a background-photo swap can never be captured mid-decode as a stale or
+   * blank frame.
+   */
+  onBackgroundReady?: (ready: boolean) => void;
 }
 
 /**
@@ -172,13 +183,64 @@ export default function ShareCardCanvas({
   backgroundPhotoUri,
   canvasRef,
   onFontsReady,
+  onBackgroundReady,
 }: ShareCardCanvasProps): React.JSX.Element {
   // D-02: same capped-arc formula as the in-app ring, imported (not redefined).
   const fillFraction = Math.min(hss / RING_FILL_REFERENCE_HSS, 1);
 
-  // D-06/D-10: the picked background photo -- useImage never throws, `null` (missing prop or a
-  // failed load) falls back to the void `<Fill>` below rather than crashing the export.
-  const photoImage = useImage(backgroundPhotoUri ?? undefined);
+  // D-06/D-10/CR-01: the picked background photo -- useImage never throws, `null` (missing prop
+  // or a failed load) falls back to the void `<Fill>` below rather than crashing the export.
+  //
+  // Readiness tracking: useImage's internal `data` state does NOT reset to null when `source`
+  // changes -- it keeps the PREVIOUS resolved value until the new load settles (see
+  // @shopify/react-native-skia's `Data.ts` `useLoading`) -- so neither a bare `photoImage != null`
+  // check nor a naive reference-equality check can reliably tell "still decoding the new uri"
+  // apart from "decode finished." `pendingUriRef` records the uri we're currently waiting on;
+  // the effect below flips `onBackgroundReady` to false the instant `backgroundPhotoUri` changes
+  // and back to true once `photoImage` resolves to a NEW value for that same uri. A failed
+  // decode instead resolves back to the SAME `null` the canvas already held (a reference check
+  // alone can't see that), so `useImage`'s own `onError` callback closes that gap -- it is
+  // closed over the `backgroundPhotoUri` that was current when THIS decode attempt started, so a
+  // stale/superseded swap's late failure can never incorrectly mark a newer pending uri ready.
+  const pendingUriRef = useRef<string | null>(null);
+  const settledImageRef = useRef<SkImage | null>(null);
+  const photoImage = useImage(backgroundPhotoUri ?? undefined, () => {
+    if (pendingUriRef.current === (backgroundPhotoUri ?? null)) {
+      pendingUriRef.current = null;
+      onBackgroundReady?.(true);
+    }
+  });
+
+  useEffect(() => {
+    if (backgroundPhotoUri == null) {
+      // D-07: void card has no async background to wait on -- always ready.
+      pendingUriRef.current = null;
+      settledImageRef.current = photoImage;
+      onBackgroundReady?.(true);
+      return;
+    }
+    if (pendingUriRef.current !== backgroundPhotoUri) {
+      // A new uri just arrived -- not ready until it settles (below, or via the onError
+      // callback above).
+      pendingUriRef.current = backgroundPhotoUri;
+      onBackgroundReady?.(false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [backgroundPhotoUri, onBackgroundReady]);
+
+  useEffect(() => {
+    if (
+      backgroundPhotoUri != null &&
+      photoImage != null &&
+      photoImage !== settledImageRef.current &&
+      pendingUriRef.current === backgroundPhotoUri
+    ) {
+      pendingUriRef.current = null;
+      settledImageRef.current = photoImage;
+      onBackgroundReady?.(true);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [photoImage, backgroundPhotoUri, onBackgroundReady]);
 
   // Ring variant (see file-header doc comment): photo card -> compact top-left badge; void
   // card (including a failed photo load) -> large centered hero ring. Keyed off the RESOLVED
