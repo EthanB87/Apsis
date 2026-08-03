@@ -273,12 +273,12 @@ RN core `Share` / existing expo-file-system) — a new native module is acceptab
 research shows Skia snapshot is unworkable, and must be flagged as a 06-06 gate.
 **Requirements**: TBD (no v1.0 requirement IDs map to Phase 8 — scoped by 08-CONTEXT.md D-01..D-16)
 **Depends on:** Phase 7
-**Plans:** 4 plans
+**Plans:** 1/4 plans executed
 
 Plans:
 **Wave 1**
 
-- [ ] 08-01-PLAN.md — Native dep gate: expo-image-picker/expo-file-system/expo-sharing install (SUS legitimacy checkpoint) + app.json photo permission + 06-06 build gate (D-06/D-08/D-15)
+- [x] 08-01-PLAN.md — Native dep gate: expo-image-picker/expo-file-system/expo-sharing install (SUS legitimacy checkpoint) + app.json photo permission + 06-06 build gate (D-06/D-08/D-15)
 
 **Wave 2** *(blocked on 08-01)*
 

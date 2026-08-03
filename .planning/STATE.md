@@ -2,18 +2,18 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-current_phase: 07
+current_phase: 08
+current_phase_name: share-card-social-overlay
 status: executing
-stopped_at: Phase 8 context gathered
-last_updated: "2026-08-03T16:04:57.538Z"
-last_activity: 2026-07-20
-last_activity_desc: Phase 07 complete
+stopped_at: Completed 08-01-PLAN.md
+last_updated: "2026-08-03T17:32:02.657Z"
+last_activity: 2026-08-03
+last_activity_desc: Phase 08 execution started
 progress:
   total_phases: 7
   completed_phases: 5
   total_plans: 58
-  completed_plans: 50
-current_phase_name: nutrition-tracking
+  completed_plans: 51
 ---
 
 # Project State — Apsis
@@ -24,16 +24,16 @@ See: .planning/PROJECT.md (updated 2026-07-12)
 
 **Core value:** Log lifting + running in one app, instantly see one honest combined
 training-load number (HSS) and a readiness band — fully offline.
-**Current focus:** Phase 07 — nutrition-tracking
+**Current focus:** Phase 08 — share-card-social-overlay
 
 ## Current Position
 
-Phase: 07
-Plan: Not started
+Phase: 08 (share-card-social-overlay) — EXECUTING
+Plan: 2 of 4
 Status: Ready to execute
-Last activity: 2026-07-20 — Phase 07 complete
+Last activity: 2026-08-03 — Phase 08 execution started
 
-Progress: [█████████████░░░░░░░] 67% (4/6 phases complete, 27/27 executed plans)
+Progress: [█████████░] 88% (4/6 phases complete, 27/27 executed plans)
 
 ## Performance Metrics
 
@@ -111,6 +111,11 @@ Progress: [█████████████░░░░░░░] 67% (4/
 | Phase 07 P08 | 26min | 2 tasks | 10 files |
 | Phase 07 P09 | 25min | 2 tasks | 4 files |
 | Phase 07 P11 | 6min | 2 tasks | 2 files |
+**Per-Plan Metrics:**
+
+| Plan | Duration | Tasks | Files |
+|------|----------|-------|-------|
+| Phase 08 P01 | 8min | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -241,6 +246,7 @@ Recent decisions affecting current work:
 - [Phase 07]: [Phase 07 P08]: Added findFoodByBarcode to nutritionQueries.ts (Rule 2 deviation, outside 07-08's declared files) -- the barcode chain's local-cache step had no query builder anywhere in the codebase
 - [Phase 07 P09]: labelOcrParse's field names mirror the food table's per-100g columns directly (no serving-to-100g conversion) -- the mandatory editable review step in label-scan.tsx is the correctness backstop, not the parser
 - [Phase 07 P09]: label-scan.tsx builds its own editable macro-review form (mirrors nutrition/log.tsx's Custom food mode) rather than pre-filling FoodConfirmSheet directly -- FoodConfirmSheet has no macro-editing UI and food.kcalPer100g/etc are NOT NULL, so undefined OCR fields cannot reach an insert without a fill-in step
+- [Phase ?]: Installed via npx expo install (not pnpm add) so each package resolved to its SDK-56-compatible line; expo-image-picker cameraPermission/microphonePermission left unset to preserve existing expo-camera-owned NSCameraUsageDescription string; expo-sharing self-registered its plugin entry with no permission needed
 
 ### Roadmap Evolution
 
@@ -333,9 +339,9 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-08-03T15:31:21.003Z
-Stopped at: Phase 8 context gathered
+Last session: 2026-08-03T17:32:02.615Z
+Stopped at: Completed 08-01-PLAN.md
 to roadmap, sequenced before 06-06/06-07. Next: /gsd-plan-phase 8 (or discuss first),
 then resume Phase 06 Wave 2 (06-06 production build — last EAS pnpm-detection fix
 87b5a3d unverified).
-Resume file: C:/Users/ethan/Development/Apsis/.planning/phases/08-share-card-social-overlay/08-CONTEXT.md
+Resume file: None
