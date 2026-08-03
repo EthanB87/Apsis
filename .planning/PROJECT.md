@@ -25,6 +25,7 @@ and a readiness band — fully offline. If everything else fails, this must work
 - [x] User sees a 14–30 day load / readiness trend on the home screen — Validated in Phase 04: 28-day Skia trend chart with scrub tooltip, calibrating hero <14 days
 - [x] All logging works fully offline; local SQLite is the source of truth — Validated in Phases 03–04: op-sqlite JSI + drizzle, write→recompute→UI chain proven on device with no network path
 - [x] Apple HealthKit import for runs/HR/weight + push logged workouts back — Validated in Phase 05: 90-day backfill + foreground anchor sync, provenance-based dedupe, write-back with delete-sync, on-device UAT 4/4 passed (post code-review fixes); security review clean (10/10 threats closed)
+- [x] Shareable session card (Strava-style) — Validated in Phase 08: photo-first compose (pick/swap/skip + permission fallbacks), Skia card with HSS ring (compact top-left on photo, centered hero on void), stat trio + APSIS footer, PNG export via iOS share sheet from finish screen and History detail; full on-device UAT passed, verification 16/16 (scoped by 08-CONTEXT.md D-01..D-16, no v1.0 REQ-IDs by design)
 
 ### Active
 
@@ -101,4 +102,4 @@ This document evolves at phase transitions and milestone boundaries.
 
 ---
 
-_Last updated: 2026-07-12 after Phase 05 (HealthKit Integration) completion — import (backfill + anchor sync), provenance dedupe, bodyweight most-recent-wins, and Health write-back/delete-sync shipped; post-execution code review found and fixed 13 defects (3 critical) before device UAT (4/4 passed on post-fix build); security review clean (10/10 threats closed); next: Phase 06 Polish & App Store Submission_
+_Last updated: 2026-08-03 after Phase 08 (Share Card Social Overlay) completion — photo-first share card shipped (Skia render → PNG → iOS share sheet, both entry points), on-device UAT passed; code review found 1 blocker (stale-export race on photo swap) + 2 warnings, all fixed and re-verified 16/16; Skia matchFont→useFont lesson logged (expo-font families are invisible to Skia's font manager; TrendChart may share the bug — ledger item open); better-sqlite3 bumped to 12.x for Node 24 ABI; next: Phase 06 Polish & App Store Submission (fresh EAS build already includes the three new native deps)_
