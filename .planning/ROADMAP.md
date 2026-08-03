@@ -273,7 +273,7 @@ RN core `Share` / existing expo-file-system) — a new native module is acceptab
 research shows Skia snapshot is unworkable, and must be flagged as a 06-06 gate.
 **Requirements**: TBD (no v1.0 requirement IDs map to Phase 8 — scoped by 08-CONTEXT.md D-01..D-16)
 **Depends on:** Phase 7
-**Plans:** 2/4 plans executed
+**Plans:** 3/4 plans executed
 
 Plans:
 **Wave 1**
@@ -286,7 +286,7 @@ Plans:
 
 **Wave 3** *(blocked on 08-02)*
 
-- [ ] 08-03-PLAN.md — Full card composition: fixed stat trio + branded footer + recomposed sizing + History detail entry point (D-03/D-04/D-09/D-11)
+- [x] 08-03-PLAN.md — Full card composition: fixed stat trio + branded footer + recomposed sizing + History detail entry point (D-03/D-04/D-09/D-11)
 
 **Wave 4** *(blocked on 08-03)*
 

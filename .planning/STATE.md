@@ -5,15 +5,15 @@ milestone_name: milestone
 current_phase: 08
 current_phase_name: share-card-social-overlay
 status: executing
-stopped_at: Completed 08-02-PLAN.md (on-device checkpoint approved)
-last_updated: "2026-08-03T18:49:27.789Z"
+stopped_at: Completed 08-03-PLAN.md
+last_updated: "2026-08-03T19:01:08.162Z"
 last_activity: 2026-08-03
 last_activity_desc: Phase 08 execution started
 progress:
   total_phases: 7
   completed_phases: 5
   total_plans: 58
-  completed_plans: 52
+  completed_plans: 53
 ---
 
 # Project State — Apsis
@@ -29,11 +29,11 @@ training-load number (HSS) and a readiness band — fully offline.
 ## Current Position
 
 Phase: 08 (share-card-social-overlay) — EXECUTING
-Plan: 3 of 4
+Plan: 4 of 4
 Status: Ready to execute
 Last activity: 2026-08-03 — Phase 08 execution started
 
-Progress: [█████████░] 90% (4/6 phases complete, 27/27 executed plans)
+Progress: [█████████░] 91% (4/6 phases complete, 27/27 executed plans)
 
 ## Performance Metrics
 
@@ -117,6 +117,7 @@ Progress: [█████████░] 90% (4/6 phases complete, 27/27 execu
 |------|----------|-------|-------|
 | Phase 08 P01 | 8min | 2 tasks | 3 files |
 | Phase 08 P02 | 8min | 2 tasks | 6 files |
+| Phase 08 P03 | 10min | 3 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -250,6 +251,9 @@ Recent decisions affecting current work:
 - [Phase ?]: Installed via npx expo install (not pnpm add) so each package resolved to its SDK-56-compatible line; expo-image-picker cameraPermission/microphonePermission left unset to preserve existing expo-camera-owned NSCameraUsageDescription string; expo-sharing self-registered its plugin entry with no permission needed
 - [Phase ?]: [Phase 08 P02] Phase 08's D-XX decision codes (08-CONTEXT.md) are phase-local, not REQUIREMENTS.md REQ-IDs -- requirements.mark-complete correctly no-ops on them
 - [Phase ?]: [Phase 08 P02] Share-edition HSS ring recomposed as a standalone 1080px Skia Circle (not a re-mount of HssRing), reusing RING_FILL_REFERENCE_HSS and the capped fillFraction formula -- Skia Canvas trees cannot embed react-native-svg components
+- [Phase ?]: [Phase 08 P03] Work-set count (D-03) excludes warmup sets across both reps-mode and timed-mode strength sets, diverging from finish.tsx's per-exercise setCount which includes warmups
+- [Phase ?]: [Phase 08 P03] Lift session duration derives from workout.createdAt -> workout.finishedAt, degrading to 0 rather than throwing if finishedAt is still null (D-14 crash-resume path)
+- [Phase ?]: [Phase 08 P03] Plate-mark footer asset rendered undyed via useImage -- the PNG is already bone/ash/volt colored, matching the palette with no Skia ColorFilter tint needed
 
 ### Roadmap Evolution
 
@@ -342,8 +346,8 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-08-03T18:49:27.761Z
-Stopped at: Completed 08-02-PLAN.md (on-device checkpoint approved)
+Last session: 2026-08-03T19:01:08.132Z
+Stopped at: Completed 08-03-PLAN.md
 to roadmap, sequenced before 06-06/06-07. Next: /gsd-plan-phase 8 (or discuss first),
 then resume Phase 06 Wave 2 (06-06 production build — last EAS pnpm-detection fix
 87b5a3d unverified).
