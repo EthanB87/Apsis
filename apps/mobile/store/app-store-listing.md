@@ -41,6 +41,10 @@ Connect Apple Health and Apsis pulls in your runs, heart rate, and bodyweight au
 pushes your logged sessions back so they show up alongside your other workouts. HealthKit is
 optional — skip it in onboarding and connect later from Settings if you change your mind.
 
+Done with a session? Share it. Apsis builds a branded workout-summary card — your HSS and key
+stats, with an optional photo background you pick and compose right on your phone — and hands it
+to the standard iOS share sheet so you post it wherever you want.
+
 Built for HYROX and tactical athletes who train two disciplines and need one shared unit for
 what it's actually costing them.
 
@@ -48,6 +52,7 @@ what it's actually costing them.
 - Nutrition with day-type adaptive calorie & macro targets — barcode scan, search, or manual entry
 - Fast, tap-to-type set logging — no unnecessary steppers or screens
 - Readiness trend (green/amber/red) over your last 14–30 days
+- Shareable workout-summary card with an optional photo background, sent via the iOS share sheet
 - Apple Health import and write-back, fully optional
 - Offline-first — your logged data stays on your device (barcode/online food lookups aside)
 
@@ -89,12 +94,24 @@ health, or logged data. Food logging works offline via manual entry.
 The only diagnostic data that leaves the device is anonymous crash reports (Sentry) — error type,
 stack trace, device/OS model, and app version only; no personal or health information.
 
+Photo-library access is requested only when the user taps to add an optional background photo
+to a shareable workout-summary card; the app never accesses the photo library otherwise. The
+picked photo is composed into the share image entirely on-device. Neither the photo nor the
+composed image is transmitted by the app — the image only leaves the device if the user
+explicitly shares it via the standard iOS share sheet.
+
 ---
 
-**Status:** Approved 2026-07-13; revised & re-approved 2026-07-20 after nutrition shipped in v1.
-Changes (owner-approved): subtitle → "Lift, run + fuel in one app" (nutrition signal); description
-gains a nutrition paragraph + bullet; keywords add macros/nutrition/calories (89/100); promotional
-text mentions fuel + adaptive macro targets; App Review notes disclose camera-for-barcode + the
-Open Food Facts / USDA food-lookup network calls; "100% offline" claims corrected to "offline-first"
-(logging is local; barcode/online food search query external food databases). App name unchanged.
+**Status:** Approved 2026-07-13; revised & re-approved 2026-07-20 after nutrition shipped in v1;
+revised 2026-08-03 (pending re-approval, see Task 3 of `06-08-PLAN.md`) after the Phase 8 share
+card shipped. Changes (owner-approved unless noted): subtitle → "Lift, run + fuel in one app"
+(nutrition signal); description gains a nutrition paragraph + bullet; keywords add
+macros/nutrition/calories (89/100); promotional text mentions fuel + adaptive macro targets; App
+Review notes disclose camera-for-barcode + the Open Food Facts / USDA food-lookup network calls;
+the earlier fully-offline claim corrected to "offline-first" (logging is local; barcode/online
+food search query external food databases). 2026-08-03 addition: description gains a share-card sentence +
+Features bullet; App Review notes gain a photo-library-access disclosure (optional share-card
+background photo, composed on-device, shared only via the user-initiated iOS share sheet — no
+photo or image transmitted by the app). App name unchanged (26/30). Subtitle unchanged (27/30).
+Keywords unchanged (89/100) — the share card introduced no new field-length pressure.
 This is the source of truth for App Store Connect entry in plan 06-07.
