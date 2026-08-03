@@ -376,6 +376,20 @@ export default function FinishScreen(): React.JSX.Element {
         ) : null}
       </ScrollView>
 
+      {/* D-13: secondary bone-filled "Share card" entry point (D-11) -- the Done CTA below
+          keeps sole ownership of the volt fill (one-volt-per-screen hard rule). */}
+      <Pressable
+        onPress={() => {
+          if (!workoutId) return;
+          router.push({ pathname: '/session/share', params: { workoutId } });
+        }}
+        disabled={!workoutId}
+        accessibilityRole="button"
+        accessibilityLabel="Share card"
+        style={({ pressed }) => [styles.shareButton, pressed && styles.shareButtonPressed]}>
+        <Text style={styles.shareButtonLabel}>Share card</Text>
+      </Pressable>
+
       <Pressable
         onPress={handleDone}
         disabled={busy}
@@ -511,6 +525,25 @@ const styles = StyleSheet.create({
     ...Typography.label,
     color: Colors.dark.mutedText,
     marginBottom: Spacing.xs,
+  },
+  // Bone-filled secondary CTA (D-13) -- mirrors nutrition-setup/index.tsx's
+  // goalOptionSelected/goalLabelSelected bone-active-fill convention so the volt Done button
+  // below keeps sole ownership of the volt fill.
+  shareButton: {
+    minHeight: HIT_TARGET_MIN,
+    marginHorizontal: Spacing.xl,
+    marginBottom: Spacing.sm,
+    borderRadius: Radius.md,
+    backgroundColor: Colors.dark.text,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  shareButtonPressed: {
+    opacity: DISABLED_OPACITY,
+  },
+  shareButtonLabel: {
+    ...Typography.body,
+    color: Colors.dark.onAccent,
   },
   button: {
     minHeight: 48,
