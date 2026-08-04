@@ -308,12 +308,12 @@ Plans:
   3. Any crash/analytics reporting (Sentry) is audited and confirmed to scrub all HealthKit-derived values (HR, HSS, workout details) before any event or breadcrumb is sent.
   4. The binary is built via EAS and submitted to App Store review by ~July 25, 2026, leaving a 1–3 day buffer before July 28.
 
-**Plans**: 4/8 plans executed
+**Plans**: 5/8 plans executed
 
 Plans:
 **Wave 1** *(parallel — no cross-file conflicts)*
 
-- [ ] 06-01-PLAN.md — Pre-flight: delete stray root app.json/eas.json (Pitfall 2) + fix icon alpha channel (Pitfall 1) + confirm Apple Developer enrollment & create ASC app record (REL-01/REL-04) *(paused on human checkpoint; ascAppId 6792933794 already in eas.json)*
+- [x] 06-01-PLAN.md — Pre-flight: delete stray root app.json/eas.json (Pitfall 2) + fix icon alpha channel (Pitfall 1) + confirm Apple Developer enrollment & create ASC app record (REL-01/REL-04) *(paused on human checkpoint; ascAppId 6792933794 already in eas.json)*
 - [x] 06-02-PLAN.md — REL-03 crash reporting: pure Sentry allowlist sanitizer + @sentry/react-native install + config plugin/metro wrap + Sentry.init/wrap in root layout (REL-03)
 - [x] 06-03-PLAN.md — Folded catalog: expand STARTER_EXERCISES 43→~150 (D-13) + ab-wheel/hanging-leg-raise bwFactor fix (D-14), migration-free (REL-01)
 - [ ] 06-04-PLAN.md — REL-02 static pages: privacy policy + support page (Pitfall 5), reviewed & deployed HTTPS on apsistraining.com (REL-02) *(paused pre-publish; publish AFTER 06-08 lands the photo/share-card copy correction)*
@@ -342,4 +342,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 | 03. Onboarding & Lifting Logger | 11/11 | Complete    | 2026-07-10 |
 | 04. Run Logger & Home Dashboard | 10/10 | Complete    | 2026-07-10 |
 | 05. HealthKit Integration | 9/9 | Complete    | 2026-07-12 |
-| 06. Polish & App Store Submission | 4/8 | In Progress|  |
+| 06. Polish & App Store Submission | 5/8 | In Progress|  |

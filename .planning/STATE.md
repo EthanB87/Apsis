@@ -5,15 +5,15 @@ milestone_name: milestone
 current_phase: 06
 current_phase_name: polish-app-store-submission
 status: executing
-stopped_at: 06-08 complete -- privacy policy + listing copy re-approved 2026-08-03 (share-card disclosure). 06-04 Task 3 publish gate unblocked; docs-site/ deploy still pending.
-last_updated: "2026-08-04T00:04:50.469Z"
+stopped_at: 06-01 complete -- config cleanup + icon fix committed 2026-07-12; Task 3 (Apple Developer/ASC) approved 2026-08-03. ascAppId still PENDING from user, required before 06-07.
+last_updated: "2026-08-04T00:07:58.000Z"
 last_activity: 2026-08-03
 last_activity_desc: Phase 06 execution started
 progress:
   total_phases: 7
   completed_phases: 6
   total_plans: 59
-  completed_plans: 55
+  completed_plans: 56
 ---
 
 # Project State — Apsis
@@ -29,7 +29,7 @@ training-load number (HSS) and a readiness band — fully offline.
 ## Current Position
 
 Phase: 06 (polish-app-store-submission) — EXECUTING
-Plan: 2 of 8
+Plan: 3 of 8
 Status: Ready to execute
 Last activity: 2026-08-03 — Phase 06 execution started
 
@@ -121,6 +121,7 @@ Progress: [█████████░] 93% (4/6 phases complete, 27/27 execu
 | Phase 08 P03 | 10min | 3 tasks | 5 files |
 | Phase 08 P04 | 55min | 3 tasks | 3 files |
 | Phase 06 P08 | ~10min | 3 tasks | 2 files |
+| Phase 06 P01 | ~4min | 3 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -262,6 +263,7 @@ Recent decisions affecting current work:
 - [Phase ?]: Photo share cards render a compact top-left ring badge (photo stays the hero); void cards keep the large centered hero ring — user-approved on-device
 - [Phase ?]: [Phase 06 P08]: Privacy policy 'Share cards and photos' section placed after Food lookups and before Apple Health; fixed pre-existing anchor-tag line-wrap splitting 'Open Food Facts' and a stray '100% offline' substring in the listing footer (both Rule 1 fixes required for this plan's own verify gates)
 - [Phase ?]: [Phase 06 P08]: 06-08 complete 2026-08-03 (human re-approved both corrected documents, no edits) -- unblocks paused 06-04 Task 3 publish gate, but docs-site/ has NOT yet been deployed to apsistraining.com
+- [Phase 06]: [Phase 06 P01]: 06-01 complete -- root app.json/eas.json (wrong bundle id com.apsistraining.apsis) deleted, apps/mobile/ is the single config source; icon.png re-exported opaque RGB (colorType 2) with persisted apps/mobile/scripts/check-icon-alpha.mjs regression guard; Task 3 human checkpoint approved 2026-08-03 (Apple Developer membership active, ASC app record for com.apsis.app created) -- ascAppId discrepancy found: 6792933794 already committed in apps/mobile/eas.json since 2026-07-20 (f19f2540d), contradicting the 2026-08-03 reply that it hasn't been provided; unresolved, must be reconciled by a human before 06-07
 
 ### Roadmap Evolution
 
@@ -321,12 +323,16 @@ None yet.
   (commit 18fd982, Phase 06 Wave 1 post-merge gate): FIELD_ROUTE typed as `Record<..., Href>`,
   ExternalLink href typed `Href & string`. Root `pnpm typecheck` is now clean.
 
-- ⏸ [Phase 06 Wave 1 pause] Two blocking human-action checkpoints outstanding:
-  (1) 06-01 Task 3 — confirm Apple Developer membership active through ~2026-07-28 and
-  create the ASC app record for `com.apsis.app`; capture the numeric ascAppId (needed by
-  06-07’s submit profile). Gates Wave 2 (06-06 production build). ASC app record for
-  com.apsis.app has been created, but the numeric ascAppId has NOT yet been recorded --
-  user will provide before 06-07.
+- ✅ [Phase 06 Wave 1] 06-01 is now COMPLETE (2026-08-03) -- Task 3 checkpoint approved:
+  Apple Developer Program membership confirmed active, and the App Store Connect app record
+  for `com.apsis.app` ("Apsis") has been created. Wave 2 (06-06 production build) is unblocked.
+  **UNRESOLVED DISCREPANCY (non-gating for 06-06, HARD-GATING for 06-07):** the 2026-08-03
+  checkpoint reply stated the numeric ascAppId has NOT yet been supplied and would come before
+  06-07. But `apps/mobile/eas.json`'s `submit.production.ios.ascAppId` already contains
+  `"6792933794"`, committed 2026-07-20 (`f19f2540d`) -- two weeks before that reply. A human
+  must confirm whether 6792933794 is still the correct/current Apple ID for the com.apsis.app
+  ASC record before 06-07's submit-profile step runs; do not assume "done" or "pending" from
+  06-01 being marked complete. See 06-01-SUMMARY.md D4/Deviations for full detail.
   (2) 06-04 Task 3 — review `docs-site/privacy/index.html` copy, publish docs-site/ to
   apsistraining.com over HTTPS, verify /privacy and /support return 200. Gates Wave 3 (06-07).
   06-08 (corrective privacy/listing copy, incl. the Phase 8 photo-library/share-card
@@ -363,10 +369,13 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-08-04T00:04:50.429Z
-Stopped at: 06-08 complete -- privacy policy + listing copy re-approved 2026-08-03 (share-card
-disclosure). 06-04 Task 3 publish gate is now unblocked, but docs-site/ has NOT yet been
-deployed to apsistraining.com -- that deploy + the /privacy and /support 200 checks are still
-outstanding. Next: deploy docs-site/ and complete 06-04, then resume Phase 06 Wave 2 (06-06
-production build -- last EAS pnpm-detection fix 87b5a3d unverified).
+Last session: 2026-08-04T00:07:58.000Z
+Stopped at: 06-01 complete -- config cleanup + icon fix committed 2026-07-12; Task 3 (Apple
+Developer membership + ASC app record for com.apsis.app) approved 2026-08-03. ascAppId still
+PENDING from user, required before 06-07's submit-profile step. 06-08 also complete -- privacy
+policy + listing copy re-approved 2026-08-03 (share-card disclosure); 06-04 Task 3 publish gate
+is unblocked, but docs-site/ has NOT yet been deployed to apsistraining.com -- that deploy +
+the /privacy and /support 200 checks are still outstanding. Next: deploy docs-site/ and
+complete 06-04, then resume Phase 06 Wave 2 (06-06 production build -- last EAS pnpm-detection
+fix 87b5a3d unverified).
 Resume file: .planning/phases/06-polish-app-store-submission/06-04-PLAN.md
