@@ -368,8 +368,13 @@ None yet.
   SENTRY_AUTH_TOKEN/EXPO_PUBLIC_SENTRY_DSN loaded; Sentry source-map upload to be spot-checked in the
   cloud build log). `eas submit` then SUCCEEDED — build 9 uploaded to App Store Connect (ascAppId
   6792933794, submission fa94543d-b10b-4ae2-a5e2-f1f44e50f8a5), now processing on Apple's side.
-  REMAINING for Task 2: build appears in ASC TestFlight → add to an External test group → submit for
-  Beta App Review → enable public link. Then Task 3 (D-12 beta gate + Sentry scrub confirmation).
+  **Task 2 COMPLETE (2026-08-03):** build 9 processed in ASC, export compliance handled, external
+  tester group created (CSV import), build 9 added to the group, and Beta App Review submitted —
+  status "Waiting for Review" (no-SLA queue). All Task 2 acceptance criteria met; no credentials
+  committed. NOW PAUSED at Task 3 (blocking human-verify): once beta review approves → testers get
+  invites / enable public link → run the D-12 beta gate (lifting/running/HealthKit/nutrition/share
+  card on-device) + confirm a live Sentry event scrubs health AND nutrition values (REL-03/NUTR-22).
+  Resume signal: "beta clear" (or a blocker list) → then write 06-06-SUMMARY.md and close the plan.
 
 ### Quick Tasks Completed
 
