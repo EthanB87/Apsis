@@ -267,6 +267,16 @@ Recent decisions affecting current work:
 
 ### Roadmap Evolution
 
+- Phase 9 added (2026-08-04, owner decision): Beta feedback round 1 — build 9 passed Apple
+  Beta App Review and is live with TestFlight testers; first feedback round produced 4 items,
+  ALL owner-approved to ship pre-submission in build 10: (1) FoodConfirmSheet keyboard-blocks-
+  quantity bug + no Done button, (2) oz/lb food quantity entry alongside grams, (3) split
+  metric/imperial units pref into body/lifts vs run-distance units (DB migration; imperial
+  lifts + km runs mixed mode), (4) onboarding HSS/readiness/stats explainer step. Phase 9
+  executes NOW before 06-06 closes and before 06-07 (Phase 7/8 re-sequencing precedent).
+  Consequence: build 9 is no longer the submission candidate — after Phase 9, a new
+  production build (10) + TestFlight beta pass re-runs the 06-06 Task 3 gate on build 10.
+
 - Phase 8 added (2026-08-03, owner decision): Share Card Social Overlay — Strava-style
   shareable workout-summary image (branding, session HSS, key stats) posted via the iOS
   share sheet. Ships IN the App Store submission build: Phase 8 executes NOW, before
@@ -400,12 +410,10 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-08-04T21:00:00.000Z
-Stopped at: 06-04 is now COMPLETE (2026-08-04) — 06-04-SUMMARY.md written, privacy + support pages
-verified live (200/HTTPS) on apsistraining.com, REL-02 satisfied. Phase 06 Wave 1 (06-01, 06-02,
-06-03, 06-04, 06-05, 06-08) is fully complete. 06-06 remains PAUSED at Task 3, a blocking
-human-verify checkpoint (D-12 beta gate + on-device Sentry health/nutrition scrub confirmation) —
-build 9 is in Apple's Beta App Review queue, status "Waiting for Review" (no SLA). ascAppId
-discrepancy (6792933794, see Blockers/Concerns) is RESOLVED, no further action needed. Only 06-06
-Task 3 and 06-07 (ASC submission entry) remain in the phase.
-Resume file: .planning/phases/06-polish-app-store-submission/06-06-PLAN.md
+Last session: 2026-08-04 (evening)
+Stopped at: Build 9 PASSED Apple Beta App Review — app is live in TestFlight beta. First
+beta-feedback round triaged with owner; all 4 items approved for pre-submission scope.
+Phase 9 (beta-feedback-round-1) added to ROADMAP.md, executes before 06-06 close / 06-07.
+06-06 Task 3 (D-12 beta gate + Sentry scrub confirm) now re-targets build 10, which Phase 9
+produces. Next action: /gsd-plan-phase 9 (or /gsd-discuss-phase 9 first).
+Resume file: .planning/phases/09-beta-feedback-round-1/ (no plans yet)

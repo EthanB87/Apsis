@@ -294,6 +294,17 @@ Plans:
 
 **UI hint**: yes (new compose screen + Skia card render)
 
+### Phase 9: Beta feedback round 1
+
+**Goal:** TestFlight beta feedback (build 9) is addressed and shipped in build 10 before final ASC submission: (1) FoodConfirmSheet quantity input is no longer hidden by the keyboard and gains a Done/dismiss affordance; (2) food quantity can be entered in oz/lb as well as grams (storage stays grams); (3) the single metric/imperial units preference splits into body/lifts units vs run-distance units (DB migration) so mixed mode — imperial lifts + km runs — works end to end; (4) onboarding gains an explainer step for HSS, the readiness band, and trend statistics.
+**Requirements**: TBD (beta feedback items, no existing REQ-IDs)
+**Depends on:** Phase 8 (executes NOW, before 06-06 closes and 06-07 ASC submission — mirrors Phase 7/8 re-sequencing precedent; all items ship in build 10, which supersedes build 9 as the submission build)
+**Plans:** 0 plans
+
+Plans:
+
+- [ ] TBD (run /gsd-plan-phase 9 to break down)
+
 ---
 
 ### Phase 06: Polish & App Store Submission
