@@ -5,15 +5,15 @@ milestone_name: milestone
 current_phase: 06
 current_phase_name: polish-app-store-submission
 status: executing
-stopped_at: "06-08: Tasks 1-2 committed, paused at Task 3 blocking checkpoint (re-approve corrected privacy + listing copy)"
-last_updated: "2026-08-03T23:53:08.334Z"
+stopped_at: 06-08 complete -- privacy policy + listing copy re-approved 2026-08-03 (share-card disclosure). 06-04 Task 3 publish gate unblocked; docs-site/ deploy still pending.
+last_updated: "2026-08-04T00:04:50.469Z"
 last_activity: 2026-08-03
 last_activity_desc: Phase 06 execution started
 progress:
   total_phases: 7
   completed_phases: 6
   total_plans: 59
-  completed_plans: 54
+  completed_plans: 55
 ---
 
 # Project State — Apsis
@@ -29,8 +29,8 @@ training-load number (HSS) and a readiness band — fully offline.
 ## Current Position
 
 Phase: 06 (polish-app-store-submission) — EXECUTING
-Plan: 1 of 8
-Status: Executing Phase 06
+Plan: 2 of 8
+Status: Ready to execute
 Last activity: 2026-08-03 — Phase 06 execution started
 
 Progress: [█████████░] 93% (4/6 phases complete, 27/27 executed plans)
@@ -120,6 +120,7 @@ Progress: [█████████░] 93% (4/6 phases complete, 27/27 execu
 | Phase 08 P02 | 8min | 2 tasks | 6 files |
 | Phase 08 P03 | 10min | 3 tasks | 5 files |
 | Phase 08 P04 | 55min | 3 tasks | 3 files |
+| Phase 06 P08 | ~10min | 3 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -259,6 +260,8 @@ Recent decisions affecting current work:
 - [Phase ?]: Skia card fonts load via useFont(raw TTF from @expo-google-fonts), not matchFont(family name) — expo-font registration is invisible to Skia's system font manager (fixed phase-wide silent blank-text bug)
 - [Phase ?]: Share export gated on onFontsReady + canvas-settle so a blank-text PNG can never be shared
 - [Phase ?]: Photo share cards render a compact top-left ring badge (photo stays the hero); void cards keep the large centered hero ring — user-approved on-device
+- [Phase ?]: [Phase 06 P08]: Privacy policy 'Share cards and photos' section placed after Food lookups and before Apple Health; fixed pre-existing anchor-tag line-wrap splitting 'Open Food Facts' and a stray '100% offline' substring in the listing footer (both Rule 1 fixes required for this plan's own verify gates)
+- [Phase ?]: [Phase 06 P08]: 06-08 complete 2026-08-03 (human re-approved both corrected documents, no edits) -- unblocks paused 06-04 Task 3 publish gate, but docs-site/ has NOT yet been deployed to apsistraining.com
 
 ### Roadmap Evolution
 
@@ -321,12 +324,16 @@ None yet.
 - ⏸ [Phase 06 Wave 1 pause] Two blocking human-action checkpoints outstanding:
   (1) 06-01 Task 3 — confirm Apple Developer membership active through ~2026-07-28 and
   create the ASC app record for `com.apsis.app`; capture the numeric ascAppId (needed by
-  06-07's submit profile). Gates Wave 2 (06-06 production build).
+  06-07’s submit profile). Gates Wave 2 (06-06 production build). ASC app record for
+  com.apsis.app has been created, but the numeric ascAppId has NOT yet been recorded --
+  user will provide before 06-07.
   (2) 06-04 Task 3 — review `docs-site/privacy/index.html` copy, publish docs-site/ to
   apsistraining.com over HTTPS, verify /privacy and /support return 200. Gates Wave 3 (06-07).
-  HARD GATE: do not resume/publish 06-04 Task 3 until 06-08-PLAN.md (corrective privacy/
-  listing copy, incl. the Phase 8 photo-library/share-card disclosure) reports complete —
-  publishing first would put an inaccurate privacy policy live (REL-02 ripple, replan 2026-08-03).
+  06-08 (corrective privacy/listing copy, incl. the Phase 8 photo-library/share-card
+  disclosure) is now COMPLETE (2026-08-03) — the hard gate on 06-04 Task 3 is satisfied and
+  publish may proceed. HOWEVER, as of 2026-08-03 the user has NOT yet deployed docs-site/ to
+  apsistraining.com — 06-04 Task 3 remains open/paused pending that deploy plus the
+  /privacy and /support 200 checks. Do not conflate "06-08 complete" with "docs-site is live."
   Also pending (non-gating until 06-06): Sentry project + EXPO_PUBLIC_SENTRY_DSN /
   SENTRY_AUTH_TOKEN per 06-USER-SETUP.md.
 
@@ -336,7 +343,7 @@ None yet.
   out-of-sync lockfile (fixed ec76663, 2026-07-11). Phase 05's HealthKit dep will hit
   the same gate: budget an EAS build cycle into the phase.
 
-- 06-08 Task 3 (blocking checkpoint): human must re-read docs-site/privacy/index.html and apps/mobile/store/app-store-listing.md and confirm the new share-card/photo disclosures are accurate before the paused 06-04 Task 3 publish and 06-07 ASC entry proceed.
+- ~~06-08 Task 3 (blocking checkpoint): human must re-read docs-site/privacy/index.html and apps/mobile/store/app-store-listing.md and confirm the new share-card/photo disclosures are accurate before the paused 06-04 Task 3 publish and 06-07 ASC entry proceed.~~ — RESOLVED 2026-08-03: user replied "copy approved" for both documents, no edits requested (see 06-08-SUMMARY.md). 06-04 Task 3 publish gate is unblocked; docs-site/ deploy itself is still pending (see Blockers/Concerns entry above).
 
 ### Quick Tasks Completed
 
@@ -356,9 +363,10 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-08-03T23:53:01.870Z
-Stopped at: 06-08: Tasks 1-2 committed, paused at Task 3 blocking checkpoint (re-approve corrected privacy + listing copy)
-to roadmap, sequenced before 06-06/06-07. Next: /gsd-plan-phase 8 (or discuss first),
-then resume Phase 06 Wave 2 (06-06 production build — last EAS pnpm-detection fix
-87b5a3d unverified).
-Resume file: .planning/phases/06-polish-app-store-submission/06-08-PLAN.md
+Last session: 2026-08-04T00:04:50.429Z
+Stopped at: 06-08 complete -- privacy policy + listing copy re-approved 2026-08-03 (share-card
+disclosure). 06-04 Task 3 publish gate is now unblocked, but docs-site/ has NOT yet been
+deployed to apsistraining.com -- that deploy + the /privacy and /support 200 checks are still
+outstanding. Next: deploy docs-site/ and complete 06-04, then resume Phase 06 Wave 2 (06-06
+production build -- last EAS pnpm-detection fix 87b5a3d unverified).
+Resume file: .planning/phases/06-polish-app-store-submission/06-04-PLAN.md
