@@ -23,6 +23,12 @@ GoogleService-Info.plist
 .expo/
 expo-env.d.ts
 
+# GSD research cache (regenerated locally; not source)
+.planning/research/.cache/
+
+# Stray planning dir under the app package (local scratch)
+apps/mobile/.planning/
+
 # OS
 .DS_Store
 Thumbs.db

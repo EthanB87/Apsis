@@ -3,7 +3,7 @@
  * The `light`/`dark` key shape is kept for future-proofing, but both resolve to
  * the same dark palette this phase.
  *
- * Palette source of truth: apsis_claude_design_prompt.md ("PERFORMANCE INSTRUMENT,
+ * Palette source of truth: docs/apsis_claude_design_prompt.md ("PERFORMANCE INSTRUMENT,
  * NOT A DIARY") — void/carbon/steel/line/bone/ash/volt/molten. Volt is the single
  * primary accent; molten is reserved for alert/heat/overreaching states only — the
  * two must never compete as fills in the same view (quick task 260709-qmv).

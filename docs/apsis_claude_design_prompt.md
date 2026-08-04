@@ -79,7 +79,7 @@ The brand mark is a **barbell plate shown in tilted perspective (an ellipse at ~
 - **Workout / session detail** — breakdown of one session with its HSS, the sets or splits, and its contribution to the day.
 - (Optional if time) **Onboarding paywall** — captures bodyweight/sex/thresholds, presents the value, and a 7-day-trial → annual plan CTA. Premium, confident, not pushy.
 
-## INTERACTION & MOTION NOTES (describe, for handoff)
+## INTERACTION  & MOTION NOTES (describe, for handoff)
 
 - The HSS ring should feel like it "fills" on load; the number can count up. The logo's motion trail can draw on.
 - Transitions are quick and crisp (no slow fades). The product should feel fast — matching the "logging is faster than the competition" promise.

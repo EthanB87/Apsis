@@ -2,8 +2,8 @@
 
 > Source of truth for all UI work. Supersedes prior component-level specs where they
 > conflict (including per-phase UI-SPEC set-row details). Provided by Ethan 2026-07-10.
-> Companion artifacts: `apsis_claude_design_prompt.md` (the Claude Design prompt that
-> produced this system), `Apsis Design System.dc.html` (visual reference).
+> Companion artifacts: `docs/apsis_claude_design_prompt.md` (the Claude Design prompt that
+> produced this system), `docs/Apsis Design System.dc.html` (visual reference).
 > Build tokens first, then components, then screens.
 
 You are building **Apsis**, a hybrid athlete training app (React Native + Expo) for people who both lift and run. It logs both training types and computes a single **Hybrid Stress Score (HSS)**. Implement the design system below exactly — it is the source of truth for all UI work. Build tokens first, then components, then screens.

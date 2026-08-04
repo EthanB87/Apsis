@@ -47,7 +47,7 @@ and a readiness band — fully offline. If everything else fails, this must work
   being the single source of truth for what a hybrid athlete actually did, with a defensible
   unified-load model as the moat.
 - Two source documents: `BUILD.md` (authoritative executable plan — wins on build decisions)
-  and `hybrid_app_brief.docx` (full product/market reasoning, broader long-term vision).
+  and `docs/hybrid_app_brief.docx` (full product/market reasoning, broader long-term vision).
 - HSS formulas and default constants are literature-anchored starting points to be tuned;
   the engine logs raw components so constants can be re-fit later without app releases.
 

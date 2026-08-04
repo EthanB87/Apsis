@@ -2,7 +2,7 @@
  * Design tokens for Apsis (UI-SPEC: Spacing Scale, Typography).
  * Dark-only theme — see constants/Colors.ts for the color palette.
  *
- * Type system (apsis_claude_design_prompt.md): Archivo Expanded (heavy) for display/
+ * Type system (docs/apsis_claude_design_prompt.md): Archivo Expanded (heavy) for display/
  * headline sizes and big numbers, Archivo for body/UI, JetBrains Mono for data/
  * telemetry (metrics, units, timestamps, set/rep data) — the mono-for-data rule is
  * core to the "performance instrument, not a diary" identity. True "Expanded" width
