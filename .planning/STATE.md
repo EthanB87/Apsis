@@ -5,15 +5,15 @@ milestone_name: milestone
 current_phase: 06
 current_phase_name: polish-app-store-submission
 status: executing
-stopped_at: 06-06 Task 1 (automated pre-build verification gate) complete and green -- icon/bundle-id/native-dep/lockfile/workspace-test checks all passed, no lockfile changes needed. PAUSED at 06-06 Task 2, a blocking human-action checkpoint (production EAS build + TestFlight upload) requiring the user's authenticated EAS/Apple session.
-last_updated: "2026-08-04T20:12:39.000Z"
+stopped_at: 06-04 COMPLETE (2026-08-04) -- privacy policy + support page live over HTTPS on apsistraining.com, REL-02 satisfied. Wave 1 of Phase 06 is now fully done. Remaining in-phase work: 06-06 PAUSED at Task 3 (blocking human-verify beta gate) -- build 9 is in Beta App Review, status "Waiting for Review" -- and 06-07 (ASC submission entry), still to come.
+last_updated: "2026-08-04T21:00:00.000Z"
 last_activity: 2026-08-04
-last_activity_desc: 06-06 Task 1 pre-build gate executed; paused at Task 2 human-action checkpoint (EAS production build)
+last_activity_desc: 06-04 closed out (privacy + support pages verified live on apsistraining.com); 06-06 remains paused at Task 3 awaiting Apple Beta App Review outcome
 progress:
   total_phases: 7
   completed_phases: 6
   total_plans: 59
-  completed_plans: 56
+  completed_plans: 57
 ---
 
 # Project State — Apsis
@@ -29,11 +29,11 @@ training-load number (HSS) and a readiness band — fully offline.
 ## Current Position
 
 Phase: 06 (polish-app-store-submission) — EXECUTING
-Plan: 06-06 of 8
-Status: PAUSED — Task 2 blocking human-action checkpoint (production EAS build + TestFlight)
-Last activity: 2026-08-04 — 06-06 Task 1 pre-build gate green; awaiting human EAS build
+Plan: 06-06 of 8 (06-04 now COMPLETE; Wave 1 fully done)
+Status: PAUSED — 06-06 Task 3 blocking human-verify checkpoint (beta gate: build 9 in Beta App Review, "Waiting for Review")
+Last activity: 2026-08-04 — 06-04 closed out (privacy + support pages live on apsistraining.com, REL-02 satisfied); 06-06 still paused at Task 3 awaiting Apple's review outcome
 
-Progress: [█████████░] 93% (4/6 phases complete, 27/27 executed plans)
+Progress: [█████████░] 93% (4/6 phases complete, 28/28 executed plans)
 
 ## Performance Metrics
 
@@ -262,7 +262,7 @@ Recent decisions affecting current work:
 - [Phase ?]: Share export gated on onFontsReady + canvas-settle so a blank-text PNG can never be shared
 - [Phase ?]: Photo share cards render a compact top-left ring badge (photo stays the hero); void cards keep the large centered hero ring — user-approved on-device
 - [Phase ?]: [Phase 06 P08]: Privacy policy 'Share cards and photos' section placed after Food lookups and before Apple Health; fixed pre-existing anchor-tag line-wrap splitting 'Open Food Facts' and a stray '100% offline' substring in the listing footer (both Rule 1 fixes required for this plan's own verify gates)
-- [Phase ?]: [Phase 06 P08]: 06-08 complete 2026-08-03 (human re-approved both corrected documents, no edits) -- unblocks paused 06-04 Task 3 publish gate, but docs-site/ has NOT yet been deployed to apsistraining.com
+- [Phase ?]: [Phase 06 P08]: 06-08 complete 2026-08-03 (human re-approved both corrected documents, no edits) -- unblocks paused 06-04 Task 3 publish gate, but docs-site/ has NOT yet been deployed to apsistraining.com [SUPERSEDED 2026-08-03: docs-site now deployed & live (200) via Vercel/landing repo — see Blockers/Concerns 06-04 Task 3]
 - [Phase 06]: [Phase 06 P01]: 06-01 complete -- root app.json/eas.json (wrong bundle id com.apsistraining.apsis) deleted, apps/mobile/ is the single config source; icon.png re-exported opaque RGB (colorType 2) with persisted apps/mobile/scripts/check-icon-alpha.mjs regression guard; Task 3 human checkpoint approved 2026-08-03 (Apple Developer membership active, ASC app record for com.apsis.app created) -- ascAppId discrepancy found: 6792933794 already committed in apps/mobile/eas.json since 2026-07-20 (f19f2540d), contradicting the 2026-08-03 reply that it hasn't been provided; unresolved, must be reconciled by a human before 06-07
 
 ### Roadmap Evolution
@@ -332,13 +332,19 @@ None yet.
   empirically confirms 6792933794 is the correct/current Apple ID for the com.apsis.app ASC
   record. The earlier "not yet supplied" checkpoint reply was a memory gap — the ID had been
   wired into eas.json on 2026-07-20 (`f19f2540d`). No further confirmation needed for 06-07.
-  (2) 06-04 Task 3 — review `docs-site/privacy/index.html` copy, publish docs-site/ to
-  apsistraining.com over HTTPS, verify /privacy and /support return 200. Gates Wave 3 (06-07).
+  ~~(2) 06-04 Task 3 — review `docs-site/privacy/index.html` copy, publish docs-site/ to
+  apsistraining.com over HTTPS, verify /privacy and /support return 200. Gates Wave 3 (06-07).~~
   06-08 (corrective privacy/listing copy, incl. the Phase 8 photo-library/share-card
-  disclosure) is now COMPLETE (2026-08-03) — the hard gate on 06-04 Task 3 is satisfied and
-  publish may proceed. HOWEVER, as of 2026-08-03 the user has NOT yet deployed docs-site/ to
-  apsistraining.com — 06-04 Task 3 remains open/paused pending that deploy plus the
-  /privacy and /support 200 checks. Do not conflate "06-08 complete" with "docs-site is live."
+  disclosure) is COMPLETE (2026-08-03) — the hard gate on 06-04 Task 3 was satisfied.
+  RESOLVED 2026-08-03: docs-site is LIVE. **Mechanism correction:** apsistraining.com is NOT
+  GitHub Pages — the apex is served by **Vercel from the `Apsis-Landing-Page` repo**, so the
+  `docs-site/CNAME` (Pages) path is obsolete/wrong (repointing DNS would take the live landing
+  page down). The approved privacy + support pages were copied byte-for-byte from this repo's
+  `docs-site/` into the landing repo's `public/privacy/index.html` and `public/support/index.html`,
+  with `next.config.mjs` rewrites mapping the clean URLs (landing commit 208803e). Verified live
+  over HTTPS: https://apsistraining.com/privacy and /support both return 200 (correct titles),
+  root still 200. `docs-site/` here remains the approved source of record — keep it in sync with
+  the landing repo's `public/` copy on any future edits.
   Also pending (non-gating until 06-06): Sentry project + EXPO_PUBLIC_SENTRY_DSN /
   SENTRY_AUTH_TOKEN per 06-USER-SETUP.md.
 
@@ -348,7 +354,7 @@ None yet.
   out-of-sync lockfile (fixed ec76663, 2026-07-11). Phase 05's HealthKit dep will hit
   the same gate: budget an EAS build cycle into the phase.
 
-- ~~06-08 Task 3 (blocking checkpoint): human must re-read docs-site/privacy/index.html and apps/mobile/store/app-store-listing.md and confirm the new share-card/photo disclosures are accurate before the paused 06-04 Task 3 publish and 06-07 ASC entry proceed.~~ — RESOLVED 2026-08-03: user replied "copy approved" for both documents, no edits requested (see 06-08-SUMMARY.md). 06-04 Task 3 publish gate is unblocked; docs-site/ deploy itself is still pending (see Blockers/Concerns entry above).
+- ~~06-08 Task 3 (blocking checkpoint): human must re-read docs-site/privacy/index.html and apps/mobile/store/app-store-listing.md and confirm the new share-card/photo disclosures are accurate before the paused 06-04 Task 3 publish and 06-07 ASC entry proceed.~~ — RESOLVED 2026-08-03: user replied "copy approved" for both documents, no edits requested (see 06-08-SUMMARY.md). 06-04 Task 3 publish gate is unblocked; docs-site/ deploy is now DONE — live on apsistraining.com via Vercel/landing repo (see Blockers/Concerns entry above).
 
 - ⏸️ [Phase 06 P06 / Wave 2] 06-06 Task 1 (automated pre-build verification gate) is COMPLETE and green
   (2026-08-04): icon-alpha check passed, no root-level app.json/eas.json, single bundle id com.apsis.app
@@ -394,13 +400,12 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-08-04T20:12:39.000Z
-Stopped at: 06-06 Task 1 (automated pre-build verification gate) complete and green -- icon,
-single bundle id, Phase 7/8 native deps present, expo-text-extractor absent, frozen-lockfile
-install clean (no lockfile changes needed), `pnpm -r test` fully green (259 tests). PAUSED at
-06-06 Task 2, a blocking human-action checkpoint requiring the user's authenticated EAS/Apple
-session to run the production EAS build and upload to external TestFlight; Task 3 (D-12 beta
-gate + on-device Sentry scrub confirmation) follows after Task 2. ascAppId discrepancy (6792933794,
-see Blockers/Concerns) is non-gating for 06-06 but still needs human reconciliation before 06-07.
-06-04 Task 3 (docs-site deploy) also remains open/paused, non-gating for 06-06.
+Last session: 2026-08-04T21:00:00.000Z
+Stopped at: 06-04 is now COMPLETE (2026-08-04) — 06-04-SUMMARY.md written, privacy + support pages
+verified live (200/HTTPS) on apsistraining.com, REL-02 satisfied. Phase 06 Wave 1 (06-01, 06-02,
+06-03, 06-04, 06-05, 06-08) is fully complete. 06-06 remains PAUSED at Task 3, a blocking
+human-verify checkpoint (D-12 beta gate + on-device Sentry health/nutrition scrub confirmation) —
+build 9 is in Apple's Beta App Review queue, status "Waiting for Review" (no SLA). ascAppId
+discrepancy (6792933794, see Blockers/Concerns) is RESOLVED, no further action needed. Only 06-06
+Task 3 and 06-07 (ASC submission entry) remain in the phase.
 Resume file: .planning/phases/06-polish-app-store-submission/06-06-PLAN.md
