@@ -5,10 +5,10 @@ milestone_name: milestone
 current_phase: 06
 current_phase_name: polish-app-store-submission
 status: executing
-stopped_at: 06-01 complete -- config cleanup + icon fix committed 2026-07-12; Task 3 (Apple Developer/ASC) approved 2026-08-03. ascAppId still PENDING from user, required before 06-07.
-last_updated: "2026-08-04T00:07:58.000Z"
-last_activity: 2026-08-03
-last_activity_desc: Phase 06 execution started
+stopped_at: 06-06 Task 1 (automated pre-build verification gate) complete and green -- icon/bundle-id/native-dep/lockfile/workspace-test checks all passed, no lockfile changes needed. PAUSED at 06-06 Task 2, a blocking human-action checkpoint (production EAS build + TestFlight upload) requiring the user's authenticated EAS/Apple session.
+last_updated: "2026-08-04T20:12:39.000Z"
+last_activity: 2026-08-04
+last_activity_desc: 06-06 Task 1 pre-build gate executed; paused at Task 2 human-action checkpoint (EAS production build)
 progress:
   total_phases: 7
   completed_phases: 6
@@ -29,9 +29,9 @@ training-load number (HSS) and a readiness band — fully offline.
 ## Current Position
 
 Phase: 06 (polish-app-store-submission) — EXECUTING
-Plan: 3 of 8
-Status: Ready to execute
-Last activity: 2026-08-03 — Phase 06 execution started
+Plan: 06-06 of 8
+Status: PAUSED — Task 2 blocking human-action checkpoint (production EAS build + TestFlight)
+Last activity: 2026-08-04 — 06-06 Task 1 pre-build gate green; awaiting human EAS build
 
 Progress: [█████████░] 93% (4/6 phases complete, 27/27 executed plans)
 
@@ -351,6 +351,20 @@ None yet.
 
 - ~~06-08 Task 3 (blocking checkpoint): human must re-read docs-site/privacy/index.html and apps/mobile/store/app-store-listing.md and confirm the new share-card/photo disclosures are accurate before the paused 06-04 Task 3 publish and 06-07 ASC entry proceed.~~ — RESOLVED 2026-08-03: user replied "copy approved" for both documents, no edits requested (see 06-08-SUMMARY.md). 06-04 Task 3 publish gate is unblocked; docs-site/ deploy itself is still pending (see Blockers/Concerns entry above).
 
+- ⏸️ [Phase 06 P06 / Wave 2] 06-06 Task 1 (automated pre-build verification gate) is COMPLETE and green
+  (2026-08-04): icon-alpha check passed, no root-level app.json/eas.json, single bundle id com.apsis.app
+  confirmed, Phase 7/8 native deps (expo-camera, expo-image-picker, expo-file-system, expo-sharing,
+  @sentry/react-native) all present in apps/mobile/package.json, expo-text-extractor confirmed ABSENT
+  from both package.json and pnpm-lock.yaml, `pnpm install --frozen-lockfile` succeeded with no lockfile
+  changes needed (already in sync — no commit required), and `pnpm -r test` fully green (259 tests: 21
+  shared + 95 engine + 63 db + 80 mobile). PAUSED at Task 2, a blocking human-action checkpoint: the
+  human must confirm Sentry env/slug preconditions (EXPO_PUBLIC_SENTRY_DSN, SENTRY_AUTH_TOKEN EAS secret,
+  real Sentry org/project slugs in app.json per 06-USER-SETUP.md) and then run
+  `eas build --platform ios --profile production` FROM apps/mobile, submit the build to an External
+  TestFlight group for Beta App Review. Task 3 (D-12 beta gate + on-device Sentry health/nutrition scrub
+  confirmation) follows once Task 2's build is live in TestFlight. Neither task can be automated on this
+  Windows host — both require the user's authenticated EAS/Apple session.
+
 ### Quick Tasks Completed
 
 | # | Description | Date | Commit | Directory |
@@ -369,13 +383,13 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-08-04T00:07:58.000Z
-Stopped at: 06-01 complete -- config cleanup + icon fix committed 2026-07-12; Task 3 (Apple
-Developer membership + ASC app record for com.apsis.app) approved 2026-08-03. ascAppId still
-PENDING from user, required before 06-07's submit-profile step. 06-08 also complete -- privacy
-policy + listing copy re-approved 2026-08-03 (share-card disclosure); 06-04 Task 3 publish gate
-is unblocked, but docs-site/ has NOT yet been deployed to apsistraining.com -- that deploy +
-the /privacy and /support 200 checks are still outstanding. Next: deploy docs-site/ and
-complete 06-04, then resume Phase 06 Wave 2 (06-06 production build -- last EAS pnpm-detection
-fix 87b5a3d unverified).
-Resume file: .planning/phases/06-polish-app-store-submission/06-04-PLAN.md
+Last session: 2026-08-04T20:12:39.000Z
+Stopped at: 06-06 Task 1 (automated pre-build verification gate) complete and green -- icon,
+single bundle id, Phase 7/8 native deps present, expo-text-extractor absent, frozen-lockfile
+install clean (no lockfile changes needed), `pnpm -r test` fully green (259 tests). PAUSED at
+06-06 Task 2, a blocking human-action checkpoint requiring the user's authenticated EAS/Apple
+session to run the production EAS build and upload to external TestFlight; Task 3 (D-12 beta
+gate + on-device Sentry scrub confirmation) follows after Task 2. ascAppId discrepancy (6792933794,
+see Blockers/Concerns) is non-gating for 06-06 but still needs human reconciliation before 06-07.
+06-04 Task 3 (docs-site deploy) also remains open/paused, non-gating for 06-06.
+Resume file: .planning/phases/06-polish-app-store-submission/06-06-PLAN.md
