@@ -326,13 +326,12 @@ None yet.
 - ✅ [Phase 06 Wave 1] 06-01 is now COMPLETE (2026-08-03) -- Task 3 checkpoint approved:
   Apple Developer Program membership confirmed active, and the App Store Connect app record
   for `com.apsis.app` ("Apsis") has been created. Wave 2 (06-06 production build) is unblocked.
-  **UNRESOLVED DISCREPANCY (non-gating for 06-06, HARD-GATING for 06-07):** the 2026-08-03
-  checkpoint reply stated the numeric ascAppId has NOT yet been supplied and would come before
-  06-07. But `apps/mobile/eas.json`'s `submit.production.ios.ascAppId` already contains
-  `"6792933794"`, committed 2026-07-20 (`f19f2540d`) -- two weeks before that reply. A human
-  must confirm whether 6792933794 is still the correct/current Apple ID for the com.apsis.app
-  ASC record before 06-07's submit-profile step runs; do not assume "done" or "pending" from
-  06-01 being marked complete. See 06-01-SUMMARY.md D4/Deviations for full detail.
+  ~~UNRESOLVED DISCREPANCY (ascAppId)~~ — RESOLVED 2026-08-03: `eas submit --platform ios
+  --profile production --latest` succeeded against ascAppId `6792933794` (submission
+  fa94543d-b10b-4ae2-a5e2-f1f44e50f8a5; Apple accepted build 9 into that app record), which
+  empirically confirms 6792933794 is the correct/current Apple ID for the com.apsis.app ASC
+  record. The earlier "not yet supplied" checkpoint reply was a memory gap — the ID had been
+  wired into eas.json on 2026-07-20 (`f19f2540d`). No further confirmation needed for 06-07.
   (2) 06-04 Task 3 — review `docs-site/privacy/index.html` copy, publish docs-site/ to
   apsistraining.com over HTTPS, verify /privacy and /support return 200. Gates Wave 3 (06-07).
   06-08 (corrective privacy/listing copy, incl. the Phase 8 photo-library/share-card
@@ -364,6 +363,13 @@ None yet.
   TestFlight group for Beta App Review. Task 3 (D-12 beta gate + on-device Sentry health/nutrition scrub
   confirmation) follows once Task 2's build is live in TestFlight. Neither task can be automated on this
   Windows host — both require the user's authenticated EAS/Apple session.
+  **Task 2 progress (2026-08-03):** production EAS build SUCCEEDED — buildNumber 9, version 1.0.0,
+  bundle com.apsis.app, build id 6684894b-e0f7-4d4c-8ac8-042b81fefb61 (production env vars incl.
+  SENTRY_AUTH_TOKEN/EXPO_PUBLIC_SENTRY_DSN loaded; Sentry source-map upload to be spot-checked in the
+  cloud build log). `eas submit` then SUCCEEDED — build 9 uploaded to App Store Connect (ascAppId
+  6792933794, submission fa94543d-b10b-4ae2-a5e2-f1f44e50f8a5), now processing on Apple's side.
+  REMAINING for Task 2: build appears in ASC TestFlight → add to an External test group → submit for
+  Beta App Review → enable public link. Then Task 3 (D-12 beta gate + Sentry scrub confirmation).
 
 ### Quick Tasks Completed
 
