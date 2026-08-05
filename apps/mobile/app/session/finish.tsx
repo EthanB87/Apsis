@@ -126,7 +126,10 @@ export default function FinishScreen(): React.JSX.Element {
 
   const [hss, setHss] = useState<number | null>(null);
   const [warnings, setWarnings] = useState<string[]>([]);
-  const [units, setUnits] = useState<Units>('metric');
+  // D-01: volume (lift display) and pace/distance (run display) resolve through
+  // independent buckets — a session cannot assume both read the same unit preference.
+  const [liftsUnits, setLiftsUnits] = useState<Units>('metric');
+  const [runUnits, setRunUnits] = useState<Units>('metric');
   const [exerciseSummaries, setExerciseSummaries] = useState<ExerciseSummary[]>([]);
   const [enduranceSummaryLine, setEnduranceSummaryLine] = useState<string | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -176,14 +179,14 @@ export default function FinishScreen(): React.JSX.Element {
                 firstSegment.distanceM,
                 firstSegment.durationS,
                 firstSegment.avgHr,
-                profile.units
+                profile.runUnits
               )
             : null;
 
           if (!cancelled) {
             setHss(result.hss);
             setWarnings(result.warnings);
-            setUnits(profile.units);
+            setRunUnits(profile.runUnits);
             setExerciseSummaries([]);
             setEnduranceSummaryLine(summaryLine);
           }
@@ -253,7 +256,7 @@ export default function FinishScreen(): React.JSX.Element {
         if (!cancelled) {
           setHss(result.hss);
           setWarnings(result.warnings);
-          setUnits(profile.units);
+          setLiftsUnits(profile.liftsUnits);
           setExerciseSummaries(Array.from(byExercise.values()));
           setEnduranceSummaryLine(null);
         }
@@ -358,7 +361,7 @@ export default function FinishScreen(): React.JSX.Element {
               <Text style={styles.exerciseMeta}>
                 {summary.entryMode === 'timed'
                   ? formatDuration(summary.totalDurationS)
-                  : formatVolume(summary.volumeKg, units)}
+                  : formatVolume(summary.volumeKg, liftsUnits)}
               </Text>
             </View>
           ))

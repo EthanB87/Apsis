@@ -77,6 +77,10 @@ export interface AddExerciseInput {
 interface SessionState {
   workoutId: string | null;
   profileBodyweightKg: number;
+  /** D-01: the LIFT-display unit bucket specifically (`profile.liftsUnits`) -- this store
+   * is the active LIFTING session, so every reader (ExerciseCard's KG/LB header,
+   * formatLastSessionSummary) means "lift units" here, never the legacy single
+   * `profile.units` value. */
   units: Units;
   exercises: ExerciseCardState[];
   liveHss: number;
@@ -87,7 +91,7 @@ interface SessionState {
   restNotificationId: string | null;
   breakdownOpen: boolean;
 
-  startSession: (workoutId: string, profile: { bodyweightKg: number; units: Units }) => void;
+  startSession: (workoutId: string, profile: { bodyweightKg: number; liftsUnits: Units }) => void;
   addExercise: (exercise: AddExerciseInput) => Promise<void>;
   addSet: (exerciseId: string) => void;
   removeSet: (exerciseId: string, setId: string) => void;
@@ -119,7 +123,7 @@ interface SessionState {
    * leaving the app mid-rest ALWAYS has a completion signal. Idempotent — no-ops when a
    * notification is already pending or no timer is running. */
   ensureRestNotificationScheduled: () => void;
-  rehydrateFromDb: (workoutId: string, profile: { bodyweightKg: number; units: Units }) => Promise<void>;
+  rehydrateFromDb: (workoutId: string, profile: { bodyweightKg: number; liftsUnits: Units }) => Promise<void>;
   reset: () => void;
 }
 
@@ -175,7 +179,10 @@ export const useSessionStore = create<SessionState>((set, get) => ({
       ...INITIAL_SESSION,
       workoutId,
       profileBodyweightKg: profile.bodyweightKg,
-      units: profile.units,
+      // D-01: this store's `units` field is the LIFT-display bucket specifically (see
+      // interface doc + ExerciseCard.tsx's KG/LB column header) -- sourced from
+      // profile.liftsUnits, never the legacy single profile.units value.
+      units: profile.liftsUnits,
     });
   },
 
@@ -399,7 +406,8 @@ export const useSessionStore = create<SessionState>((set, get) => ({
       ...INITIAL_SESSION,
       workoutId,
       profileBodyweightKg: profile.bodyweightKg,
-      units: profile.units,
+      // D-01: LIFT-display bucket (see startSession's identical comment above).
+      units: profile.liftsUnits,
     });
 
     try {

@@ -174,18 +174,38 @@ export async function uncommitSet(
   return recomputeSessionHss(database, workoutId, profileBodyweightKg);
 }
 
-/** The mandatory user_profile row's bodyweight + units (D-01: a profile always exists past
- * the onboarding gate). Falls back to safe neutral defaults if the row is somehow missing. */
+/** The mandatory user_profile row's bodyweight + unit-display buckets (D-01: a profile
+ * always exists past the onboarding gate). Falls back to safe neutral defaults if the row
+ * is somehow missing. `units` is retained as the legacy anchor/rollback value (D-04); every
+ * display consumer should read `liftsUnits`/`bodyweightUnits`/`runUnits` instead — each
+ * falls back to the legacy `units` value for a row migration 0005 hasn't backfilled yet,
+ * matching useProfile.ts's resolution discipline. */
 export async function fetchProfileSummary(
   database: DB = db
-): Promise<{ bodyweightKg: number; units: Units }> {
+): Promise<{
+  bodyweightKg: number;
+  units: Units;
+  liftsUnits: Units;
+  bodyweightUnits: Units;
+  runUnits: Units;
+}> {
   const rows = await database
-    .select({ bodyweightKg: userProfile.bodyweightKg, units: userProfile.units })
+    .select({
+      bodyweightKg: userProfile.bodyweightKg,
+      units: userProfile.units,
+      liftsUnits: userProfile.liftsUnits,
+      bodyweightUnits: userProfile.bodyweightUnits,
+      runUnits: userProfile.runUnits,
+    })
     .from(userProfile)
     .limit(1);
   const row = rows[0];
+  const legacyUnits = (row?.units ?? 'metric') as Units;
   return {
     bodyweightKg: row?.bodyweightKg ?? 0,
-    units: (row?.units ?? 'metric') as Units,
+    units: legacyUnits,
+    liftsUnits: (row?.liftsUnits ?? legacyUnits) as Units,
+    bodyweightUnits: (row?.bodyweightUnits ?? legacyUnits) as Units,
+    runUnits: (row?.runUnits ?? legacyUnits) as Units,
   };
 }

@@ -169,7 +169,7 @@ export default function SessionDetailScreen(): React.JSX.Element {
           const detailRows: DetailRow[] = segmentRows.map((seg) => ({
             id: seg.id,
             label: capitalize(seg.activityType),
-            meta: formatEnduranceMeta(seg.activityType, seg.distanceM, seg.durationS, seg.avgHr, profile.units),
+            meta: formatEnduranceMeta(seg.activityType, seg.distanceM, seg.durationS, seg.avgHr, profile.runUnits),
             stress: enduranceStressDetailed({
               durationS: seg.durationS,
               intensityFactor: seg.intensityFactor ?? 1.0,

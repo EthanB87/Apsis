@@ -25,9 +25,18 @@ export interface ProfileReviewValues {
   thresholdHr: number | null;
   thresholdPaceSecPerKm: number | null;
   units: Units;
+  /** D-01: per-domain display buckets. Optional and fall back to `units` -- the onboarding
+   * review screen only ever collects a single units choice (buckets don't diverge until a
+   * later Settings edit), while a caller with split buckets (e.g. a future Settings editor)
+   * can pass these to resolve bodyweight/pace independently. */
+  bodyweightUnits?: Units;
+  runUnits?: Units;
 }
 
-export type ProfileReviewField = keyof ProfileReviewValues;
+// bodyweightUnits/runUnits are display-resolution inputs, not editable rows -- excluded so
+// callers' `Record<ProfileReviewField, ...>` maps (e.g. onboarding/review.tsx's FIELD_ROUTE)
+// don't need an entry for them.
+export type ProfileReviewField = keyof Omit<ProfileReviewValues, 'bodyweightUnits' | 'runUnits'>;
 
 export interface ProfileReviewEstimatedFlags {
   thresholdHr?: boolean;
@@ -58,10 +67,14 @@ export function ProfileReview({
   errorMessage = null,
 }: ProfileReviewProps): React.JSX.Element {
   const isImperial = values.units === 'imperial';
+  // D-01: bodyweight resolves through bodyweightUnits, threshold pace through runUnits --
+  // each falls back to the single `units` value when the caller hasn't split buckets yet.
+  const bodyweightIsImperial = (values.bodyweightUnits ?? values.units) === 'imperial';
+  const runIsImperial = (values.runUnits ?? values.units) === 'imperial';
 
   const bodyweightDisplay =
     values.bodyweightKg != null
-      ? isImperial
+      ? bodyweightIsImperial
         ? `${kgToDisplayLb(values.bodyweightKg)} lb`
         : `${Math.round(values.bodyweightKg)} kg`
       : '—';
@@ -69,8 +82,8 @@ export function ProfileReview({
   const thresholdPaceDisplay =
     values.thresholdPaceSecPerKm != null
       ? `${formatPaceMinSec(
-          isImperial ? paceSecPerKmToSecPerMi(values.thresholdPaceSecPerKm) : values.thresholdPaceSecPerKm,
-        )} ${isImperial ? '/mi' : '/km'}`
+          runIsImperial ? paceSecPerKmToSecPerMi(values.thresholdPaceSecPerKm) : values.thresholdPaceSecPerKm,
+        )} ${runIsImperial ? '/mi' : '/km'}`
       : '—';
 
   const rows: Array<{ field: ProfileReviewField; label: string; value: string; estimated?: boolean }> = [
