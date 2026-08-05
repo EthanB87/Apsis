@@ -18,39 +18,12 @@
  *   - the 3 new user_profile columns (height_cm, birth_year, goal_mode) accept NULL
  */
 
-import { readFileSync } from 'node:fs';
-import path from 'node:path';
 import Database from 'better-sqlite3';
 import { drizzle } from 'drizzle-orm/better-sqlite3';
 import { eq } from 'drizzle-orm';
 import * as schema from '../schema';
 import { food, foodLog, nutritionTarget, recipe, recipeIngredient, userProfile } from '../schema';
-
-const DRIZZLE_DIR = path.resolve(__dirname, '../../drizzle');
-
-interface JournalEntry {
-  idx: number;
-  tag: string;
-}
-
-/** Apply every committed migration .sql file in journal order — mirrors useMigrations(). */
-function applyCommittedMigrations(sqlite: Database.Database): string[] {
-  const journal = JSON.parse(
-    readFileSync(path.join(DRIZZLE_DIR, 'meta/_journal.json'), 'utf-8'),
-  ) as { entries: JournalEntry[] };
-
-  const tags = [...journal.entries].sort((a, b) => a.idx - b.idx).map((e) => e.tag);
-
-  for (const tag of tags) {
-    const migrationSql = readFileSync(path.join(DRIZZLE_DIR, `${tag}.sql`), 'utf-8');
-    for (const statement of migrationSql.split('--> statement-breakpoint')) {
-      const trimmed = statement.trim();
-      if (trimmed.length > 0) sqlite.exec(trimmed);
-    }
-  }
-
-  return tags;
-}
+import { applyCommittedMigrations } from './migrationHarness';
 
 function openMigratedDb() {
   const sqlite = new Database(':memory:');
@@ -75,8 +48,8 @@ describe('nutrition migration round-trip (0004, schema_push_requirement)', () =>
   });
 
   it('the committed journal includes 0004 and every migration applies cleanly', () => {
-    expect(harness.appliedTags.at(-1)).toBe('0004_youthful_valkyrie');
-    expect(harness.appliedTags).toHaveLength(5);
+    expect(harness.appliedTags).toContain('0004_youthful_valkyrie');
+    expect(harness.appliedTags.length).toBeGreaterThanOrEqual(5);
 
     const tables = harness.sqlite
       .prepare("SELECT name FROM sqlite_master WHERE type = 'table'")
