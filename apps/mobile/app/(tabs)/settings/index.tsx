@@ -9,9 +9,16 @@
  * Editing pattern: the four review fields (sex, bodyweight, threshold HR, threshold
  * pace) stage locally when a row is tapped — a small modal editor for that one field —
  * then commit together via the "Save Changes" button, mirroring the onboarding review
- * screen's tap-to-edit-then-save shape (D-04). Units and the rest-timer default apply
+ * screen's tap-to-edit-then-save shape (D-04). The rest-timer default applies
  * immediately on tap (matching the onboarding units.tsx step's instant-selection feel)
- * since they're single-value toggles, not part of the numeric review batch.
+ * since it's a single-value toggle, not part of the numeric review batch.
+ *
+ * Phase 09 (D-03): the single legacy Units toggle row below Profile is replaced by
+ * three always-visible rows — Lifts, Bodyweight, Runs — each independently persisting
+ * to its own `user_profile` column via `useProfile.update({ liftsUnits | bodyweightUnits
+ * | runUnits })`, which also hydrates `settingsStore`'s matching bucket (09-01 wiring).
+ * Shown unconditionally, never behind a Mixed toggle, so a user can set imperial lifts
+ * alongside km runs directly from Settings (the literal beta complaint).
  *
  * Every write goes through useProfile's update() — a parameterized UPDATE against
  * user_profile only. Edits apply to FUTURE calculations only; stored/version-stamped
@@ -280,6 +287,32 @@ export default function SettingsScreen(): React.JSX.Element {
     await update({ restTimerDefaultSec: sec });
   }
 
+  /**
+   * D-03: each of the three unit-preference buckets persists independently — reads
+   * directly from `profile.liftsUnits`/`bodyweightUnits`/`runUnits` (already resolved
+   * with the legacy-column fallback by useProfile) and writes back through the same
+   * named field, matching `handleRestPreset`'s direct profile-read-then-update shape.
+   * No local optimistic state needed: `useProfile.update` only commits `profile` (and
+   * mirrors `settingsStore`) after the UPDATE succeeds.
+   */
+  async function handleBucketUnitsChange(
+    bucket: 'liftsUnits' | 'bodyweightUnits' | 'runUnits',
+    next: Units,
+  ): Promise<void> {
+    if (profile == null || profile[bucket] === next) return;
+    switch (bucket) {
+      case 'liftsUnits':
+        await update({ liftsUnits: next });
+        break;
+      case 'bodyweightUnits':
+        await update({ bodyweightUnits: next });
+        break;
+      case 'runUnits':
+        await update({ runUnits: next });
+        break;
+    }
+  }
+
   /** D-03: the permanent re-entry point for onboarding decliners / existing installs. */
   async function handleConnectHealthKit(): Promise<void> {
     if (hkConnecting) return;
@@ -385,9 +418,25 @@ export default function SettingsScreen(): React.JSX.Element {
         />
 
         <Text style={styles.sectionLabel}>Units</Text>
-        <View style={styles.choiceRow}>
-          <ChoiceButton label="Metric" sub="km, kg" selected={!isImperial} onPress={() => handleUnitsChange('metric')} />
-          <ChoiceButton label="Imperial" sub="mi, lb" selected={isImperial} onPress={() => handleUnitsChange('imperial')} />
+        <View style={styles.unitsSection}>
+          <UnitsRow
+            label="Lifts"
+            sub="kg / lb"
+            value={profile.liftsUnits}
+            onChange={(next) => void handleBucketUnitsChange('liftsUnits', next)}
+          />
+          <UnitsRow
+            label="Bodyweight"
+            sub="kg / lb"
+            value={profile.bodyweightUnits}
+            onChange={(next) => void handleBucketUnitsChange('bodyweightUnits', next)}
+          />
+          <UnitsRow
+            label="Runs"
+            sub="km / mi"
+            value={profile.runUnits}
+            onChange={(next) => void handleBucketUnitsChange('runUnits', next)}
+          />
         </View>
 
         <Text style={styles.sectionLabel}>Default Rest Timer</Text>
@@ -625,6 +674,48 @@ function ChoiceButton({
   );
 }
 
+/**
+ * D-03: one of the three always-visible unit-bucket rows. Segmented Metric/Imperial
+ * control uses bone active-fill (`ChoiceButton`'s existing `choiceButtonSelected`
+ * style) — ProfileReview's "Save changes" button above remains the one volt-filled
+ * element on this screen (DESIGN-SYSTEM.md §7).
+ */
+function UnitsRow({
+  label,
+  sub,
+  value,
+  onChange,
+}: {
+  label: string;
+  sub: string;
+  value: Units;
+  onChange: (units: Units) => void;
+}): React.JSX.Element {
+  const isImperial = value === 'imperial';
+  return (
+    <View style={styles.unitsRow}>
+      <View style={styles.unitsRowLabelBlock}>
+        <Text style={styles.unitsRowLabel}>{label}</Text>
+        <Text style={styles.unitsRowSub}>{sub}</Text>
+      </View>
+      <View style={styles.unitsRowToggle}>
+        <ChoiceButton
+          label="Metric"
+          selected={!isImperial}
+          onPress={() => onChange('metric')}
+          compact
+        />
+        <ChoiceButton
+          label="Imperial"
+          selected={isImperial}
+          onPress={() => onChange('imperial')}
+          compact
+        />
+      </View>
+    </View>
+  );
+}
+
 function ModalActions({ onCancel, onSave }: { onCancel: () => void; onSave: () => void }): React.JSX.Element {
   return (
     <View style={styles.modalActions}>
@@ -703,9 +794,32 @@ const styles = StyleSheet.create({
     paddingBottom: Spacing.xs,
     textTransform: 'uppercase',
   },
-  choiceRow: {
-    flexDirection: 'row',
+  unitsSection: {
     paddingHorizontal: Spacing.lg,
+  },
+  unitsRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    minHeight: HIT_TARGET_MIN + 12,
+    paddingVertical: Spacing.md,
+    borderBottomWidth: HAIRLINE_WIDTH,
+    borderBottomColor: Colors.dark.border,
+    gap: Spacing.sm,
+  },
+  unitsRowLabelBlock: {
+    gap: 2,
+  },
+  unitsRowLabel: {
+    ...Typography.body,
+    color: Colors.dark.text,
+  },
+  unitsRowSub: {
+    ...Typography.label,
+    color: Colors.dark.mutedText,
+  },
+  unitsRowToggle: {
+    flexDirection: 'row',
     gap: Spacing.sm,
   },
   restRow: {

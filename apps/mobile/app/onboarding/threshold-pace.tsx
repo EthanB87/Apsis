@@ -31,7 +31,7 @@ type Mode = 'direct' | 'estimate';
 
 export default function ThresholdPaceStep(): React.JSX.Element {
   const router = useRouter();
-  const units = useOnboardingDraft((state) => state.units);
+  const units = useOnboardingDraft((state) => state.runUnits);
   const thresholdPaceSecPerKm = useOnboardingDraft((state) => state.thresholdPaceSecPerKm);
   const thresholdPaceEstimated = useOnboardingDraft((state) => state.thresholdPaceEstimated);
   const setThresholdPaceSecPerKm = useOnboardingDraft((state) => state.setThresholdPaceSecPerKm);
