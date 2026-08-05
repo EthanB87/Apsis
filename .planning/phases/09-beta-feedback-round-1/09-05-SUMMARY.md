@@ -140,3 +140,7 @@ None - no external service configuration required.
 ---
 *Phase: 09-beta-feedback-round-1*
 *Completed: 2026-08-05*
+
+## Self-Check: PASSED
+
+All 7 declared source files plus SUMMARY.md verified present on disk; all 3 commits (`f745f57`, `b2d69e2`, `8c5d2cb`) verified present in git history.
