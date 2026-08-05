@@ -29,6 +29,7 @@ import { db } from '@apsis/db';
 import { carryStressDetailed, estimateE1RM, estimateE1RMFromRepMaxTable, strengthStressDetailed } from '@apsis/engine';
 import { kgToDisplayLbFractional, lbToKgExact, type Units } from '@apsis/shared';
 
+import { DECIMAL_PAD_ACCESSORY_ID } from '../DecimalPadDoneBar';
 import Colors from '../../constants/Colors';
 import { Radius, Spacing } from '../../constants/theme';
 import { computeEffectiveLoad } from '../../lib/effectiveLoad';
@@ -241,6 +242,7 @@ export function SetRow({
           }}
           onBlur={() => setLoadText(null)}
           keyboardType="decimal-pad"
+          inputAccessoryViewID={DECIMAL_PAD_ACCESSORY_ID}
           autoFocus={draft.isBlank}
           editable={!locked}
           selectTextOnFocus
@@ -259,6 +261,7 @@ export function SetRow({
               patch({ durationS: Number.isFinite(parsed) ? parsed : 0, isBlank: false });
             }}
             keyboardType="number-pad"
+            inputAccessoryViewID={DECIMAL_PAD_ACCESSORY_ID}
             editable={!locked}
             selectTextOnFocus
             style={[styles.valueField, styles.flexField, locked && styles.valueFieldLocked]}
@@ -274,6 +277,7 @@ export function SetRow({
               patch({ reps: Number.isFinite(parsed) ? parsed : 0, isBlank: false });
             }}
             keyboardType="number-pad"
+            inputAccessoryViewID={DECIMAL_PAD_ACCESSORY_ID}
             editable={!locked}
             selectTextOnFocus
             style={[styles.valueField, styles.flexField, locked && styles.valueFieldLocked]}

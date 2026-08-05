@@ -12,7 +12,7 @@
  */
 
 import { useCallback, useEffect, useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import { eq } from 'drizzle-orm';
 import { db, workout } from '@apsis/db';
@@ -20,6 +20,7 @@ import { db, workout } from '@apsis/db';
 import Colors from '@/constants/Colors';
 import { Spacing } from '@/constants/theme';
 import { fetchProfileSummary } from '@/lib/commitSet';
+import { DecimalPadDoneBar } from '@/components/DecimalPadDoneBar';
 import { ExerciseCard } from '@/components/session/ExerciseCard';
 import { ExercisePickerSheet } from '@/components/session/ExercisePickerSheet';
 import { HSSBreakdownSheet } from '@/components/session/HSSBreakdownSheet';
@@ -132,19 +133,26 @@ export default function SessionScreen(): React.JSX.Element {
     <View style={styles.container}>
       <LiveHssHeader startedAt={startedAt ?? new Date()} onFinish={handleFinish} />
 
-      <ScrollView contentContainerStyle={styles.scrollContent}>
-        {exercises.map((exercise) => (
-          <ExerciseCard key={exercise.exerciseId} exercise={exercise} />
-        ))}
+      {/* D-14 keyboard-safety: mirrors WizardStep.tsx's Platform.OS-conditional 'padding'
+          behavior — a focused set field near the bottom of a long exercise list is pushed
+          above the keyboard instead of being hidden behind it. */}
+      <KeyboardAvoidingView
+        style={styles.keyboardAvoiding}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+        <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
+          {exercises.map((exercise) => (
+            <ExerciseCard key={exercise.exerciseId} exercise={exercise} />
+          ))}
 
-        <Pressable
-          onPress={() => setPickerVisible(true)}
-          accessibilityRole="button"
-          accessibilityLabel="Add exercise"
-          style={styles.addExerciseButton}>
-          <Text style={styles.addExerciseLabel}>+ Add exercise</Text>
-        </Pressable>
-      </ScrollView>
+          <Pressable
+            onPress={() => setPickerVisible(true)}
+            accessibilityRole="button"
+            accessibilityLabel="Add exercise"
+            style={styles.addExerciseButton}>
+            <Text style={styles.addExerciseLabel}>+ Add exercise</Text>
+          </Pressable>
+        </ScrollView>
+      </KeyboardAvoidingView>
 
       <RestTimerBanner />
       <HSSBreakdownSheet />
@@ -153,6 +161,9 @@ export default function SessionScreen(): React.JSX.Element {
         onClose={() => setPickerVisible(false)}
         onSelect={handleSelectExercise}
       />
+      {/* D-11/D-13: single shared Done bar every decimal-pad set field (SetRow) attaches to
+          via DECIMAL_PAD_ACCESSORY_ID. Mounted once here, high in the session screen. */}
+      <DecimalPadDoneBar />
     </View>
   );
 }
@@ -161,6 +172,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.dark.background,
+  },
+  keyboardAvoiding: {
+    flex: 1,
   },
   scrollContent: {
     paddingTop: Spacing.md,
