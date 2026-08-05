@@ -9,6 +9,11 @@
  * (D-13), and an optional note field (RUN-05). Saving calls `saveRun` (lib/runEntry.ts) then
  * navigates to `/session/finish` with the new workoutId.
  *
+ * Phase 09 (D-01, TRACER): the DISTANCE caption + pace display resolve their unit from
+ * `useProfile().profile.runUnits` (the split run-specific bucket), not the legacy single
+ * `profile.units` value — this is the one tracer consumer proving the units-split spine
+ * end to end; the rest of the app's unit-reading call sites are swept in 09-04/09-05.
+ *
  * Validation is clamp-and-warn, never block (D-15): Save is disabled only when `durationS`
  * is 0 — the single required field. Distance/HR stay in raw local-text state (not reformatted
  * on every keystroke) so a typed "6.2" never gets stomped mid-entry, matching `SetRow.tsx`'s
@@ -52,11 +57,11 @@ import {
   Typography,
   tabularNums,
 } from '@/constants/theme';
-import { fetchProfileSummary } from '@/lib/commitSet';
 import { isDuplicateOfExisting } from '@/lib/healthkitMapping';
 import { dateToLocalDateStr, todayLocalDate } from '@/lib/localDate';
 import { saveRun, type RunEntryInput } from '@/lib/runEntry';
 import { computePaceSecPerKm, type RunActivityType } from '@/lib/runEntryLogic';
+import { useProfile } from '@/hooks/useProfile';
 
 const SAVE_ERROR_MESSAGE = "Couldn't save that run. Nothing was lost — try again.";
 const MIN_PLAUSIBLE_PACE_SEC_PER_KM = 150; // 2:30/km (D-15)
@@ -101,25 +106,17 @@ export default function RunEntryScreen(): React.JSX.Element {
   const [noteText, setNoteText] = useState('');
   const [selectedDate, setSelectedDate] = useState<Date>(() => new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
-  const [units, setUnits] = useState<Units>('metric');
   const [saving, setSaving] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [hasImportDupe, setHasImportDupe] = useState(false);
 
-  // Profile units (for the DISTANCE caption + pace display unit, ONB-04) are read once on
-  // mount — a fresh screen each time this route is pushed, so no focus-gating is needed here
-  // (unlike session.tsx's stacked-screen rehydrate concern).
-  useEffect(() => {
-    let cancelled = false;
-    fetchProfileSummary(db)
-      .then((profile) => {
-        if (!cancelled) setUnits(profile.units);
-      })
-      .catch((err: unknown) => console.error('[Apsis] Failed to load profile units:', err));
-    return () => {
-      cancelled = true;
-    };
-  }, []);
+  // Phase 09 (D-01, TRACER): the DISTANCE caption + pace display resolve their unit from
+  // the split `runUnits` bucket, not the legacy single `profile.units` value. `useProfile`
+  // loads once on mount (a fresh screen each time this route is pushed, so no focus-gating
+  // is needed here, unlike session.tsx's stacked-screen rehydrate concern) and defaults to
+  // 'metric' until the profile row resolves.
+  const { profile } = useProfile();
+  const units: Units = profile?.runUnits ?? 'metric';
 
   const localDate = useMemo(() => dateToLocalDateStr(selectedDate), [selectedDate]);
   const isToday = localDate === todayLocalDate();

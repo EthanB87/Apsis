@@ -36,6 +36,13 @@
       "when": 1783973688787,
       "tag": "0004_youthful_valkyrie",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "6",
+      "when": 1785892635624,
+      "tag": "0005_clean_champions",
+      "breakpoints": true
     }
   ]
 }

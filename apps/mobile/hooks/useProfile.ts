@@ -10,9 +10,11 @@
  * insert-only path used once during onboarding; this hook is the update-in-place path
  * `useSaveProfile`'s doc comment anticipates for Plan 09.
  *
- * On every successful read/update this hydrates `useSettingsStore`'s `units` mirror
- * (lib/settingsStore.ts) so other screens can convert metric storage to display without
- * re-querying the profile row themselves (ONB-04).
+ * On every successful read/update this hydrates `useSettingsStore`'s three unit-bucket
+ * mirrors (lib/settingsStore.ts) so other screens can convert metric storage to display
+ * without re-querying the profile row themselves (ONB-04). Phase 09 (D-01): each bucket
+ * resolves from its own column, falling back to the legacy `units` column for rows not
+ * yet backfilled by migration 0005 (`row.liftsUnits ?? row.units ?? 'metric'`, etc.).
  *
  * Security (V7/T-1-02, T-03-08): the raw error is console.error'd for developer
  * diagnostics only; the UI-SPEC's generic string is the only user-facing error surface —
@@ -35,6 +37,10 @@ export interface ProfileValues {
   thresholdHr: number | null;
   thresholdPaceSecPerKm: number | null;
   units: Units;
+  /** Phase 09 (D-01): per-domain unit preference buckets, resolved with legacy fallback. */
+  liftsUnits: Units;
+  bodyweightUnits: Units;
+  runUnits: Units;
   restTimerDefaultSec: number;
 }
 
@@ -48,6 +54,10 @@ export interface ProfileUpdateInput {
   thresholdHr?: number;
   thresholdPaceSecPerKm?: number;
   units?: Units;
+  /** Phase 09 (D-01): explicit named fields (not a generic Partial passthrough — Pitfall 6). */
+  liftsUnits?: Units;
+  bodyweightUnits?: Units;
+  runUnits?: Units;
   restTimerDefaultSec?: number;
   /** Phase 07 (NUTR-15/NUTR-20): stored metric cm, written by the Nutrition Setup prompt's
    * single batched UPDATE — never touches strength_set/endurance_segment/workout/load_daily. */
@@ -75,7 +85,9 @@ export function useProfile(): UseProfileResult {
   const [submitting, setSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [loadErrorMessage, setLoadErrorMessage] = useState<string | null>(null);
-  const setUnits = useSettingsStore((state) => state.setUnits);
+  const setLiftsUnits = useSettingsStore((state) => state.setLiftsUnits);
+  const setBodyweightUnits = useSettingsStore((state) => state.setBodyweightUnits);
+  const setRunUnits = useSettingsStore((state) => state.setRunUnits);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -84,6 +96,8 @@ export function useProfile(): UseProfileResult {
       const rows = await db.select().from(userProfile).limit(1);
       const row = rows[0];
       if (row != null) {
+        // Phase 09 (D-01/D-04): each bucket resolves from its own column, falling back to
+        // the legacy `units` value for a row migration 0005 hasn't backfilled yet.
         const next: ProfileValues = {
           id: row.id,
           sex: row.sex,
@@ -91,10 +105,15 @@ export function useProfile(): UseProfileResult {
           thresholdHr: row.thresholdHr,
           thresholdPaceSecPerKm: row.thresholdPaceSecPerKm,
           units: (row.units ?? 'metric') as Units,
+          liftsUnits: (row.liftsUnits ?? row.units ?? 'metric') as Units,
+          bodyweightUnits: (row.bodyweightUnits ?? row.units ?? 'metric') as Units,
+          runUnits: (row.runUnits ?? row.units ?? 'metric') as Units,
           restTimerDefaultSec: row.restTimerDefaultSec ?? 120,
         };
         setProfile(next);
-        setUnits(next.units);
+        setLiftsUnits(next.liftsUnits);
+        setBodyweightUnits(next.bodyweightUnits);
+        setRunUnits(next.runUnits);
       }
     } catch (err: unknown) {
       // Raw error logged for developer diagnostics only — never rendered (T-03-08).
@@ -105,7 +124,7 @@ export function useProfile(): UseProfileResult {
     } finally {
       setLoading(false);
     }
-  }, [setUnits]);
+  }, [setLiftsUnits, setBodyweightUnits, setRunUnits]);
 
   useEffect(() => {
     load();
@@ -123,7 +142,9 @@ export function useProfile(): UseProfileResult {
       await db.update(userProfile).set(patch).where(eq(userProfile.id, profile.id));
       const next: ProfileValues = { ...profile, ...patch };
       setProfile(next);
-      if (patch.units != null) setUnits(patch.units);
+      if (patch.liftsUnits != null) setLiftsUnits(patch.liftsUnits);
+      if (patch.bodyweightUnits != null) setBodyweightUnits(patch.bodyweightUnits);
+      if (patch.runUnits != null) setRunUnits(patch.runUnits);
       return true;
     } catch (err: unknown) {
       console.error('[Apsis] useProfile update failed:', err);
