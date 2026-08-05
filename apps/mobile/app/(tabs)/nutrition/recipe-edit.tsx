@@ -36,13 +36,17 @@ import {
   searchLocalFoods,
 } from '@apsis/db';
 
+import { UnitChipRow } from '../../../components/FoodConfirmSheet';
+import { DECIMAL_PAD_ACCESSORY_ID, DecimalPadDoneBar } from '../../../components/DecimalPadDoneBar';
 import { ScreenHeader } from '../../../components/ScreenHeader';
 import Colors from '../../../constants/Colors';
 import { HIT_TARGET_MIN, Mono, Radius, Spacing, Typography, tabularNums } from '../../../constants/theme';
+import { availableUnitsFor, gramsToDisplayQty, qtyToGrams, type FoodQtyUnit, type FoodUnitBasis } from '../../../lib/foodUnits';
 
 const SEARCH_DEBOUNCE_MS = 300;
 const SEARCH_RESULT_LIMIT = 20;
 const DEFAULT_INGREDIENT_QTY_GRAMS = 100;
+const DEFAULT_INGREDIENT_UNIT: FoodQtyUnit = 'g';
 const SAVE_ERROR_MESSAGE = "Couldn't save that recipe. Nothing was lost — try again.";
 const LOAD_ERROR_MESSAGE = "Couldn't load that recipe.";
 
@@ -54,6 +58,8 @@ interface FoodSearchResult {
   proteinGPer100g: number;
   carbGPer100g: number;
   fatGPer100g: number;
+  servingGrams: number | null;
+  servingName: string | null;
 }
 
 interface DraftIngredient {
@@ -64,13 +70,22 @@ interface DraftIngredient {
   proteinGPer100g: number;
   carbGPer100g: number;
   fatGPer100g: number;
+  servingGrams: number | null;
+  servingName: string | null;
+  /** D-10: which unit `qtyText` is currently expressed in — g/kg/oz/lb always available;
+   * tsp/tbsp/serving only when `servingGrams` supports them (availableUnitsFor). */
+  unit: FoodQtyUnit;
   /** WR-07: kept as RAW TEXT while editing (like every other numeric field in this phase) so
    * decimals can be typed ("12." must not re-render as "12") and clearing the field doesn't
    * fight the user with a phantom "0". Parsed to a number only for the preview computation and
-   * at save time. */
+   * at save time — always via `qtyToGrams(qtyText, unit, basis)`, never assumed to be grams. */
   qtyText: string;
   /** True for ingredients already persisted (edit mode) — not removable from this screen. */
   existing: boolean;
+}
+
+function ingredientBasis(ing: DraftIngredient): FoodUnitBasis {
+  return { servingGrams: ing.servingGrams, servingName: ing.servingName };
 }
 
 function parseNumberInput(text: string): number {
@@ -122,6 +137,8 @@ export default function RecipeEditScreen(): React.JSX.Element {
             proteinGPer100g: food.proteinGPer100g,
             carbGPer100g: food.carbGPer100g,
             fatGPer100g: food.fatGPer100g,
+            servingGrams: food.servingGrams,
+            servingName: food.servingName,
           })
           .from(recipeIngredient)
           .innerJoin(food, eq(recipeIngredient.foodId, food.id))
@@ -139,6 +156,11 @@ export default function RecipeEditScreen(): React.JSX.Element {
             proteinGPer100g: row.proteinGPer100g,
             carbGPer100g: row.carbGPer100g,
             fatGPer100g: row.fatGPer100g,
+            servingGrams: row.servingGrams,
+            servingName: row.servingName,
+            // Existing rows are locked (editable={!ing.existing}) and always display the
+            // stored grams value directly — no chip row is shown for them (see JSX below).
+            unit: DEFAULT_INGREDIENT_UNIT,
             qtyText: String(row.qtyGrams),
             existing: true,
           })),
@@ -184,6 +206,9 @@ export default function RecipeEditScreen(): React.JSX.Element {
         proteinGPer100g: f.proteinGPer100g,
         carbGPer100g: f.carbGPer100g,
         fatGPer100g: f.fatGPer100g,
+        servingGrams: f.servingGrams,
+        servingName: f.servingName,
+        unit: DEFAULT_INGREDIENT_UNIT,
         qtyText: String(DEFAULT_INGREDIENT_QTY_GRAMS),
         existing: false,
       },
@@ -194,6 +219,20 @@ export default function RecipeEditScreen(): React.JSX.Element {
     // WR-07: sanitize but keep the raw text (never round-trip through a number mid-typing).
     const qtyText = text.replace(/[^0-9.]/g, '');
     setIngredients((prev) => prev.map((ing) => (ing.draftId === draftId ? { ...ing, qtyText } : ing)));
+  }
+
+  /** D-08/D-10: switching an ingredient's unit chip preserves the real quantity — the
+   * displayed number converts via `gramsToDisplayQty` (mirrors FoodConfirmSheet's chip). */
+  function handleSelectUnit(draftId: string, unit: FoodQtyUnit): void {
+    setIngredients((prev) =>
+      prev.map((ing) => {
+        if (ing.draftId !== draftId || ing.unit === unit) return ing;
+        const basis = ingredientBasis(ing);
+        const grams = qtyToGrams(parseNumberInput(ing.qtyText), ing.unit, basis);
+        const displayQty = gramsToDisplayQty(grams, unit, basis);
+        return { ...ing, unit, qtyText: String(Math.round(displayQty * 100) / 100) };
+      }),
+    );
   }
 
   function handleRemoveIngredient(draftId: string): void {
@@ -209,7 +248,8 @@ export default function RecipeEditScreen(): React.JSX.Element {
     if (ingredients.length === 0) return null;
     const totals = ingredients.reduce(
       (acc, ing) => {
-        const factor = parseNumberInput(ing.qtyText) / 100;
+        const qtyGrams = qtyToGrams(parseNumberInput(ing.qtyText), ing.unit, ingredientBasis(ing));
+        const factor = qtyGrams / 100;
         acc.kcal += ing.kcalPer100g * factor;
         acc.p += ing.proteinGPer100g * factor;
         acc.c += ing.carbGPer100g * factor;
@@ -247,7 +287,7 @@ export default function RecipeEditScreen(): React.JSX.Element {
               id: randomUUID(),
               recipeId,
               foodId: ing.foodId,
-              qtyGrams: parseNumberInput(ing.qtyText),
+              qtyGrams: qtyToGrams(parseNumberInput(ing.qtyText), ing.unit, ingredientBasis(ing)),
             });
           }
         });
@@ -260,7 +300,7 @@ export default function RecipeEditScreen(): React.JSX.Element {
               id: randomUUID(),
               recipeId: id,
               foodId: ing.foodId,
-              qtyGrams: parseNumberInput(ing.qtyText),
+              qtyGrams: qtyToGrams(parseNumberInput(ing.qtyText), ing.unit, ingredientBasis(ing)),
             });
           }
         });
@@ -309,6 +349,7 @@ export default function RecipeEditScreen(): React.JSX.Element {
               placeholder="1"
               placeholderTextColor={Colors.dark.mutedText}
               keyboardType="decimal-pad"
+              inputAccessoryViewID={DECIMAL_PAD_ACCESSORY_ID}
               style={[styles.numericInput, tabularNums]}
               accessibilityLabel="Servings"
             />
@@ -318,27 +359,39 @@ export default function RecipeEditScreen(): React.JSX.Element {
               <Text style={styles.emptyHint}>Search below to add ingredients.</Text>
             ) : (
               ingredients.map((ing) => (
-                <View key={ing.draftId} style={styles.ingredientRow}>
-                  <Text style={styles.ingredientName} numberOfLines={1}>
-                    {ing.name}
-                  </Text>
-                  <TextInput
-                    value={ing.qtyText}
-                    onChangeText={(t) => handleQtyChange(ing.draftId, t)}
-                    keyboardType="decimal-pad"
-                    editable={!ing.existing}
-                    style={[styles.ingredientQtyInput, tabularNums, ing.existing && styles.ingredientQtyInputLocked]}
-                    accessibilityLabel={`${ing.name} quantity in grams`}
-                  />
-                  <Text style={styles.ingredientUnit}>g</Text>
+                <View key={ing.draftId} style={styles.ingredientBlock}>
+                  <View style={styles.ingredientRow}>
+                    <Text style={styles.ingredientName} numberOfLines={1}>
+                      {ing.name}
+                    </Text>
+                    <TextInput
+                      value={ing.qtyText}
+                      onChangeText={(t) => handleQtyChange(ing.draftId, t)}
+                      keyboardType="decimal-pad"
+                      editable={!ing.existing}
+                      inputAccessoryViewID={DECIMAL_PAD_ACCESSORY_ID}
+                      style={[styles.ingredientQtyInput, tabularNums, ing.existing && styles.ingredientQtyInputLocked]}
+                      accessibilityLabel={`${ing.name} quantity in ${ing.unit}`}
+                    />
+                    <Text style={styles.ingredientUnit}>{ing.unit}</Text>
+                    {!ing.existing ? (
+                      <Pressable
+                        onPress={() => handleRemoveIngredient(ing.draftId)}
+                        accessibilityRole="button"
+                        accessibilityLabel={`Remove ${ing.name}`}
+                        style={styles.removeButton}>
+                        <Text style={styles.removeButtonLabel}>×</Text>
+                      </Pressable>
+                    ) : null}
+                  </View>
+                  {/* D-10: chips only for editable (newly added) rows — existing rows are
+                     locked (editable={false} above) and always show the stored grams value. */}
                   {!ing.existing ? (
-                    <Pressable
-                      onPress={() => handleRemoveIngredient(ing.draftId)}
-                      accessibilityRole="button"
-                      accessibilityLabel={`Remove ${ing.name}`}
-                      style={styles.removeButton}>
-                      <Text style={styles.removeButtonLabel}>×</Text>
-                    </Pressable>
+                    <UnitChipRow
+                      units={availableUnitsFor(ingredientBasis(ing))}
+                      selectedUnit={ing.unit}
+                      onSelectUnit={(unit) => handleSelectUnit(ing.draftId, unit)}
+                    />
                   ) : null}
                 </View>
               ))
@@ -404,6 +457,7 @@ export default function RecipeEditScreen(): React.JSX.Element {
           </>
         )}
       </ScrollView>
+      <DecimalPadDoneBar />
     </SafeAreaView>
   );
 }
@@ -452,13 +506,15 @@ const styles = StyleSheet.create({
     color: Colors.dark.mutedText,
     paddingTop: Spacing.sm,
   },
+  ingredientBlock: {
+    paddingVertical: Spacing.sm,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: Colors.dark.border,
+  },
   ingredientRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.sm,
-    paddingVertical: Spacing.sm,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: Colors.dark.border,
   },
   ingredientName: {
     ...Typography.body,

@@ -25,15 +25,19 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { ElementRef } from 'react';
 import { Keyboard, Pressable, StyleSheet, Text, View } from 'react-native';
-import BottomSheet, { BottomSheetTextInput, BottomSheetView } from '@gorhom/bottom-sheet';
+import BottomSheet, { BottomSheetScrollView, BottomSheetTextInput } from '@gorhom/bottom-sheet';
 import { randomUUID } from 'expo-crypto';
-import { db, foodLog } from '@apsis/db';
+import { eq } from 'drizzle-orm';
+import { db, food as foodTable, foodLog } from '@apsis/db';
 
 import Colors from '../constants/Colors';
 import { HIT_TARGET_MIN, Mono, Radius, Spacing, Typography, tabularNums } from '../constants/theme';
+import { availableUnitsFor, gramsToDisplayQty, qtyToGrams, type FoodQtyUnit, type FoodUnitBasis } from '../lib/foodUnits';
 import { buildFoodLogRow, type FoodPer100g, type Meal } from '../lib/logFood';
 import { todayLocalDate } from '../lib/localDate';
 import { useNutritionTargetSignal } from '../lib/nutritionTargetSignal';
+import { useSettingsStore } from '../lib/settingsStore';
+import { DECIMAL_PAD_ACCESSORY_ID, DecimalPadDoneBar } from './DecimalPadDoneBar';
 
 /** The subset of a `food` row this sheet needs to preview + log — food-source-agnostic. */
 export interface ConfirmableFood extends FoodPer100g {
@@ -42,9 +46,14 @@ export interface ConfirmableFood extends FoodPer100g {
   brand?: string | null;
   servingName?: string | null;
   servingGrams?: number | null;
+  /** Phase 09 (D-09): the unit last picked when logging THIS food, e.g. 'oz'/'g'/'serving'.
+   * Read to default the chip selection on open; written back after a successful log. Absent
+   * or unrecognized values fall back to the bodyweight units pref (D-09). */
+  lastUsedUnit?: string | null;
   /** True when this is a stand-in for a non-`food`-row source (e.g. a recipe serving,
    * recipes.tsx) — `buildFoodLogRow` then writes `foodId: null` instead of freezing an id
-   * that would violate `food_log.food_id`'s FK to `food.id` (CR-02). */
+   * that would violate `food_log.food_id`'s FK to `food.id` (CR-02). Also skips the
+   * `food.lastUsedUnit` write-back, since a virtual food has no real `food` row to update. */
   isVirtual?: boolean;
 }
 
@@ -67,6 +76,22 @@ const MEAL_OPTIONS: ReadonlyArray<{ value: Meal; label: string }> = [
 const LOG_ERROR_MESSAGE = "Couldn't log that food. Nothing was lost — try again.";
 const DEFAULT_QTY_GRAMS = 100;
 
+/** D-05: the full unit vocabulary, used to validate a stored `food.lastUsedUnit` string. */
+const ALL_FOOD_QTY_UNITS: readonly FoodQtyUnit[] = ['g', 'kg', 'oz', 'lb', 'tsp', 'tbsp', 'serving'];
+
+/** No serving basis — used when `food` is null but a hook still needs a `FoodUnitBasis`. */
+const EMPTY_BASIS: FoodUnitBasis = { servingGrams: null, servingName: null };
+
+const UNIT_LABELS: Record<FoodQtyUnit, string> = {
+  g: 'g',
+  kg: 'kg',
+  oz: 'oz',
+  lb: 'lb',
+  tsp: 'tsp',
+  tbsp: 'tbsp',
+  serving: 'serving',
+};
+
 /** Time-of-day heuristic so the sheet opens with a sensible meal preselected — the user can
  * always override it before confirming. */
 function defaultMealForNow(): Meal {
@@ -77,19 +102,73 @@ function defaultMealForNow(): Meal {
   return 'snack';
 }
 
-function parseGramsInput(text: string): number {
+function parseQtyInput(text: string): number {
   const parsed = Number.parseFloat(text);
   return Number.isFinite(parsed) && parsed >= 0 ? parsed : 0;
 }
 
+/** Runtime guard for a `food.lastUsedUnit` TEXT column value — never trust it's a valid unit. */
+function isFoodQtyUnit(value: string): value is FoodQtyUnit {
+  return (ALL_FOOD_QTY_UNITS as readonly string[]).includes(value);
+}
+
+/** `ConfirmableFood`'s optional fields carry `| undefined`; `FoodUnitBasis` doesn't — normalize
+ * once here rather than at every `foodUnits.ts` call site. */
+function toUnitBasis(food: ConfirmableFood): FoodUnitBasis {
+  return { servingGrams: food.servingGrams ?? null, servingName: food.servingName ?? null };
+}
+
+/** Display formatting for a converted quantity — 2 decimal places is enough resolution for
+ * every unit here (whole oz, 0.1 lb, fractional g/kg/tsp/tbsp/serving) without a noisy tail. */
+function formatQtyForDisplay(qty: number): string {
+  if (!Number.isFinite(qty) || qty < 0) return '0';
+  return String(Math.round(qty * 100) / 100);
+}
+
+export interface UnitChipRowProps {
+  units: readonly FoodQtyUnit[];
+  selectedUnit: FoodQtyUnit;
+  onSelectUnit: (unit: FoodQtyUnit) => void;
+}
+
+/** D-08 chip row: g/kg/oz/lb always, tsp/tbsp/serving only when `units` includes them (driven
+ * by `availableUnitsFor`). Bone active-fill, matching the meal selector above — the Log button
+ * is this sheet's one volt-filled element. Reused as-is by nutrition/log.tsx (custom food) and
+ * nutrition/recipe-edit.tsx (ingredient qty) so the chip visual/behavior never drifts (D-10). */
+export function UnitChipRow({ units, selectedUnit, onSelectUnit }: UnitChipRowProps): React.JSX.Element {
+  return (
+    <View style={chipStyles.row}>
+      {units.map((unit) => (
+        <Pressable
+          key={unit}
+          onPress={() => onSelectUnit(unit)}
+          accessibilityRole="button"
+          accessibilityLabel={`Unit ${UNIT_LABELS[unit]}`}
+          accessibilityState={{ selected: selectedUnit === unit }}
+          style={[chipStyles.chip, selectedUnit === unit && chipStyles.chipSelected]}>
+          <Text style={[chipStyles.chipLabel, selectedUnit === unit && chipStyles.chipLabelSelected]}>
+            {UNIT_LABELS[unit]}
+          </Text>
+        </Pressable>
+      ))}
+    </View>
+  );
+}
+
 export function FoodConfirmSheet({ visible, food, onClose, onLogged }: FoodConfirmSheetProps): React.JSX.Element {
   const [qtyText, setQtyText] = useState(String(DEFAULT_QTY_GRAMS));
+  const [selectedUnit, setSelectedUnit] = useState<FoodQtyUnit>('g');
   const [meal, setMeal] = useState<Meal>(defaultMealForNow());
   const [logging, setLogging] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const qtyInputRef = useRef<ElementRef<typeof BottomSheetTextInput>>(null);
   const sheetRef = useRef<BottomSheet>(null);
   const selectionMadeRef = useRef(false);
+  // D-09 fallback for foods with no stored `lastUsedUnit` yet: bodyweight units pref
+  // (imperial -> oz, metric -> g) — mirrors the same profile bucket `ProfileReview`/Settings use.
+  const bodyweightUnits = useSettingsStore((s) => s.bodyweightUnits);
+
+  const availableUnits = useMemo(() => (food != null ? availableUnitsFor(toUnitBasis(food)) : []), [food]);
 
   // Single-owner open/close (mirrors ExercisePickerSheet.tsx — see module doc comment).
   const wasVisibleRef = useRef(false);
@@ -97,7 +176,15 @@ export function FoodConfirmSheet({ visible, food, onClose, onLogged }: FoodConfi
     if (visible) {
       selectionMadeRef.current = false;
       wasVisibleRef.current = true;
-      setQtyText(String(food?.servingGrams ?? DEFAULT_QTY_GRAMS));
+      const units = food != null ? availableUnitsFor(toUnitBasis(food)) : [];
+      const fallbackUnit: FoodQtyUnit = bodyweightUnits === 'imperial' ? 'oz' : 'g';
+      const stored = food?.lastUsedUnit;
+      const initialUnit: FoodQtyUnit =
+        stored != null && isFoodQtyUnit(stored) && units.includes(stored) ? stored : fallbackUnit;
+      const initialGrams = food?.servingGrams ?? DEFAULT_QTY_GRAMS;
+      const basis = food != null ? toUnitBasis(food) : EMPTY_BASIS;
+      setSelectedUnit(initialUnit);
+      setQtyText(formatQtyForDisplay(gramsToDisplayQty(initialGrams, initialUnit, basis)));
       setMeal(defaultMealForNow());
       setError(null);
       sheetRef.current?.snapToIndex(0);
@@ -107,14 +194,29 @@ export function FoodConfirmSheet({ visible, food, onClose, onLogged }: FoodConfi
       Keyboard.dismiss();
       sheetRef.current?.close();
     }
-  }, [visible, food]);
+  }, [visible, food, bodyweightUnits]);
 
-  const qtyGrams = useMemo(() => parseGramsInput(qtyText), [qtyText]);
+  // D-05..D-08: qtyGrams is ALWAYS the storage value — every conversion happens through
+  // `qtyToGrams`, so `buildFoodLogRow`/the preview never see a non-gram quantity.
+  const qtyGrams = useMemo(() => {
+    if (food == null) return 0;
+    return qtyToGrams(parseQtyInput(qtyText), selectedUnit, toUnitBasis(food));
+  }, [qtyText, selectedUnit, food]);
 
   const preview = useMemo(() => {
     if (food == null) return null;
     return buildFoodLogRow({ food, qtyGrams, meal, localDate: todayLocalDate() });
   }, [food, qtyGrams, meal]);
+
+  /** D-08: switching chips preserves the REAL quantity — the displayed number converts via
+   * `gramsToDisplayQty`, it does not reinterpret the same digits as a new unit. */
+  function handleSelectUnit(unit: FoodQtyUnit): void {
+    if (food == null || unit === selectedUnit) return;
+    const basis = toUnitBasis(food);
+    const grams = qtyToGrams(parseQtyInput(qtyText), selectedUnit, basis);
+    setSelectedUnit(unit);
+    setQtyText(formatQtyForDisplay(gramsToDisplayQty(grams, unit, basis)));
+  }
 
   async function handleLog(): Promise<void> {
     if (food == null || logging || selectionMadeRef.current) return;
@@ -124,6 +226,15 @@ export function FoodConfirmSheet({ visible, food, onClose, onLogged }: FoodConfi
       const row = buildFoodLogRow({ food, qtyGrams, meal, localDate: todayLocalDate() });
       await db.insert(foodLog).values({ id: randomUUID(), ...row });
       selectionMadeRef.current = true;
+      // D-09: persist the chosen unit for next time — skipped for virtual foods (recipes),
+      // which have no real `food` row to update (CR-02 precedent).
+      if (food.isVirtual !== true) {
+        try {
+          await db.update(foodTable).set({ lastUsedUnit: selectedUnit }).where(eq(foodTable.id, food.id));
+        } catch (err: unknown) {
+          console.error('[Apsis] Failed to persist last-used food unit:', err);
+        }
+      }
       useNutritionTargetSignal.getState().bump();
       onLogged?.();
       onClose();
@@ -146,7 +257,7 @@ export function FoodConfirmSheet({ visible, food, onClose, onLogged }: FoodConfi
       keyboardBlurBehavior="none"
       backgroundStyle={styles.background}
       handleIndicatorStyle={styles.handleIndicator}>
-      <BottomSheetView style={styles.content}>
+      <BottomSheetScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
         {food != null ? (
           <>
             <Text style={styles.foodName} numberOfLines={2}>
@@ -181,14 +292,15 @@ export function FoodConfirmSheet({ visible, food, onClose, onLogged }: FoodConfi
                 onChangeText={(text) => setQtyText(text.replace(/[^0-9.]/g, ''))}
                 keyboardType="decimal-pad"
                 selectTextOnFocus
+                inputAccessoryViewID={DECIMAL_PAD_ACCESSORY_ID}
                 style={styles.qtyInput}
-                accessibilityLabel="Quantity in grams"
+                accessibilityLabel={`Quantity in ${UNIT_LABELS[selectedUnit]}`}
               />
-              <Text style={styles.qtyUnit}>g</Text>
               {food.servingName != null && food.servingName.length > 0 ? (
                 <Text style={styles.servingHint}>{food.servingName}</Text>
               ) : null}
             </View>
+            <UnitChipRow units={availableUnits} selectedUnit={selectedUnit} onSelectUnit={handleSelectUnit} />
 
             {preview != null ? (
               <Text style={[styles.previewLine, tabularNums]}>
@@ -211,7 +323,8 @@ export function FoodConfirmSheet({ visible, food, onClose, onLogged }: FoodConfi
             </Pressable>
           </>
         ) : null}
-      </BottomSheetView>
+      </BottomSheetScrollView>
+      <DecimalPadDoneBar />
     </BottomSheet>
   );
 }
@@ -286,10 +399,6 @@ const styles = StyleSheet.create({
     borderRadius: Radius.sm,
     backgroundColor: Colors.dark.steel,
   },
-  qtyUnit: {
-    ...Typography.label,
-    color: Colors.dark.mutedText,
-  },
   servingHint: {
     ...Typography.label,
     color: Colors.dark.mutedText,
@@ -318,6 +427,39 @@ const styles = StyleSheet.create({
   },
   logButtonLabel: {
     ...Typography.body,
+    color: Colors.dark.onAccent,
+  },
+});
+
+/** Exported alongside `UnitChipRow` so nutrition/log.tsx and nutrition/recipe-edit.tsx render
+ * the exact same chip visual (D-10 — one shared component, not three style copies). */
+export const chipStyles = StyleSheet.create({
+  row: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: Spacing.sm,
+    marginTop: Spacing.sm,
+  },
+  chip: {
+    minHeight: HIT_TARGET_MIN / 1.3,
+    paddingHorizontal: Spacing.lg,
+    borderRadius: Radius.sm,
+    borderWidth: 1,
+    borderColor: Colors.dark.border,
+    backgroundColor: Colors.dark.steel,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  // Bone active-fill, not volt — matches the meal selector's one-volt-per-screen convention.
+  chipSelected: {
+    borderColor: Colors.dark.text,
+    backgroundColor: Colors.dark.text,
+  },
+  chipLabel: {
+    ...Typography.label,
+    color: Colors.dark.text,
+  },
+  chipLabelSelected: {
     color: Colors.dark.onAccent,
   },
 });
