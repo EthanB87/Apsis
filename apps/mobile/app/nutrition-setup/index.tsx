@@ -65,7 +65,9 @@ export default function NutritionSetupScreen(): React.JSX.Element {
     );
   }
 
-  const isImperial = profile.units === 'imperial';
+  // D-01: height is a bodyweight/body-metric concern -> bodyweightUnits, not the legacy
+  // single profile.units value.
+  const isImperial = profile.bodyweightUnits === 'imperial';
 
   const heightCmValue: number | null = isImperial
     ? (() => {
