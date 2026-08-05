@@ -11,6 +11,12 @@ export const LB_PER_KG = 2.2046226218;
 /** Exact kilometers-per-mile conversion factor. */
 export const KM_PER_MI = 1.609344;
 
+/** Exact grams-per-ounce conversion factor (avoirdupois ounce, 09-02 D-05). */
+export const G_PER_OZ = 28.349523125;
+
+/** Exact grams-per-pound conversion factor (09-02 D-05; = G_PER_OZ * 16). */
+export const G_PER_LB = G_PER_OZ * 16;
+
 /**
  * Convert a display pound value to exact storage kilograms (no rounding). Used when a user
  * enters/steps a value in lb; the app always stores metric.
@@ -36,6 +42,40 @@ export function kgToDisplayLb(kg: number): number {
  */
 export function kgToDisplayLbFractional(kg: number): number {
   return Math.round(kg * LB_PER_KG * 10) / 10;
+}
+
+/**
+ * Convert a display ounce value (food quantity) to exact storage grams (no rounding). Used
+ * when a user enters a food quantity in oz; the app always stores grams. Distinct from the
+ * lb/kg helpers above, which are for lifting loads, not food quantities.
+ */
+export function ozToGramsExact(oz: number): number {
+  return oz * G_PER_OZ;
+}
+
+/**
+ * Convert stored grams to a rounded display ounce value (09-02 D-05). Rounds to the nearest
+ * whole oz so `gramsToDisplayOz(ozToGramsExact(4)) === 4` — never `3.9`.
+ */
+export function gramsToDisplayOz(g: number): number {
+  return Math.round(g / G_PER_OZ);
+}
+
+/**
+ * Convert a display pound value (food quantity) to exact storage grams (no rounding). Distinct
+ * from `lbToKgExact`, which converts to kilograms for lifting-load storage.
+ */
+export function lbToGramsExact(lb: number): number {
+  return lb * G_PER_LB;
+}
+
+/**
+ * Convert stored grams to a display pound value rounded to the nearest 0.1 lb (09-02 D-05,
+ * matches `kgToDisplayLbFractional`'s precision precedent). Distinct from the kg-based
+ * `kgToDisplayLb`/`kgToDisplayLbFractional`, which operate on lifting loads, not food grams.
+ */
+export function gramsToDisplayLb(g: number): number {
+  return Math.round((g / G_PER_LB) * 10) / 10;
 }
 
 /** Convert stored kilometers to a display mile value (no rounding applied here). */
