@@ -41,6 +41,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Constants from 'expo-constants';
+import { useRouter } from 'expo-router';
 import { db } from '@apsis/db';
 import { ENGINE_VERSION } from '@apsis/engine';
 import type { Sex, Units } from '@apsis/shared';
@@ -120,6 +121,7 @@ function paceDisplayTexts(secPerKm: number | null, imperial: boolean): { min: st
 }
 
 export default function SettingsScreen(): React.JSX.Element {
+  const router = useRouter();
   const { profile, loading, submitting, errorMessage, loadErrorMessage, reload, update } =
     useProfile();
 
@@ -491,6 +493,21 @@ export default function SettingsScreen(): React.JSX.Element {
             </Text>
           </Pressable>
         )}
+        <View style={styles.hairlineDivider} />
+
+        {/* Phase 09 D-19: "How Apsis works" reopens the onboarding explainer cards for
+         * existing build-9 testers who never saw them (they skip fresh onboarding). Pushes
+         * the TOP-LEVEL /explainer route — NOT /onboarding/explainer, which sits behind
+         * Stack.Protected's !hasProfile guard and is unreachable once a profile exists. */}
+        <Text style={styles.sectionLabel}>Guide</Text>
+        <Pressable
+          onPress={() => router.push('/explainer')}
+          accessibilityRole="button"
+          accessibilityLabel="How Apsis works"
+          style={({ pressed }) => [styles.guideRow, pressed && styles.guideRowPressed]}>
+          <Text style={styles.guideRowLabel}>How Apsis works</Text>
+          <Text style={styles.guideRowSub}>HSS, the readiness band, and your trend.</Text>
+        </Pressable>
         <View style={styles.hairlineDivider} />
 
         {/* NUTR-21 (07-08-PLAN.md Task 2, T-07-19): Open Food Facts license attribution —
@@ -932,6 +949,27 @@ const styles = StyleSheet.create({
     color: Colors.dark.text,
   },
   hkRowSub: {
+    ...Typography.label,
+    color: Colors.dark.mutedText,
+  },
+  // Phase 09 D-19: "How Apsis works" nav row — mirrors hkConnectRow's shape.
+  guideRow: {
+    paddingHorizontal: Spacing.lg,
+    minHeight: HIT_TARGET_MIN + 12,
+    paddingVertical: Spacing.lg,
+    borderBottomWidth: HAIRLINE_WIDTH,
+    borderBottomColor: Colors.dark.border,
+    justifyContent: 'center',
+    gap: Spacing.xs,
+  },
+  guideRowPressed: {
+    opacity: 0.7,
+  },
+  guideRowLabel: {
+    ...Typography.body,
+    color: Colors.dark.text,
+  },
+  guideRowSub: {
     ...Typography.label,
     color: Colors.dark.mutedText,
   },
