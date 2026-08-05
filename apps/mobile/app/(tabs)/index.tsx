@@ -318,7 +318,7 @@ export default function TodayScreen(): React.JSX.Element {
             id: s.id,
             title: seg ? capitalize(seg.activityType) : 'Run',
             metaLine: seg
-              ? formatEnduranceMeta(seg.activityType, seg.distanceM, seg.durationS, seg.avgHr, profile.units)
+              ? formatEnduranceMeta(seg.activityType, seg.distanceM, seg.durationS, seg.avgHr, profile.runUnits)
               : '',
             hss: s.hss ?? 0,
           };

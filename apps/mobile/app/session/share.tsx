@@ -130,7 +130,7 @@ export default function ShareScreen(): React.JSX.Element {
 
           trio = buildEnduranceStatTrio(
             { distanceM: totalDistanceM, paceSecPerKm, durationS: totalDurationS },
-            profile.units
+            profile.runUnits
           );
         } else {
           // strength (and hybrid) -- same strengthSet/exercise join finish.tsx/detail.tsx use.
@@ -161,7 +161,7 @@ export default function ShareScreen(): React.JSX.Element {
               ? Math.max(0, Math.round((w.finishedAt.getTime() - w.createdAt.getTime()) / 1000))
               : 0;
 
-          trio = buildStrengthStatTrio({ totalVolumeKg, setCount, durationS }, profile.units);
+          trio = buildStrengthStatTrio({ totalVolumeKg, setCount, durationS }, profile.liftsUnits);
         }
 
         if (!cancelled) {
