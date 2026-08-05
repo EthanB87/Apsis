@@ -52,6 +52,11 @@ findings:
   info: 1
   total: 4
 status: issues_found
+fixed_at: 2026-08-04T23:41:00Z
+fix_status: partial
+fixed: 2
+deferred: 1
+skipped_info: 1
 ---
 
 # Phase 09: Code Review Report
@@ -150,6 +155,19 @@ truth, either remove the legacy "Units" row from `ProfileReview` entirely for th
 now fully duplicates the "Lifts" row) or make it read-only/derived, so there is exactly one
 control per unit domain.
 
+**Resolution: fixed** (commit `51d81cc`, `fix(09): CR-01 resolve Settings profile editor
+from split unit buckets`). `apps/mobile/app/(tabs)/settings/index.tsx`: replaced the single
+`draft.units`-derived `isImperial` with `bodyweightIsImperial = profile.bodyweightUnits ===
+'imperial'` and `runIsImperial = profile.runUnits === 'imperial'`, and re-keyed every
+bodyweight modal/preview use to `bodyweightIsImperial` and every threshold-pace modal/preview
+use to `runIsImperial`. `ProfileReview`'s `values` prop now includes `bodyweightUnits`/
+`runUnits` from `profile`. Removed the dead `handleUnitsChange` control and its
+`openFieldEditor` branch; added a new `showUnitsRow?: boolean` prop to
+`components/onboarding/ProfileReview.tsx` (default `true`) and pass `showUnitsRow={false}`
+from Settings so the legacy "Units" row no longer renders there — the three bucket rows are
+the only unit controls on this screen (D-03). `pnpm typecheck` and
+`pnpm --filter=./apps/mobile test` both green after the change.
+
 ## Warnings
 
 ### WR-01: Onboarding review screen omits `bodyweightUnits`/`runUnits` when rendering `ProfileReview`, mislabeling bodyweight/pace under Mixed units
@@ -187,6 +205,12 @@ second-guess a value that is actually fine (or fail to notice one that is actual
 `units: draft.liftsUnits` in the `values` object, matching the props `ProfileReview` already
 supports.
 
+**Resolution: fixed** (commit `4f0fa38`, `fix(09): WR-01 pass bodyweightUnits/runUnits to
+onboarding ProfileReview`). `apps/mobile/app/onboarding/review.tsx`'s `ProfileReview` call
+now passes `bodyweightUnits: draft.bodyweightUnits` and `runUnits: draft.runUnits` alongside
+the existing `units: draft.liftsUnits`, exactly as suggested. `pnpm typecheck` and
+`pnpm --filter=./apps/mobile test` both green after the change.
+
 ### WR-02: `formatEnduranceMeta` is hand-duplicated across three files with no shared source
 
 **File:** `apps/mobile/app/(tabs)/index.tsx:110-142`, `apps/mobile/app/session/finish.tsx:86-119` (`formatEnduranceSummary`), `apps/mobile/app/session/detail.tsx:86-118`
@@ -201,6 +225,14 @@ these files' own comments elsewhere invoke for engine math.
 **Fix:** Extract to a shared helper (e.g. `apps/mobile/lib/enduranceMeta.ts`) in a follow-up
 pass; not blocking for this phase given the explicit file-scope constraint documented in each
 copy, but worth tracking so it doesn't accumulate a fourth copy.
+
+**Resolution: deferred, not fixed in this pass.** The finding's own text and each of the
+three copies' inline comments explicitly mark this refactor as outside phase 09's declared
+file scope (`apps/mobile/app/(tabs)/index.tsx`, `app/session/finish.tsx`,
+`app/session/detail.tsx` were not touched by any 09-0X plan and are not part of this
+fix task's target files); the reviewer's own Fix guidance says "not blocking for this
+phase." Left open for a dedicated follow-up plan/phase rather than force-fitting an
+out-of-scope extraction here.
 
 ## Info
 
