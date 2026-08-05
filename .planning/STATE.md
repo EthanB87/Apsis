@@ -5,12 +5,12 @@ milestone_name: milestone
 current_phase: 06
 current_phase_name: polish-app-store-submission
 status: executing
-stopped_at: 06-04 COMPLETE (2026-08-04) -- privacy policy + support page live over HTTPS on apsistraining.com, REL-02 satisfied. Wave 1 of Phase 06 is now fully done. Remaining in-phase work: 06-06 PAUSED at Task 3 (blocking human-verify beta gate) -- build 9 is in Beta App Review, status "Waiting for Review" -- and 06-07 (ASC submission entry), still to come.
-last_updated: "2026-08-04T21:00:00.000Z"
+stopped_at: Phase 9 context gathered
+last_updated: "2026-08-05T00:26:58.384Z"
 last_activity: 2026-08-04
-last_activity_desc: 06-04 closed out (privacy + support pages verified live on apsistraining.com); 06-06 remains paused at Task 3 awaiting Apple Beta App Review outcome
+last_activity_desc: 06-04 closed out (privacy + support pages live on apsistraining.com, REL-02 satisfied); 06-06 still paused at Task 3 awaiting Apple's review outcome
 progress:
-  total_phases: 7
+  total_phases: 8
   completed_phases: 6
   total_plans: 59
   completed_plans: 57
@@ -410,10 +410,10 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-08-04 (evening)
-Stopped at: Build 9 PASSED Apple Beta App Review — app is live in TestFlight beta. First
+Last session: 2026-08-05T00:26:58.322Z
+Stopped at: Phase 9 context gathered
 beta-feedback round triaged with owner; all 4 items approved for pre-submission scope.
 Phase 9 (beta-feedback-round-1) added to ROADMAP.md, executes before 06-06 close / 06-07.
 06-06 Task 3 (D-12 beta gate + Sentry scrub confirm) now re-targets build 10, which Phase 9
 produces. Next action: /gsd-plan-phase 9 (or /gsd-discuss-phase 9 first).
-Resume file: .planning/phases/09-beta-feedback-round-1/ (no plans yet)
+Resume file: .planning/phases/09-beta-feedback-round-1/09-CONTEXT.md
