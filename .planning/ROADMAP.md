@@ -297,13 +297,28 @@ Plans:
 ### Phase 9: Beta feedback round 1
 
 **Goal:** TestFlight beta feedback (build 9) is addressed and shipped in build 10 before final ASC submission: (1) FoodConfirmSheet quantity input is no longer hidden by the keyboard and gains a Done/dismiss affordance; (2) food quantity can be entered in oz/lb as well as grams (storage stays grams); (3) the single metric/imperial units preference splits into body/lifts units vs run-distance units (DB migration) so mixed mode — imperial lifts + km runs — works end to end; (4) onboarding gains an explainer step for HSS, the readiness band, and trend statistics.
-**Requirements**: TBD (beta feedback items, no existing REQ-IDs)
+**Requirements**: TBD (beta feedback items, no existing REQ-IDs; scoped by 09-CONTEXT.md D-01..D-21)
 **Depends on:** Phase 8 (executes NOW, before 06-06 closes and 06-07 ASC submission — mirrors Phase 7/8 re-sequencing precedent; all items ship in build 10, which supersedes build 9 as the submission build)
-**Plans:** 0 plans
+**Plans:** 9 plans
 
 Plans:
+**Wave 1** *(foundation + independent fixes — parallel, no cross-file conflicts)*
 
-- [ ] TBD (run /gsd-plan-phase 9 to break down)
+- [ ] 09-01-PLAN.md — TRACER + [BLOCKING] migration 0005: units-split spine (3 user_profile buckets + food.lastUsedUnit) wired end-to-end for the run path, silent backfill, round-trip test (D-01/D-04/D-09)
+- [ ] 09-02-PLAN.md — Food-unit pure conversion foundation (TDD): oz/lb helpers in units.ts + foodUnits.ts conditional tsp/tbsp/serving gating (D-05/D-06/D-07)
+- [ ] 09-03-PLAN.md — Lifting logger store fixes: startRestTimer cancel-before-reschedule (D-21) + removeExercise DB-first cleanup (D-20) + ExerciseCard overflow affordance
+- [ ] 09-04-PLAN.md — DecimalPadDoneBar shared component + session-screen keyboard-safety + SetRow Done bar (D-11/D-13/D-14)
+
+**Wave 2** *(depends on Wave 1)*
+
+- [ ] 09-05-PLAN.md — Units-split UI: onboarding Mixed path + draft/save re-key + Settings three unit rows (D-01/D-02/D-03/D-04)
+- [ ] 09-06-PLAN.md — Consumer re-key sweep: 9 display surfaces resolve lifts/bodyweight/runs buckets, no legacy `units` display read (D-01)
+- [ ] 09-07-PLAN.md — Food quantity units UI: chip rows + keyboard-safe FoodConfirmSheet + Done bar + last-used default (D-05..D-13)
+
+**Wave 3** *(depends on Wave 2)*
+
+- [ ] 09-08-PLAN.md — Onboarding explainer: three swipeable cards (HSS/readiness/trend) as wizard step 1 + Settings revisit (D-15..D-19)
+- [ ] 09-09-PLAN.md — Done-bar rollout finish: run form + onboarding bodyweight decimal-pad inputs (D-11/D-13)
 
 ---
 
