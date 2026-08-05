@@ -299,7 +299,7 @@ Plans:
 **Goal:** TestFlight beta feedback (build 9) is addressed and shipped in build 10 before final ASC submission: (1) FoodConfirmSheet quantity input is no longer hidden by the keyboard and gains a Done/dismiss affordance; (2) food quantity can be entered in oz/lb as well as grams (storage stays grams); (3) the single metric/imperial units preference splits into body/lifts units vs run-distance units (DB migration) so mixed mode — imperial lifts + km runs — works end to end; (4) onboarding gains an explainer step for HSS, the readiness band, and trend statistics.
 **Requirements**: TBD (beta feedback items, no existing REQ-IDs; scoped by 09-CONTEXT.md D-01..D-21)
 **Depends on:** Phase 8 (executes NOW, before 06-06 closes and 06-07 ASC submission — mirrors Phase 7/8 re-sequencing precedent; all items ship in build 10, which supersedes build 9 as the submission build)
-**Plans:** 4/9 plans executed
+**Plans:** 7/9 plans executed
 
 Plans:
 **Wave 1** *(foundation + independent fixes — parallel, no cross-file conflicts)*
@@ -311,9 +311,9 @@ Plans:
 
 **Wave 2** *(depends on Wave 1)*
 
-- [ ] 09-05-PLAN.md — Units-split UI: onboarding Mixed path + draft/save re-key + Settings three unit rows (D-01/D-02/D-03/D-04)
-- [ ] 09-06-PLAN.md — Consumer re-key sweep: 9 display surfaces resolve lifts/bodyweight/runs buckets, no legacy `units` display read (D-01)
-- [ ] 09-07-PLAN.md — Food quantity units UI: chip rows + keyboard-safe FoodConfirmSheet + Done bar + last-used default (D-05..D-13)
+- [x] 09-05-PLAN.md — Units-split UI: onboarding Mixed path + draft/save re-key + Settings three unit rows (D-01/D-02/D-03/D-04)
+- [x] 09-06-PLAN.md — Consumer re-key sweep: 9 display surfaces resolve lifts/bodyweight/runs buckets, no legacy `units` display read (D-01)
+- [x] 09-07-PLAN.md — Food quantity units UI: chip rows + keyboard-safe FoodConfirmSheet + Done bar + last-used default (D-05..D-13)
 
 **Wave 3** *(depends on Wave 2)*
 
