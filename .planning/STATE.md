@@ -2,13 +2,13 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-current_phase: 06
-current_phase_name: polish-app-store-submission
+current_phase: 09
+current_phase_name: beta-feedback-round-1
 status: executing
 stopped_at: Phase 9 context gathered
-last_updated: "2026-08-05T01:02:02.537Z"
+last_updated: "2026-08-05T01:09:01.371Z"
 last_activity: 2026-08-04
-last_activity_desc: 06-04 closed out (privacy + support pages live on apsistraining.com, REL-02 satisfied); 06-06 still paused at Task 3 awaiting Apple's review outcome
+last_activity_desc: Phase 09 execution started
 progress:
   total_phases: 8
   completed_phases: 6
@@ -24,14 +24,14 @@ See: .planning/PROJECT.md (updated 2026-07-12)
 
 **Core value:** Log lifting + running in one app, instantly see one honest combined
 training-load number (HSS) and a readiness band — fully offline.
-**Current focus:** Phase 06 — polish-app-store-submission
+**Current focus:** Phase 09 — beta-feedback-round-1
 
 ## Current Position
 
-Phase: 06 (polish-app-store-submission) — EXECUTING
-Plan: 06-06 of 8 (06-04 now COMPLETE; Wave 1 fully done)
-Status: PAUSED — 06-06 Task 3 blocking human-verify checkpoint (beta gate: build 9 in Beta App Review, "Waiting for Review")
-Last activity: 2026-08-04 — 06-04 closed out (privacy + support pages live on apsistraining.com, REL-02 satisfied); 06-06 still paused at Task 3 awaiting Apple's review outcome
+Phase: 09 (beta-feedback-round-1) — EXECUTING
+Plan: 1 of 9
+Status: Executing Phase 09
+Last activity: 2026-08-04 — Phase 09 execution started
 
 Progress: [█████████░] 93% (4/6 phases complete, 28/28 executed plans)
 
