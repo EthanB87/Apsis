@@ -7,11 +7,15 @@ import {
   KM_PER_MI,
   LB_PER_KG,
   formatPaceMinSec,
+  gramsToDisplayLb,
+  gramsToDisplayOz,
   kgToDisplayLb,
   kgToDisplayLbFractional,
   kmToDisplayMi,
+  lbToGramsExact,
   lbToKgExact,
   miToKmExact,
+  ozToGramsExact,
   paceSecPerKmToSecPerMi,
   paceSecPerMiToSecPerKm,
 } from '../units';
@@ -100,5 +104,48 @@ describe('constants', () => {
 
   it('LB_PER_KG is the standard conversion factor', () => {
     expect(LB_PER_KG).toBeCloseTo(2.2046226218, 9);
+  });
+});
+
+describe('food oz <-> grams exact round-trip (09-02 D-05)', () => {
+  it('ozToGramsExact(1) is finite and > 28.3 (28.349523125 g/oz exact factor)', () => {
+    const grams = ozToGramsExact(1);
+    expect(Number.isFinite(grams)).toBe(true);
+    expect(grams).toBeGreaterThan(28.3);
+  });
+
+  it('gramsToDisplayOz(ozToGramsExact(4)) === 4 (whole-oz round-trip)', () => {
+    expect(gramsToDisplayOz(ozToGramsExact(4))).toBe(4);
+  });
+
+  it('gramsToDisplayOz(ozToGramsExact(16)) === 16', () => {
+    expect(gramsToDisplayOz(ozToGramsExact(16))).toBe(16);
+  });
+
+  it('every helper returns a finite number for finite input', () => {
+    expect(Number.isFinite(ozToGramsExact(3.5))).toBe(true);
+    expect(Number.isFinite(gramsToDisplayOz(100))).toBe(true);
+  });
+});
+
+describe('food lb <-> grams exact round-trip, 0.1 lb precision (09-02 D-05)', () => {
+  it('lbToGramsExact(1) is finite and distinct from the kg-based conversion', () => {
+    const grams = lbToGramsExact(1);
+    expect(Number.isFinite(grams)).toBe(true);
+    expect(grams).toBeGreaterThan(453);
+    expect(grams).toBeLessThan(454);
+  });
+
+  it('gramsToDisplayLb(lbToGramsExact(0.5)) === 0.5 (0.1 lb precision round-trip)', () => {
+    expect(gramsToDisplayLb(lbToGramsExact(0.5))).toBe(0.5);
+  });
+
+  it('gramsToDisplayLb(lbToGramsExact(2.3)) === 2.3', () => {
+    expect(gramsToDisplayLb(lbToGramsExact(2.3))).toBe(2.3);
+  });
+
+  it('every helper returns a finite number for finite input', () => {
+    expect(Number.isFinite(lbToGramsExact(1.7))).toBe(true);
+    expect(Number.isFinite(gramsToDisplayLb(500))).toBe(true);
   });
 });
