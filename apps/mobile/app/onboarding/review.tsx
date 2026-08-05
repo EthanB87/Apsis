@@ -80,6 +80,11 @@ export default function ReviewStep(): React.JSX.Element {
           // liftsUnits mirrors it exactly (single-choice sets all three buckets equal;
           // Mixed's anchor is liftsUnits per D-04, matching useSaveProfile's write).
           units: draft.liftsUnits,
+          // WR-01: bodyweight/threshold-pace display must resolve through their own
+          // buckets, not `liftsUnits` — in the Mixed path (D-02) they can legitimately
+          // diverge from Lifts, and from each other.
+          bodyweightUnits: draft.bodyweightUnits,
+          runUnits: draft.runUnits,
         }}
         estimated={{
           thresholdHr: draft.thresholdHrEstimated,
