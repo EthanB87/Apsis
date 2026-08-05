@@ -21,7 +21,7 @@ const MAX_PLAUSIBLE_KG = 250;
 
 export default function BodyweightStep(): React.JSX.Element {
   const router = useRouter();
-  const units = useOnboardingDraft((state) => state.units);
+  const units = useOnboardingDraft((state) => state.bodyweightUnits);
   const bodyweightKg = useOnboardingDraft((state) => state.bodyweightKg);
   const setBodyweightKg = useOnboardingDraft((state) => state.setBodyweightKg);
 

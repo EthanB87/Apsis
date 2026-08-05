@@ -53,7 +53,9 @@ export default function ReviewStep(): React.JSX.Element {
       bodyweightKg: draft.bodyweightKg,
       thresholdHr: draft.thresholdHr,
       thresholdPaceSecPerKm: draft.thresholdPaceSecPerKm,
-      units: draft.units,
+      liftsUnits: draft.liftsUnits,
+      bodyweightUnits: draft.bodyweightUnits,
+      runUnits: draft.runUnits,
     });
     // Phase 05 (05-07, Pitfall 2 fix): the profile-version bump — and therefore the
     // Stack.Protected gate flip — no longer happens inside save() itself. Navigate to the
@@ -74,7 +76,10 @@ export default function ReviewStep(): React.JSX.Element {
           bodyweightKg: draft.bodyweightKg,
           thresholdHr: draft.thresholdHr,
           thresholdPaceSecPerKm: draft.thresholdPaceSecPerKm,
-          units: draft.units,
+          // ProfileReview's single `units` row is a legacy-anchor display, not a bucket —
+          // liftsUnits mirrors it exactly (single-choice sets all three buckets equal;
+          // Mixed's anchor is liftsUnits per D-04, matching useSaveProfile's write).
+          units: draft.liftsUnits,
         }}
         estimated={{
           thresholdHr: draft.thresholdHrEstimated,

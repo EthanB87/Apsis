@@ -22,6 +22,12 @@
  * exists (a re-invoked save() after navigating back into onboarding), it is UPDATEd in
  * place rather than INSERTed a second time, since duplicate profile rows make every
  * `.limit(1)` reader (useProfile, getSyncState, fetchThresholds) nondeterministic.
+ *
+ * Phase 09 (D-01/D-04): writes all three unit-preference buckets (liftsUnits/
+ * bodyweightUnits/runUnits). Also writes the legacy `units` column, mirroring
+ * `liftsUnits` — this keeps the D-04 rollback anchor populated for new users too (works
+ * for both the Mixed path and the single-choice fast path, since the fast path sets all
+ * three buckets equal via `setAllUnits`).
  */
 
 import { useState } from 'react';
@@ -36,7 +42,9 @@ export interface SaveProfileInput {
   bodyweightKg: number;
   thresholdHr: number;
   thresholdPaceSecPerKm: number;
-  units: Units;
+  liftsUnits: Units;
+  bodyweightUnits: Units;
+  runUnits: Units;
 }
 
 export interface UseSaveProfileResult {
@@ -62,7 +70,12 @@ export function useSaveProfile(): UseSaveProfileResult {
         bodyweightSetAt: new Date(),
         thresholdHr: input.thresholdHr,
         thresholdPaceSecPerKm: input.thresholdPaceSecPerKm,
-        units: input.units,
+        // D-04: legacy anchor column mirrors liftsUnits — the rollback anchor stays
+        // populated for new users too, whichever onboarding units path was taken.
+        units: input.liftsUnits,
+        liftsUnits: input.liftsUnits,
+        bodyweightUnits: input.bodyweightUnits,
+        runUnits: input.runUnits,
       };
       // WR-09: user_profile is a singleton — if a row already exists (e.g. save() re-invoked
       // after navigating back into onboarding), UPDATE it in place. A second INSERT would
