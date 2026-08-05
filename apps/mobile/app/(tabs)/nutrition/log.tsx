@@ -23,13 +23,20 @@ import { useRouter } from 'expo-router';
 import { randomUUID } from 'expo-crypto';
 import { db, food, foodLog } from '@apsis/db';
 
-import { FoodConfirmSheet, type ConfirmableFood } from '../../../components/FoodConfirmSheet';
+import { DECIMAL_PAD_ACCESSORY_ID, DecimalPadDoneBar } from '../../../components/DecimalPadDoneBar';
+import { FoodConfirmSheet, UnitChipRow, type ConfirmableFood } from '../../../components/FoodConfirmSheet';
 import { ScreenHeader } from '../../../components/ScreenHeader';
 import Colors from '../../../constants/Colors';
 import { HIT_TARGET_MIN, Mono, Radius, Spacing, Typography, tabularNums } from '../../../constants/theme';
+import { availableUnitsFor, gramsToDisplayQty, qtyToGrams, type FoodQtyUnit } from '../../../lib/foodUnits';
 import { buildQuickAddRow, type Meal } from '../../../lib/logFood';
 import { todayLocalDate } from '../../../lib/localDate';
 import { useNutritionTargetSignal } from '../../../lib/nutritionTargetSignal';
+
+/** D-10: the custom-food "Serving grams" field DEFINES `food.servingGrams` — it has no serving
+ * basis of its own (that's what it's creating), so only the fixed-factor units are ever
+ * available here (never tsp/tbsp/serving, which would need a basis that doesn't exist yet). */
+const SERVING_QTY_UNITS: readonly FoodQtyUnit[] = availableUnitsFor({ servingGrams: null, servingName: null });
 
 type Mode = 'custom' | 'quickAdd';
 
@@ -74,6 +81,7 @@ export default function NutritionLogScreen(): React.JSX.Element {
   const [fatText, setFatText] = useState('');
   const [servingName, setServingName] = useState('');
   const [servingGramsText, setServingGramsText] = useState('');
+  const [servingUnit, setServingUnit] = useState<FoodQtyUnit>('g');
   const [creating, setCreating] = useState(false);
   const [createError, setCreateError] = useState<string | null>(null);
   const [createdFood, setCreatedFood] = useState<ConfirmableFood | null>(null);
@@ -105,7 +113,10 @@ export default function NutritionLogScreen(): React.JSX.Element {
         carbGPer100g: parseNumberInput(carbText),
         fatGPer100g: parseNumberInput(fatText),
         servingName: servingName.trim().length > 0 ? servingName.trim() : null,
-        servingGrams: servingGramsText.trim().length > 0 ? parseNumberInput(servingGramsText) : null,
+        servingGrams:
+          servingGramsText.trim().length > 0
+            ? qtyToGrams(parseNumberInput(servingGramsText), servingUnit, { servingGrams: null, servingName: null })
+            : null,
       };
       await db.insert(food).values({
         id,
@@ -137,6 +148,18 @@ export default function NutritionLogScreen(): React.JSX.Element {
     setFatText('');
     setServingName('');
     setServingGramsText('');
+    setServingUnit('g');
+  }
+
+  /** D-08/D-10: mirrors FoodConfirmSheet's chip behavior — preserve the real quantity, convert
+   * the displayed number. No `servingGrams` basis exists yet (this field is defining it), so
+   * `qtyToGrams`/`gramsToDisplayQty` only ever see g/kg/oz/lb here. */
+  function handleSelectServingUnit(unit: FoodQtyUnit): void {
+    if (unit === servingUnit) return;
+    const emptyBasis = { servingGrams: null, servingName: null };
+    const grams = qtyToGrams(parseNumberInput(servingGramsText), servingUnit, emptyBasis);
+    setServingUnit(unit);
+    setServingGramsText(String(Math.round(gramsToDisplayQty(grams, unit, emptyBasis) * 100) / 100));
   }
 
   const canQuickAdd = qaKcalText.trim().length > 0 && !quickAdding;
@@ -237,10 +260,18 @@ export default function NutritionLogScreen(): React.JSX.Element {
                 placeholder="grams"
                 placeholderTextColor={Colors.dark.mutedText}
                 keyboardType="decimal-pad"
+                inputAccessoryViewID={DECIMAL_PAD_ACCESSORY_ID}
                 style={[styles.numericInput, styles.servingGramsInput, tabularNums]}
-                accessibilityLabel="Serving grams"
+                accessibilityLabel={`Serving quantity in ${servingUnit}`}
               />
             </View>
+            {servingGramsText.trim().length > 0 ? (
+              <UnitChipRow
+                units={SERVING_QTY_UNITS}
+                selectedUnit={servingUnit}
+                onSelectUnit={handleSelectServingUnit}
+              />
+            ) : null}
 
             {createError != null ? <Text style={styles.errorText}>{createError}</Text> : null}
 
@@ -300,6 +331,7 @@ export default function NutritionLogScreen(): React.JSX.Element {
           </>
         )}
       </ScrollView>
+      <DecimalPadDoneBar />
 
       <FoodConfirmSheet
         visible={createdFood != null}
@@ -331,6 +363,7 @@ function MacroField({ label, value, onChangeText }: MacroFieldProps): React.JSX.
         placeholderTextColor={Colors.dark.mutedText}
         keyboardType="decimal-pad"
         selectTextOnFocus
+        inputAccessoryViewID={DECIMAL_PAD_ACCESSORY_ID}
         style={[styles.numericInput, tabularNums]}
         accessibilityLabel={label}
       />
