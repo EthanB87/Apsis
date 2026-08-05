@@ -57,6 +57,7 @@ import {
   Typography,
   tabularNums,
 } from '@/constants/theme';
+import { DECIMAL_PAD_ACCESSORY_ID, DecimalPadDoneBar } from '@/components/DecimalPadDoneBar';
 import { isDuplicateOfExisting } from '@/lib/healthkitMapping';
 import { dateToLocalDateStr, todayLocalDate } from '@/lib/localDate';
 import { saveRun, type RunEntryInput } from '@/lib/runEntry';
@@ -267,6 +268,7 @@ export default function RunEntryScreen(): React.JSX.Element {
                     placeholder="0"
                     placeholderTextColor={Colors.dark.mutedText}
                     keyboardType="decimal-pad"
+                    inputAccessoryViewID={DECIMAL_PAD_ACCESSORY_ID}
                     style={styles.valueField}
                     accessibilityLabel="Distance"
                   />
@@ -282,6 +284,7 @@ export default function RunEntryScreen(): React.JSX.Element {
                   placeholder="0:00"
                   placeholderTextColor={Colors.dark.mutedText}
                   keyboardType="number-pad"
+                  inputAccessoryViewID={DECIMAL_PAD_ACCESSORY_ID}
                   style={styles.durationField}
                   accessibilityLabel="Duration"
                 />
@@ -364,6 +367,10 @@ export default function RunEntryScreen(): React.JSX.Element {
           ]}>
           <Text style={[styles.buttonLabel, saveDisabled && styles.buttonLabelDisabled]}>Save Run</Text>
         </Pressable>
+
+        {/* D-11/D-13: single shared Done bar the distance/duration decimal-pad fields attach
+            to via DECIMAL_PAD_ACCESSORY_ID. */}
+        <DecimalPadDoneBar />
       </KeyboardAvoidingView>
     </SafeAreaView>
   );

@@ -11,6 +11,7 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import { kgToDisplayLb, lbToKgExact } from '@apsis/shared';
+import { DECIMAL_PAD_ACCESSORY_ID, DecimalPadDoneBar } from '../../components/DecimalPadDoneBar';
 import { WizardStep } from '../../components/onboarding/WizardStep';
 import { useOnboardingDraft } from '../../lib/onboardingDraft';
 import Colors from '../../constants/Colors';
@@ -73,6 +74,7 @@ export default function BodyweightStep(): React.JSX.Element {
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}
           keyboardType="decimal-pad"
+          inputAccessoryViewID={DECIMAL_PAD_ACCESSORY_ID}
           placeholder="0"
           placeholderTextColor={Colors.dark.mutedText}
           autoFocus
@@ -85,6 +87,9 @@ export default function BodyweightStep(): React.JSX.Element {
           That looks unusual — are you sure?
         </Text>
       ) : null}
+      {/* D-11/D-13: single shared Done bar the bodyweight decimal-pad field attaches to via
+          DECIMAL_PAD_ACCESSORY_ID. */}
+      <DecimalPadDoneBar />
     </WizardStep>
   );
 }
