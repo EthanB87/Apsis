@@ -53,6 +53,11 @@ export interface ProfileReviewProps {
   onSubmit: () => void;
   submitting?: boolean;
   errorMessage?: string | null;
+  /** CR-01: hide the legacy "Units" row entirely. Defaults to true (onboarding review,
+   * which has no split-bucket editor yet, still shows it). A caller with a dedicated
+   * per-domain unit editor (e.g. Settings' three Lifts/Bodyweight/Runs rows, D-03)
+   * should pass `false` so there is exactly one control per unit domain. */
+  showUnitsRow?: boolean;
 }
 
 const SEX_LABEL: Record<Sex, string> = { male: 'Male', female: 'Female', other: 'Other' };
@@ -65,6 +70,7 @@ export function ProfileReview({
   onSubmit,
   submitting = false,
   errorMessage = null,
+  showUnitsRow = true,
 }: ProfileReviewProps): React.JSX.Element {
   const isImperial = values.units === 'imperial';
   // D-01: bodyweight resolves through bodyweightUnits, threshold pace through runUnits --
@@ -101,7 +107,9 @@ export function ProfileReview({
       value: thresholdPaceDisplay,
       estimated: estimated?.thresholdPaceSecPerKm,
     },
-    { field: 'units', label: 'Units', value: isImperial ? 'Imperial (mi, lb)' : 'Metric (km, kg)' },
+    ...(showUnitsRow
+      ? [{ field: 'units' as const, label: 'Units', value: isImperial ? 'Imperial (mi, lb)' : 'Metric (km, kg)' }]
+      : []),
   ];
 
   return (

@@ -203,23 +203,28 @@ export default function SettingsScreen(): React.JSX.Element {
     );
   }
 
-  const isImperial = draft.units === 'imperial';
+  // CR-01: bodyweight and threshold-pace entry/display must resolve from the split
+  // buckets the "Units" section below actually writes (D-03), not the legacy
+  // `draft.units`/`profile.units` column — Bodyweight and Runs persist independently
+  // of each other and of Lifts, so a single `isImperial` derived from the legacy
+  // column silently mislabels/misconverts whichever bucket has diverged from it.
+  const bodyweightIsImperial = profile.bodyweightUnits === 'imperial';
+  const runIsImperial = profile.runUnits === 'imperial';
 
   function openFieldEditor(field: ProfileReviewField): void {
     if (draft == null) return;
-    if (field === 'units') {
-      // Units is a single-value toggle, applied instantly — same action as the
-      // dedicated Units section below, not staged into the batch draft.
-      void handleUnitsChange(draft.units === 'imperial' ? 'metric' : 'imperial');
-      return;
-    }
+    // CR-01: the legacy "Units" row is hidden for this screen (ProfileReview's
+    // `showUnitsRow={false}` below, D-03) — the three bucket rows are the only unit
+    // controls here. This guard is defense-in-depth in case `field` ever arrives as
+    // 'units' from an unexpected caller; there's nothing to stage or commit for it.
+    if (field === 'units') return;
     setEditingField(field);
     if (field === 'bodyweightKg') {
-      setNumericText(bodyweightDisplayText(draft.bodyweightKg, isImperial));
+      setNumericText(bodyweightDisplayText(draft.bodyweightKg, bodyweightIsImperial));
     } else if (field === 'thresholdHr') {
       setNumericText(draft.thresholdHr != null ? String(draft.thresholdHr) : '');
     } else if (field === 'thresholdPaceSecPerKm') {
-      const seeded = paceDisplayTexts(draft.thresholdPaceSecPerKm, isImperial);
+      const seeded = paceDisplayTexts(draft.thresholdPaceSecPerKm, runIsImperial);
       setPaceMinText(seeded.min);
       setPaceSecText(seeded.sec);
     }
@@ -238,14 +243,14 @@ export default function SettingsScreen(): React.JSX.Element {
     // WR-02: if the text still matches the seeded display rendering, the user didn't
     // edit the field — keep the exact stored kg instead of round-tripping the rounded
     // display back to metric (display conversion must be exact-round-trip, D-12).
-    const seeded = bodyweightDisplayText(draft?.bodyweightKg ?? null, isImperial);
+    const seeded = bodyweightDisplayText(draft?.bodyweightKg ?? null, bodyweightIsImperial);
     if (seeded !== '' && numericText === seeded) {
       setEditingField(null);
       return;
     }
     const parsed = Number(numericText);
     if (!Number.isFinite(parsed) || parsed <= 0) return;
-    const kg = isImperial ? lbToKgExact(parsed) : parsed;
+    const kg = bodyweightIsImperial ? lbToKgExact(parsed) : parsed;
     setDraft((prev) => (prev ? { ...prev, bodyweightKg: kg } : prev));
     setEditingField(null);
   }
@@ -259,7 +264,7 @@ export default function SettingsScreen(): React.JSX.Element {
 
   function commitThresholdPace(): void {
     // WR-02: unchanged seeded text -> keep the exact stored sec/km (no display round-trip).
-    const seeded = paceDisplayTexts(draft?.thresholdPaceSecPerKm ?? null, isImperial);
+    const seeded = paceDisplayTexts(draft?.thresholdPaceSecPerKm ?? null, runIsImperial);
     if (seeded.min !== '' && paceMinText === seeded.min && paceSecText === seeded.sec) {
       setEditingField(null);
       return;
@@ -268,21 +273,9 @@ export default function SettingsScreen(): React.JSX.Element {
     const secVal = Number(paceSecText) || 0;
     const totalDisplaySec = minVal * 60 + secVal;
     if (totalDisplaySec <= 0) return;
-    const secPerKm = isImperial ? paceSecPerMiToSecPerKm(totalDisplaySec) : totalDisplaySec;
+    const secPerKm = runIsImperial ? paceSecPerMiToSecPerKm(totalDisplaySec) : totalDisplaySec;
     setDraft((prev) => (prev ? { ...prev, thresholdPaceSecPerKm: secPerKm } : prev));
     setEditingField(null);
-  }
-
-  async function handleUnitsChange(next: Units): Promise<void> {
-    if (draft == null || draft.units === next) return;
-    const previous = draft.units;
-    // Optimistic draft update with rollback (WR-02): if the UPDATE fails, the draft
-    // must not keep claiming the new units while the DB still holds the old ones.
-    setDraft((prev) => (prev ? { ...prev, units: next } : prev));
-    const ok = await update({ units: next });
-    if (!ok) {
-      setDraft((prev) => (prev ? { ...prev, units: previous } : prev));
-    }
   }
 
   async function handleRestPreset(sec: number): Promise<void> {
@@ -340,7 +333,7 @@ export default function SettingsScreen(): React.JSX.Element {
 
   /**
    * D-21: the toggle pauses/resumes HK reads/writes — it never removes already-imported
-   * sessions. Optimistic-set-then-rollback-on-failure, matching `handleUnitsChange` above.
+   * sessions. Optimistic-set-then-rollback-on-failure.
    */
   async function handleToggleHealthKitSync(next: boolean): Promise<void> {
     const previous = hkConnected;
@@ -374,7 +367,7 @@ export default function SettingsScreen(): React.JSX.Element {
   const bodyweightParsed = Number(numericText);
   const bodyweightPreviewKg =
     Number.isFinite(bodyweightParsed) && bodyweightParsed > 0
-      ? isImperial
+      ? bodyweightIsImperial
         ? lbToKgExact(bodyweightParsed)
         : bodyweightParsed
       : null;
@@ -391,7 +384,7 @@ export default function SettingsScreen(): React.JSX.Element {
   const paceSecVal = Number(paceSecText) || 0;
   const paceTotalDisplaySec = paceMinVal * 60 + paceSecVal;
   const pacePreviewSecPerKm =
-    paceTotalDisplaySec > 0 ? (isImperial ? paceSecPerMiToSecPerKm(paceTotalDisplaySec) : paceTotalDisplaySec) : null;
+    paceTotalDisplaySec > 0 ? (runIsImperial ? paceSecPerMiToSecPerKm(paceTotalDisplaySec) : paceTotalDisplaySec) : null;
   const paceOutOfRange =
     pacePreviewSecPerKm != null &&
     (pacePreviewSecPerKm < MIN_PLAUSIBLE_SEC_PER_KM || pacePreviewSecPerKm > MAX_PLAUSIBLE_SEC_PER_KM);
@@ -411,7 +404,10 @@ export default function SettingsScreen(): React.JSX.Element {
 
         <Text style={styles.sectionLabel}>Profile</Text>
         <ProfileReview
-          values={draft}
+          values={{ ...draft, bodyweightUnits: profile.bodyweightUnits, runUnits: profile.runUnits }}
+          // CR-01/D-03: the "Units" section below is the one control per unit domain —
+          // Bodyweight/Runs here would otherwise duplicate/lag behind those three rows.
+          showUnitsRow={false}
           onEditField={openFieldEditor}
           primaryLabel="Save changes"
           onSubmit={handleSaveChanges}
@@ -582,7 +578,7 @@ export default function SettingsScreen(): React.JSX.Element {
                     autoFocus
                     accessibilityLabel="Bodyweight"
                   />
-                  <Text style={styles.modalUnit}>{isImperial ? 'lb' : 'kg'}</Text>
+                  <Text style={styles.modalUnit}>{bodyweightIsImperial ? 'lb' : 'kg'}</Text>
                 </View>
                 {bodyweightOutOfRange ? (
                   <Text style={styles.modalWarning} accessibilityRole="alert">
@@ -644,7 +640,7 @@ export default function SettingsScreen(): React.JSX.Element {
                     placeholderTextColor={Colors.dark.mutedText}
                     accessibilityLabel="Pace seconds"
                   />
-                  <Text style={styles.modalUnit}>{isImperial ? '/mi' : '/km'}</Text>
+                  <Text style={styles.modalUnit}>{runIsImperial ? '/mi' : '/km'}</Text>
                 </View>
                 {paceOutOfRange ? (
                   <Text style={styles.modalWarning} accessibilityRole="alert">
