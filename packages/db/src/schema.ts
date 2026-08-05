@@ -32,6 +32,13 @@ export const userProfile = sqliteTable('user_profile', {
   thresholdHr: integer('threshold_hr'),
   thresholdPaceSecPerKm: integer('threshold_pace_sec_per_km'),
   units: text('units', { enum: ['metric', 'imperial'] }).default('metric'),
+  /** Phase 09 (D-01): per-domain unit preference split. Nullable until migration 0005's
+   * silent D-04 backfill seeds every existing row from the legacy `units` value above;
+   * `units` itself is retained unchanged as the backfill source + rollback anchor and is
+   * no longer read for display once the 09-05 consumer sweep completes. */
+  liftsUnits: text('lifts_units', { enum: ['metric', 'imperial'] }),
+  bodyweightUnits: text('bodyweight_units', { enum: ['metric', 'imperial'] }),
+  runUnits: text('run_units', { enum: ['metric', 'imperial'] }),
   /** Global default rest-timer duration in seconds (D-25/D-32); per-exercise override lives on `exercise.restTimerSec`. */
   restTimerDefaultSec: integer('rest_timer_default_sec').default(120),
   createdAt: integer('created_at', { mode: 'timestamp' }).default(sql`(unixepoch())`),
@@ -196,6 +203,9 @@ export const food = sqliteTable('food',
     sodiumMgPer100g: real('sodium_mg_per_100g'),
     servingName: text('serving_name'),
     servingGrams: real('serving_grams'),
+    /** Phase 09 (D-09): last unit the user picked when logging THIS food (e.g. 'oz', 'g',
+     * 'serving'); nullable, no default — quantity entry falls back to grams until set once. */
+    lastUsedUnit: text('last_used_unit'),
     verified: integer('verified', { mode: 'boolean' }).default(false),
     createdAt: integer('created_at', { mode: 'timestamp' }).default(sql`(unixepoch())`),
   },
