@@ -60,9 +60,10 @@ function isLowerBody(bodyPart: string | null): boolean {
  * Re-runs `sessionHSSDetailed` over every committed (persisted) set for `workoutId` and
  * writes the resulting `hss` back onto the `workout` row. Shared by `commitSet` and
  * `uncommitSet` so both paths recompute identically (D-13: always the full set, never a
- * delta).
+ * delta). Exported so `sessionStore.ts#removeExercise` (D-20) can call it exactly once
+ * after its own bulk multi-set delete, rather than duplicating this recompute pipeline.
  */
-async function recomputeSessionHss(
+export async function recomputeSessionHss(
   database: DB,
   workoutId: string,
   profileBodyweightKg: number

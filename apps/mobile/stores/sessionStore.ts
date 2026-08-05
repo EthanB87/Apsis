@@ -16,9 +16,10 @@
 
 import { create } from 'zustand';
 import { randomUUID } from 'expo-crypto';
-import { eq } from 'drizzle-orm';
+import { and, eq } from 'drizzle-orm';
 import { db, exercise as exerciseTable, strengthSet, userProfile, workout, previousSessionSet } from '@apsis/db';
 import { formatPaceMinSec, kgToDisplayLb, type Units } from '@apsis/shared';
+import { recomputeSessionHss } from '../lib/commitSet';
 import { cancelRestNotification, scheduleRestNotification } from '../lib/notifications';
 import { resolveRestDuration, startRest } from '../lib/restTimer';
 
@@ -90,6 +91,13 @@ interface SessionState {
   addExercise: (exercise: AddExerciseInput) => Promise<void>;
   addSet: (exerciseId: string) => void;
   removeSet: (exerciseId: string, setId: string) => void;
+  /** Removes an exercise from the active session (D-20). For an exercise with committed
+   * sets, deletes those `strength_set` rows (single bulk delete scoped by workoutId +
+   * exerciseId) and recomputes session HSS exactly ONCE (never per-set) BEFORE the
+   * exercise leaves the in-memory list — mirrors `ExerciseCard`'s `handleDelete` DB-first
+   * discipline. On DB failure, the exercise stays in `exercises` (no silent drift from the
+   * SQLite source of truth) and the failure is logged, not swallowed silently. */
+  removeExercise: (exerciseId: string) => Promise<void>;
   updateSetDraft: (exerciseId: string, setId: string, patch: Partial<SetDraft>) => void;
   setCommitted: (exerciseId: string, setId: string, committed: boolean) => void;
   setLiveHss: (hss: number, warnings: string[]) => void;
@@ -251,6 +259,34 @@ export const useSessionStore = create<SessionState>((set, get) => ({
     }));
   },
 
+  removeExercise: async (exerciseId) => {
+    const state = get();
+    const card = state.exercises.find((c) => c.exerciseId === exerciseId);
+    if (!card) return;
+
+    const hasCommittedSets = card.sets.some((set_) => set_.committed);
+    if (hasCommittedSets && state.workoutId) {
+      try {
+        await db
+          .delete(strengthSet)
+          .where(
+            and(eq(strengthSet.workoutId, state.workoutId), eq(strengthSet.exerciseId, exerciseId))
+          );
+        const result = await recomputeSessionHss(db, state.workoutId, state.profileBodyweightKg);
+        set({ liveHss: result.hss, warnings: result.warnings });
+      } catch (err: unknown) {
+        // DB-first discipline (D-20, mirrors ExerciseCard.handleDelete): don't remove the
+        // exercise from the in-memory list if the DB cleanup failed — a "successful"
+        // remove that silently leaves committed sets persisted would drift the UI away
+        // from the SQLite source of truth and leave workout.hss stale.
+        console.error('[Apsis] removeExercise DB cleanup failed:', err);
+        return;
+      }
+    }
+
+    set((s) => ({ exercises: s.exercises.filter((c) => c.exerciseId !== exerciseId) }));
+  },
+
   updateSetDraft: (exerciseId, setId, patch) => {
     set((s) => ({
       exercises: s.exercises.map((card) =>
@@ -301,7 +337,13 @@ export const useSessionStore = create<SessionState>((set, get) => ({
 
     const durationSec = resolveRestDuration(card?.restTimerSec ?? null, profileDefaultSec);
     const endsAt = startRest(durationSec);
+    // D-21: capture the outgoing notification id BEFORE it's cleared, and cancel it —
+    // mirrors addThirtySeconds' cancel-then-reschedule discipline. Without this, committing
+    // a new set before the prior rest elapses left the old OS notification scheduled,
+    // producing 3-4 stale notifications firing back to back.
+    const previousNotificationId = get().restNotificationId;
     set({ restTimerEndsAt: endsAt, restNotificationId: null });
+    void cancelRestNotification(previousNotificationId, 'startRestTimer supersedes prior rest');
 
     const notificationId = await scheduleRestNotification(endsAt);
     // Guard against a race: a rapid Skip or a second set's commit could have moved

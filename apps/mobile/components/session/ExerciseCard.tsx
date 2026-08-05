@@ -15,12 +15,13 @@
  * never shows a stale total.
  */
 
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { useState } from 'react';
+import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
 import Swipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
 import { db } from '@apsis/db';
 
 import Colors from '../../constants/Colors';
-import { HAIRLINE_WIDTH, HIT_TARGET_MIN, Spacing } from '../../constants/theme';
+import { HAIRLINE_WIDTH, HIT_TARGET_MIN, Radius, Spacing } from '../../constants/theme';
 import { uncommitSet } from '../../lib/commitSet';
 import { useSessionStore, type ExerciseCardState, type SetDraft } from '../../stores/sessionStore';
 import {
@@ -44,6 +45,9 @@ function DeleteAction({ onPress }: { onPress: () => void }): React.JSX.Element {
   );
 }
 
+const REMOVE_EXERCISE_MESSAGE =
+  "Remove this exercise? Any logged sets will be removed and can't be recovered from the app.";
+
 export interface ExerciseCardProps {
   exercise: ExerciseCardState;
 }
@@ -53,8 +57,23 @@ export function ExerciseCard({ exercise }: ExerciseCardProps): React.JSX.Element
   const profileBodyweightKg = useSessionStore((s) => s.profileBodyweightKg);
   const units = useSessionStore((s) => s.units);
   const removeSet = useSessionStore((s) => s.removeSet);
+  const removeExercise = useSessionStore((s) => s.removeExercise);
   const addSet = useSessionStore((s) => s.addSet);
   const setLiveHss = useSessionStore((s) => s.setLiveHss);
+
+  const [removeConfirmOpen, setRemoveConfirmOpen] = useState(false);
+  const [removingExercise, setRemovingExercise] = useState(false);
+
+  async function handleConfirmRemoveExercise(): Promise<void> {
+    if (removingExercise) return;
+    setRemovingExercise(true);
+    try {
+      await removeExercise(exercise.exerciseId);
+    } finally {
+      setRemovingExercise(false);
+      setRemoveConfirmOpen(false);
+    }
+  }
 
   async function handleDelete(set: SetDraft): Promise<void> {
     if (set.committed && workoutId) {
@@ -75,10 +94,20 @@ export function ExerciseCard({ exercise }: ExerciseCardProps): React.JSX.Element
   return (
     <View style={styles.card}>
       <View style={styles.header}>
-        <Text style={styles.name}>{exercise.name}</Text>
-        {exercise.lastSessionSummary ? (
-          <Text style={styles.summary}>{exercise.lastSessionSummary}</Text>
-        ) : null}
+        <View style={styles.headerText}>
+          <Text style={styles.name}>{exercise.name}</Text>
+          {exercise.lastSessionSummary ? (
+            <Text style={styles.summary}>{exercise.lastSessionSummary}</Text>
+          ) : null}
+        </View>
+        <Pressable
+          onPress={() => setRemoveConfirmOpen(true)}
+          accessibilityRole="button"
+          accessibilityLabel="Remove exercise"
+          hitSlop={8}
+          style={styles.overflowButton}>
+          <Text style={styles.overflowGlyph}>···</Text>
+        </Pressable>
       </View>
 
       {/* Column headers reuse SetRow's exact grid (same fixed columns, flex split, gap,
@@ -116,6 +145,36 @@ export function ExerciseCard({ exercise }: ExerciseCardProps): React.JSX.Element
         style={({ pressed }) => [styles.addSetRow, pressed && styles.addSetRowPressed]}>
         <Text style={styles.addSetLabel}>+ Add set</Text>
       </Pressable>
+
+      <Modal
+        visible={removeConfirmOpen}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setRemoveConfirmOpen(false)}>
+        <View style={styles.modalBackdrop}>
+          <View style={styles.modalCard}>
+            <Text style={styles.modalMessage}>{REMOVE_EXERCISE_MESSAGE}</Text>
+            <View style={styles.modalButtonColumn}>
+              <Pressable
+                onPress={() => setRemoveConfirmOpen(false)}
+                disabled={removingExercise}
+                accessibilityRole="button"
+                accessibilityLabel="Keep"
+                style={styles.modalSecondaryButton}>
+                <Text style={styles.modalSecondaryLabel}>Keep</Text>
+              </Pressable>
+              <Pressable
+                onPress={handleConfirmRemoveExercise}
+                disabled={removingExercise}
+                accessibilityRole="button"
+                accessibilityLabel="Remove Exercise"
+                style={styles.modalDestructiveButton}>
+                <Text style={styles.modalDestructiveLabel}>Remove exercise</Text>
+              </Pressable>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -131,10 +190,33 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   header: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
     paddingHorizontal: SET_ROW_H_PADDING,
     paddingTop: Spacing.lg,
     paddingBottom: Spacing.md,
+  },
+  headerText: {
+    flex: 1,
     gap: Spacing.xs,
+  },
+  // Bone/ash overflow affordance (D-20) — deliberately no volt: the card's "+ Add set"
+  // row and the screen's primary CTA already own the single volt element per screen.
+  overflowButton: {
+    minWidth: HIT_TARGET_MIN,
+    minHeight: HIT_TARGET_MIN,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: -Spacing.sm,
+    marginRight: -Spacing.sm,
+  },
+  overflowGlyph: {
+    fontFamily: 'Archivo_800ExtraBold',
+    fontSize: 20,
+    lineHeight: 20,
+    letterSpacing: 1,
+    color: Colors.dark.mutedText,
   },
   name: {
     fontFamily: 'Archivo_800ExtraBold',
@@ -203,6 +285,56 @@ const styles = StyleSheet.create({
   deleteActionLabel: {
     fontFamily: 'Archivo_500Medium',
     fontSize: 14,
+    color: Colors.dark.text,
+  },
+  // Remove-exercise confirmation — mirrors History's swipe-delete confirmation modal
+  // (app/(tabs)/history/index.tsx) exactly: same backdrop/card/button shapes.
+  modalBackdrop: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: Spacing.xl,
+  },
+  modalCard: {
+    width: '100%',
+    backgroundColor: Colors.dark.surface,
+    borderRadius: Radius.lg,
+    padding: Spacing.xl,
+  },
+  modalMessage: {
+    fontFamily: 'Archivo_500Medium',
+    fontSize: 15,
+    lineHeight: 21,
+    color: Colors.dark.text,
+    marginBottom: Spacing.xl,
+  },
+  modalButtonColumn: {
+    gap: Spacing.sm,
+  },
+  modalSecondaryButton: {
+    minHeight: HIT_TARGET_MIN,
+    borderRadius: Radius.lg,
+    borderWidth: HAIRLINE_WIDTH,
+    borderColor: Colors.dark.border,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  modalSecondaryLabel: {
+    fontFamily: 'Archivo_500Medium',
+    fontSize: 15,
+    color: Colors.dark.text,
+  },
+  modalDestructiveButton: {
+    minHeight: HIT_TARGET_MIN,
+    borderRadius: Radius.lg,
+    backgroundColor: Colors.dark.destructive,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  modalDestructiveLabel: {
+    fontFamily: 'Archivo_500Medium',
+    fontSize: 15,
     color: Colors.dark.text,
   },
 });
