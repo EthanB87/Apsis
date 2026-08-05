@@ -16,8 +16,8 @@ affects: [09-beta-feedback-round-1 remaining plans touching sessionStore/Exercis
 
 actuals:
   tokens: 9800
-  tasks: 2
-  commits: 2
+  tasks: 3
+  commits: 4
 
 tech-stack:
   added: []
@@ -43,21 +43,50 @@ patterns-established:
 
 requirements-completed: [D-20, D-21]
 
+coverage:
+  - id: D1
+    description: "startRestTimer cancels the prior OS rest notification before scheduling the new one (D-21) — only the newest rest timer/notification is ever live; on-device single-buzz behavior approved-as-deferred to phase UAT"
+    requirement: "D-21"
+    verification:
+      - kind: unit
+        ref: "apps/mobile/lib/__tests__/sessionStore.test.ts#cancels the prior notification exactly once when a rest timer is already live"
+        status: pass
+    human_judgment: true
+    rationale: "Automated tests prove the cancel call ordering, but the actual OS notification behavior (only ONE buzz after 3-4 rapid set commits) can only be observed on a physical iOS dev build — user approved with on-device verification explicitly deferred to phase UAT (/gsd-verify-work 9)"
+  - id: D2
+    description: "removeExercise deletes committed strength_set rows and recomputes workout.hss DB-first before in-memory removal, keeping the row on DB failure (D-20); on-device delete + crash-resume behavior approved-as-deferred to phase UAT"
+    requirement: "D-20"
+    verification:
+      - kind: unit
+        ref: "apps/mobile/lib/__tests__/sessionStore.test.ts#deletes committed sets in one bulk delete and recomputes HSS exactly once"
+        status: pass
+      - kind: unit
+        ref: "apps/mobile/lib/__tests__/sessionStore.test.ts#keeps the exercise in `exercises` and does not recompute if the DB delete fails"
+        status: pass
+    human_judgment: true
+    rationale: "Unit tests prove the store logic against a mocked db, but the real SQLite delete + live-HSS drop + crash-resume non-resurrection can only be confirmed on-device — user approved with on-device verification explicitly deferred to phase UAT (/gsd-verify-work 9)"
+  - id: D3
+    description: "ExerciseCard header '···' overflow affordance opening a Keep/Remove confirmation before removeExercise is invoked"
+    requirement: "D-20"
+    verification: []
+    human_judgment: true
+    rationale: "Visual affordance discoverability and confirmation-flow feel have no automated coverage (apps/mobile has no component test harness) — verify on-device during phase UAT"
+
 duration: 13min
 completed: 2026-08-04
-status: checkpoint
+status: complete
 ---
 
 # Phase 09 Plan 03: Rest-timer notification leak + delete-exercise flow Summary
 
-**Fixed the rest-timer notification leak (cancel-before-reschedule) and added a DB-first removeExercise store action with a header overflow confirmation affordance; paused at the on-device verification checkpoint (Task 3), which requires a physical iOS device.**
+**Fixed the rest-timer notification leak (cancel-before-reschedule) and added a DB-first removeExercise store action with a header overflow confirmation affordance; Task 3's on-device checkpoint was approved by the user with the on-device verification steps explicitly deferred to phase UAT (/gsd-verify-work 9).**
 
 ## Performance
 
 - **Duration:** ~13 min (Tasks 1-2)
 - **Started:** 2026-08-04T21:10:13-04:00 (branch base commit)
 - **Completed (Tasks 1-2):** 2026-08-04T21:22:49-04:00
-- **Tasks:** 2/3 completed (Task 3 is a blocking on-device checkpoint, not executable in this environment)
+- **Tasks:** 3/3 accounted for (Tasks 1-2 executed + committed; Task 3 checkpoint approved with on-device steps deferred to phase UAT)
 - **Files modified:** 3 (+1 new test file)
 
 ## Accomplishments
@@ -73,7 +102,7 @@ Each task was committed atomically:
 
 1. **Task 1: startRestTimer cancel-before-reschedule fix + removeExercise store action** - `9e69df3` (feat, TDD)
 2. **Task 2: ExerciseCard header overflow affordance + Remove-exercise confirmation** - `f71e0a8` (feat)
-3. **Task 3: On-device verify — rest-timer fix + delete-exercise flow** - PAUSED at checkpoint (see below), no commit yet
+3. **Task 3: On-device verify — rest-timer fix + delete-exercise flow** - checkpoint APPROVED by user ("approved", 2026-08-04) with on-device steps explicitly DEFERRED to phase UAT; no code commit (verification-only task)
 
 ## Files Created/Modified
 
@@ -122,14 +151,27 @@ Each task was committed atomically:
 
 None - no external service configuration required.
 
+## On-Device Verification: Approved-as-Deferred (MUST be covered in phase UAT)
+
+Task 3's `checkpoint:human-verify` was answered "approved" by the user on 2026-08-04, with the
+on-device verification steps **explicitly deferred to phase UAT (`/gsd-verify-work 9`)**. The user
+accepted the implementation as-built based on the green automated verification (5/5 new sessionStore
+tests, 85/85 full mobile suite, typecheck clean). The following two on-device behaviors were NOT
+verified on a physical device in this plan and **must be exercised during phase UAT**:
+
+1. **Rest-timer single-buzz (D-21):** Start a set, let the rest timer begin, then commit another set
+   before rest ends WITHOUT tapping Skip; repeat 3-4 times quickly — confirm only ONE rest
+   notification ultimately fires (no back-to-back buzzes for finished exercises).
+2. **Delete-exercise flow (D-20):** Add an exercise, commit 2-3 sets, tap the card's "···", confirm
+   the Remove-exercise dialog — verify the exercise disappears, the live session HSS drops, and
+   reopening the session (crash-resume, kill + reopen) does NOT resurrect the removed exercise's
+   sets (committed rows are actually gone from SQLite).
+
 ## Next Phase Readiness
 
-- Tasks 1-2 are code-complete, unit-tested (`pnpm --filter=./apps/mobile test`: 85/85 pass, up from 80), and typecheck-clean (`pnpm typecheck`: 0 errors).
-- **Task 3 is a blocking `checkpoint:human-verify` (gate="blocking") requiring a physical iOS dev-build device** — cannot be executed in this environment (Windows host, no on-device access). Two behaviors need on-device confirmation per the plan:
-  1. Committing sets rapidly before rest elapses produces only ONE final rest notification (no 3-4 stale back-to-back buzzes).
-  2. Adding an exercise, committing 2-3 sets, then removing it via the new "···" confirm flow: the exercise disappears, live session HSS drops, and a crash-resume (kill + reopen) does NOT resurrect the removed exercise's sets (committed rows are actually gone from SQLite).
-- Resume signal per the plan: "Type 'approved' or describe the stale-notification / orphaned-set behavior observed."
+- All 3 tasks accounted for: Tasks 1-2 code-complete, unit-tested (`pnpm --filter=./apps/mobile test`: 85/85 pass, up from 80), and typecheck-clean (`pnpm typecheck`: 0 errors); Task 3 approved-as-deferred (see section above).
+- D-20/D-21 on-device confirmation is an open item carried into phase UAT — the two scenarios above must appear in the `/gsd-verify-work 9` checklist.
 
 ---
 *Phase: 09-beta-feedback-round-1*
-*Completed: 2026-08-04 (Tasks 1-2; Task 3 pending on-device human verification)*
+*Completed: 2026-08-04 (Tasks 1-2 executed; Task 3 approved with on-device verification deferred to phase UAT)*
