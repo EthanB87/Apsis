@@ -1,47 +1,60 @@
 ---
 phase: 09-beta-feedback-round-1
 verified: 2026-08-05T03:47:08Z
-status: human_needed
+status: passed
 score: 14/14 must-haves verified
 behavior_unverified: 0
 overrides_applied: 0
 human_verification:
+
   - test: "Imperial lifts + km runs displays end to end (D-01 beta case): set Bodyweight/Runs to Mixed with imperial lifts + metric runs, log a 225 lb squat and a 5 km run on the same day, check TODAY/finish/detail/history/share."
     expected: "Lift volume/loads display in lb, run pace/distance display in /km, independently, on every surface."
     why_human: "Requires an iOS dev build (op-sqlite/HealthKit are native modules); on-device rendering cannot be exercised from this Windows host. Deferred by explicit user approval per 09-01/09-05/09-06 SUMMARYs."
+
   - test: "Rest-timer single-buzz: start a set, let rest begin, commit another set before rest ends without tapping Skip; repeat 3-4 times quickly."
     expected: "Only ONE rest notification ultimately fires — no back-to-back stale buzzes."
     why_human: "OS notification delivery can only be observed on a physical/dev-build device. The cancel-before-reschedule call-ordering invariant is unit-tested (sessionStore.test.ts), but the actual OS Notification Center behavior is not. Deferred by explicit user approval per 09-03-SUMMARY.md."
+
   - test: "Delete-exercise flow: add an exercise, commit 2-3 sets, tap the ExerciseCard '...' overflow, confirm Remove, verify the exercise disappears, live HSS drops, and reopening the session (kill + reopen) does not resurrect the removed exercise's sets."
     expected: "Exercise and its committed sets are gone from the UI and from SQLite after crash-resume."
     why_human: "SQLite delete + live-HSS drop + crash-resume non-resurrection is only provable on-device. Deferred by explicit user approval per 09-03-SUMMARY.md."
+
   - test: "Session keyboard-safety: open a lifting session, tap a load field near the bottom of a long exercise list."
     expected: "The field scrolls above the keyboard (not hidden); a Done bar appears above the decimal pad and dismisses the keyboard; the rest-timer banner does not flicker/disappear while typing (regression check for the Phase 03 P10 rehydrate loop)."
     why_human: "Visual scroll/keyboard behavior needs a device; deferred by explicit user approval per 09-04-SUMMARY.md."
+
   - test: "FoodConfirmSheet conditional unit chips: open the sheet for a food WITH serving data (expect g/kg/oz/lb + tsp/tbsp/serving chips) and a food WITHOUT serving data (expect only g/kg/oz/lb)."
     expected: "Conditional chips appear/disappear exactly per food.servingGrams presence; no fabricated units offered."
     why_human: "Visual chip-row rendering needs a device; deferred by explicit user approval per 09-07-SUMMARY.md."
+
   - test: "FoodConfirmSheet keyboard-safety + Done bar: with the keyboard open, confirm the quantity row, live macro preview, AND the volt Log button are all visible; type a value in oz then tap lb (number should reinterpret, macros recompute live); confirm whether a Done bar appears INSIDE the sheet (BottomSheetTextInput may not forward inputAccessoryViewID — known uncertainty) or whether the sheet's own keyboard config alone satisfies visibility + dismiss."
     expected: "Nothing is hidden by the keyboard; unit switching recomputes correctly; some dismiss affordance works (Done bar or sheet's own pan-down/tap-outside dismiss)."
     why_human: "BottomSheet + native keyboard interaction needs a device; 09-07-SUMMARY.md flags a specific known uncertainty about accessory-view forwarding inside @gorhom/bottom-sheet. Deferred by explicit user approval."
+
   - test: "Last-used unit default: log a food in a non-default unit (e.g. oz), then reopen the same food's confirm sheet."
     expected: "The sheet defaults to the last-used unit for that food, not the bodyweight-pref fallback."
     why_human: "Requires a real log-then-reopen device interaction; deferred by explicit user approval per 09-07-SUMMARY.md."
+
   - test: "Quick-add / custom food / recipe-edit surfaces: confirm the Done bar appears on quick-add's decimal-pad macro fields, the chip row + Done bar appear on custom food's Serving-grams field, and the chip row + Done bar appear on newly-added recipe-edit ingredient rows (existing locked rows show no chip row)."
     expected: "All described surfaces render correctly per D-10/D-13 scope."
     why_human: "Visual surface-by-surface confirmation needs a device; deferred by explicit user approval per 09-07-SUMMARY.md."
+
   - test: "Onboarding explainer placement + mechanics: start fresh onboarding (no profile) — the explainer must appear FIRST, before the sex step; three cards swipe with page dots; each renders its real component with sample data (volt HSS ring at 132 no count-up, amber readiness light, mini ATL/CTL trend); each card's 'THE MATH' toggle expands/collapses; Skip and the final card's 'Get started' both advance to the sex step."
     expected: "All described behaviors work as specified in D-15/D-16/D-17."
     why_human: "Navigation order, swipe paging, and card rendering need a device; deferred by explicit user approval per 09-08-SUMMARY.md."
+
   - test: "Onboarding explainer Settings revisit: with a profile present, Settings -> Guide -> 'How Apsis works' opens the same three cards; Close/Done returns to Settings; the three 09-05 unit rows (Lifts/Bodyweight/Runs) still render/toggle correctly below the Profile section (regression check)."
     expected: "The standalone /explainer route opens and returns correctly; no regression to the Settings unit rows."
     why_human: "Navigation round-trip needs a device; deferred by explicit user approval per 09-08-SUMMARY.md."
+
   - test: "Explainer card copy review: read the drafted card copy (HSS/readiness/trend fronts + 'the math' expansions) for voice/accuracy against the athlete-direct mono register."
     expected: "Owner approves the copy or requests edits."
     why_human: "Subjective content/voice judgment — not programmatically verifiable. Explicitly flagged for owner review at UAT per 09-08-SUMMARY.md."
+
   - test: "Done bar on run form + onboarding bodyweight: open the run-log form and confirm the Done bar appears above the distance/duration decimal pads; open onboarding bodyweight and confirm the Done bar appears above its decimal pad."
     expected: "Both remaining D-13 call sites show the Done bar and dismiss the keyboard on tap; runUnits/bodyweightUnits behavior is unchanged."
     why_human: "Visual keyboard-accessory confirmation needs a device; deferred by explicit user approval per 09-09-SUMMARY.md."
+
   - test: "Onboarding Mixed-mode round trip: choose 'Mixed' at the onboarding units step, set imperial lifts + metric runs, complete onboarding, and confirm Settings shows the three rows reflecting exactly that choice."
     expected: "Settings' three rows (Lifts=imperial, Bodyweight=whatever chosen, Runs=metric) match the onboarding Mixed selections exactly."
     why_human: "End-to-end onboarding-to-settings round trip needs a device; deferred by explicit user approval per 09-05-SUMMARY.md."

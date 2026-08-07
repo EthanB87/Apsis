@@ -2,18 +2,18 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-current_phase: 09
-current_phase_name: beta-feedback-round-1
-status: executing
+current_phase: 06
+current_phase_name: Polish & App Store Submission
+status: planning
 stopped_at: Phase 9 context gathered
-last_updated: "2026-08-05T01:09:01.371Z"
-last_activity: 2026-08-04
-last_activity_desc: Phase 09 execution started
+last_updated: "2026-08-07T00:30:30.622Z"
+last_activity: 2026-08-06
+last_activity_desc: Phase 09 complete, transitioned to Phase 06
 progress:
   total_phases: 8
-  completed_phases: 6
+  completed_phases: 7
   total_plans: 68
-  completed_plans: 57
+  completed_plans: 66
 ---
 
 # Project State — Apsis
@@ -28,10 +28,10 @@ training-load number (HSS) and a readiness band — fully offline.
 
 ## Current Position
 
-Phase: 09 (beta-feedback-round-1) — EXECUTING
-Plan: 1 of 9
-Status: Executing Phase 09
-Last activity: 2026-08-04 — Phase 09 execution started
+Phase: 06 — Polish & App Store Submission
+Plan: Not started
+Status: Ready to plan
+Last activity: 2026-08-06 — Phase 09 complete, transitioned to Phase 06
 
 Progress: [█████████░] 93% (4/6 phases complete, 28/28 executed plans)
 
@@ -39,7 +39,7 @@ Progress: [█████████░] 93% (4/6 phases complete, 28/28 execu
 
 **Velocity:**
 
-- Total plans completed: 51 (all in Phase 01)
+- Total plans completed: 60 (all in Phase 01)
 - Average duration: not tracked (Phase 01 predates STATE.md instrumentation)
 - Total execution time: not tracked
 
@@ -55,6 +55,7 @@ Progress: [█████████░] 93% (4/6 phases complete, 28/28 execu
 | 05 | 9 | - | - |
 | 07 | 11 | - | - |
 | 08 | 4 | - | - |
+| 09 | 9 | - | - |
 
 **Recent Trend:**
 
