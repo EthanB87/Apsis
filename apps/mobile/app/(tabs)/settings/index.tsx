@@ -22,6 +22,7 @@
 import React, { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
+  Alert,
   Linking,
   Modal,
   Pressable,
@@ -60,6 +61,7 @@ import {
   Typography,
   tabularNums,
 } from '../../../constants/theme';
+import { clearDevSeedData, seedDevTrendData } from '../../../lib/devSeed';
 import { requestHealthKitAuthorization } from '../../../lib/healthkitAuth';
 import { runHealthKitSync } from '../../../lib/healthkitImport';
 import { getSyncState, setSyncState } from '../../../lib/healthkitSyncState';
@@ -130,6 +132,12 @@ export default function SettingsScreen(): React.JSX.Element {
   const [hkConnected, setHkConnected] = useState(false);
   const [hkLastSyncAt, setHkLastSyncAt] = useState<Date | null>(null);
   const [hkConnecting, setHkConnecting] = useState(false);
+
+  // Quick task 260907-la6 Task 3: guards the __DEV__-only Developer section below against a
+  // double-tap firing two concurrent seed/clear runs. The hook itself is unconditional (rules
+  // of hooks) even though the section it guards is __DEV__-gated — harmless, unused state in a
+  // release build.
+  const [devSeedBusy, setDevSeedBusy] = useState(false);
 
   // Seed the local edit draft from the loaded profile row exactly once — subsequent
   // profile updates (e.g. after Save Changes) are applied optimistically to `draft`
@@ -462,6 +470,74 @@ export default function SettingsScreen(): React.JSX.Element {
           </Pressable>
         </View>
         <View style={styles.hairlineDivider} />
+
+        {/* Quick task 260907-la6 Task 3: __DEV__-only demo-data seeder for the Today trend
+         * chart (06-07 App Store screenshots need real-looking data). Metro replaces
+         * __DEV__ with `false` in a release bundle, so this entire block dead-code-eliminates
+         * -- D-22's "never a fake line in production" still holds. Both handlers are inline
+         * arrows written INSIDE this gated expression (not hoisted, not extracted into a
+         * separate component) so the release-build structural gate can verify the call sites
+         * never render outside a __DEV__ check. */}
+        {__DEV__ ? (
+          <>
+            <Text style={styles.sectionLabel}>Developer</Text>
+            <Pressable
+              onPress={() => {
+                if (devSeedBusy) return;
+                setDevSeedBusy(true);
+                seedDevTrendData(db)
+                  .then(() => {
+                    Alert.alert('Demo data seeded', '~90 days of synthetic sessions were added.');
+                  })
+                  .catch((err: unknown) => {
+                    console.error('[Apsis] Seed 90 days of demo data failed:', err);
+                    Alert.alert('Seed failed', 'Something went wrong seeding demo data.');
+                  })
+                  .finally(() => {
+                    setDevSeedBusy(false);
+                  });
+              }}
+              disabled={devSeedBusy}
+              accessibilityRole="button"
+              accessibilityLabel="Seed 90 days of demo data"
+              accessibilityState={{ disabled: devSeedBusy }}
+              style={({ pressed }) => [
+                styles.hkConnectRow,
+                pressed && !devSeedBusy && styles.hkConnectRowPressed,
+              ]}>
+              <Text style={styles.hkRowLabel}>Seed 90 days of demo data</Text>
+              <Text style={styles.hkRowSub}>Fills Today with synthetic build-taper-peak sessions.</Text>
+            </Pressable>
+            <Pressable
+              onPress={() => {
+                if (devSeedBusy) return;
+                setDevSeedBusy(true);
+                clearDevSeedData(db)
+                  .then(() => {
+                    Alert.alert('Demo data cleared', 'Synthetic sessions were removed.');
+                  })
+                  .catch((err: unknown) => {
+                    console.error('[Apsis] Clear demo data failed:', err);
+                    Alert.alert('Clear failed', 'Something went wrong clearing demo data.');
+                  })
+                  .finally(() => {
+                    setDevSeedBusy(false);
+                  });
+              }}
+              disabled={devSeedBusy}
+              accessibilityRole="button"
+              accessibilityLabel="Clear demo data"
+              accessibilityState={{ disabled: devSeedBusy }}
+              style={({ pressed }) => [
+                styles.hkConnectRow,
+                pressed && !devSeedBusy && styles.hkConnectRowPressed,
+              ]}>
+              <Text style={styles.hkRowLabel}>Clear demo data</Text>
+              <Text style={styles.hkRowSub}>Removes all synthetic sessions seeded above.</Text>
+            </Pressable>
+            <View style={styles.hairlineDivider} />
+          </>
+        ) : null}
 
         <View style={styles.footer}>
           <Text style={styles.footerText}>Apsis v{appVersion}</Text>
