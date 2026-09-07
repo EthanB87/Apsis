@@ -1,19 +1,20 @@
 ---
 gsd_state_version: 1.0
 milestone: v1.0
-milestone_name: milestone
 current_phase: 06
 current_phase_name: polish-app-store-submission
 status: executing
-stopped_at: 06-04 COMPLETE (2026-08-04) -- privacy policy + support page live over HTTPS on apsistraining.com, REL-02 satisfied. Wave 1 of Phase 06 is now fully done. Remaining in-phase work: 06-06 PAUSED at Task 3 (blocking human-verify beta gate) -- build 9 is in Beta App Review, status "Waiting for Review" -- and 06-07 (ASC submission entry), still to come.
-last_updated: "2026-08-04T21:00:00.000Z"
-last_activity: 2026-08-04
-last_activity_desc: 06-04 closed out (privacy + support pages verified live on apsistraining.com); 06-06 remains paused at Task 3 awaiting Apple's review outcome
+last_updated: "2026-09-07T19:13:27.573Z"
+last_activity: 2026-09-07
+last_activity_desc: Completed quick task 260907-kwb (design system PDF committed to docs/); 06-06 remains paused at Task 3 awaiting Apple's review outcome
+state_head: fe2627431b7e372341d278c9313a19696902868e
 progress:
   total_phases: 7
   completed_phases: 6
   total_plans: 59
   completed_plans: 57
+milestone_name: milestone
+stopped_at: "06-04 COMPLETE (2026-08-04) -- privacy policy + support page live over HTTPS on apsistraining.com, REL-02 satisfied. Wave 1 of Phase 06 is now fully done. Remaining in-phase work: 06-06 PAUSED at Task 3 (blocking human-verify beta gate) -- build 9 is in Beta App Review, status \"Waiting for Review\" -- and 06-07 (ASC submission entry), still to come."
 ---
 
 # Project State — Apsis
@@ -31,10 +32,9 @@ training-load number (HSS) and a readiness band — fully offline.
 Phase: 06 (polish-app-store-submission) — EXECUTING
 Plan: 06-06 of 8 (06-04 now COMPLETE; Wave 1 fully done)
 Status: PAUSED — 06-06 Task 3 blocking human-verify checkpoint (beta gate: build 9 in Beta App Review, "Waiting for Review")
-Last activity: 2026-08-04 — 06-04 closed out (privacy + support pages live on apsistraining.com, REL-02 satisfied); 06-06 still paused at Task 3 awaiting Apple's review outcome
+Last activity: 2026-09-07 - Completed quick task 260907-kwb: commit the design system PDF (06-06 remains paused at Task 3 awaiting Apple's review outcome)
 
 Progress: [█████████░] 93% (4/6 phases complete, 28/28 executed plans)
-
 
 ## Performance Metrics
 
@@ -43,7 +43,6 @@ Progress: [█████████░] 93% (4/6 phases complete, 28/28 execu
 - Total plans completed: 51 (all in Phase 01)
 - Average duration: not tracked (Phase 01 predates STATE.md instrumentation)
 - Total execution time: not tracked
-
 
 **By Phase:**
 
@@ -124,7 +123,6 @@ Progress: [█████████░] 93% (4/6 phases complete, 28/28 execu
 | Phase 08 P04 | 55min | 3 tasks | 3 files |
 | Phase 06 P08 | ~10min | 3 tasks | 2 files |
 | Phase 06 P01 | ~4min | 3 tasks | 4 files |
-
 
 ## Accumulated Context
 
@@ -268,3 +266,8 @@ Recent decisions affecting current work:
 - [Phase ?]: [Phase 06 P08]: 06-08 complete 2026-08-03 (human re-approved both corrected documents, no edits) -- unblocks paused 06-04 Task 3 publish gate, but docs-site/ has NOT yet been deployed to apsistraining.com [SUPERSEDED 2026-08-03: docs-site now deployed & live (200) via Vercel/landing repo — see Blockers/Concerns 06-04 Task 3]
 - [Phase 06]: [Phase 06 P01]: 06-01 complete -- root app.json/eas.json (wrong bundle id com.apsistraining.apsis) deleted, apps/mobile/ is the single config source; icon.png re-exported opaque RGB (colorType 2) with persisted apps/mobile/scripts/check-icon-alpha.mjs regression guard; Task 3 human checkpoint approved 2026-08-03 (Apple Developer membership active, ASC app record for com.apsis.app created) -- ascAppId discrepancy found: 6792933794 already committed in apps/mobile/eas.json since 2026-07-20 (f19f2540d), contradicting the 2026-08-03 reply that it hasn't been provided; unresolved, must be reconciled by a human before 06-07
 
+### Quick Tasks Completed
+
+| # | Description | Date | Commit | Directory |
+|---|-------------|------|--------|-----------|
+| 260907-kwb | commit the design system PDF | 2026-09-07 | fe26274 | [260907-kwb-commit-the-design-system-pdf](./quick/260907-kwb-commit-the-design-system-pdf/) |
