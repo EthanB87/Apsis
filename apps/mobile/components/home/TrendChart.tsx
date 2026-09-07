@@ -9,9 +9,12 @@
  * 04-RESEARCH.md) -- every point's atl/ctl/tsb/hss is exactly what
  * `computeLoadTrendSeries`/`dailyHSS` already computed.
  *
- * D-18 amendment: a vertical bone gradient area fill sits under the ATL series only (CTL
- * stays a bare line), and both series draw on once per mount. No volt anywhere on the chart
- * -- the fill is achromatic and the Today screen's one volt element remains HssRing.
+ * D-18 amendment: a vertical bone gradient area fill sits under the ATL series, and both
+ * series draw on once per mount. D-02 amendment (quick task 260907-qe6b): a second ash
+ * gradient area fill now also sits under the CTL series (alpha strictly below ATL's so ATL
+ * stays visually dominant), horizontal AND vertical steel gridlines, and point dots on both
+ * series. No volt anywhere on the chart -- both fills are achromatic and the Today screen's
+ * one volt element remains HssRing.
  *
  * TSB is not drawn as a line (D-18) -- it only appears inside the scrub tooltip and the
  * TSB stat tile. Calibrating (D-22): `calibratingDayN` renders whatever real days of data
@@ -30,7 +33,7 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
-import { Area, CartesianChart, Line, useChartPressState } from 'victory-native';
+import { Area, CartesianChart, Line, Scatter, useChartPressState } from 'victory-native';
 import type { ChartBounds, CurveType } from 'victory-native';
 import { Group, Line as SkiaLine, LinearGradient, matchFont, vec } from '@shopify/react-native-skia';
 
@@ -52,6 +55,22 @@ const CURVE_TYPE: CurveType = 'monotoneX';
 // Single tuning knob (per 04-UI-SPEC.md section 5 amendment) -- lower this if the bone
 // gradient wash under ATL competes with the HssRing for attention on-device.
 const AREA_FILL_TOP_ALPHA = 0.18;
+
+// CTL's own gradient top-alpha (quick task 260907-qe6b, D-02) -- kept strictly below
+// AREA_FILL_TOP_ALPHA so the acute ATL line/fill still reads as the dominant one and the
+// ATL/CTL crossover stays legible even with both areas filled.
+const CTL_AREA_FILL_TOP_ALPHA = 0.1;
+
+// x-tick spacing tuning knob (quick task 260907-qe6b, D-02) -- lower this (denser labels)
+// or raise it (sparser) if the on-device label count crowds a 28-day window.
+const X_TICK_EVERY_N_DAYS = 4;
+
+// Point-dot radius shared by both series' Scatter layers (quick task 260907-qe6b, D-02).
+const POINT_DOT_RADIUS = 2.5;
+
+// y-axis tick label count (quick task 260907-qe6b, D-02) -- small on purpose so the
+// horizontal gridlines carry readable values without crowding the chart height.
+const Y_AXIS_TICK_COUNT = 4;
 
 // Mount draw-on duration -- under DESIGN-SYSTEM.md line 103's ~800ms animation ceiling.
 const DRAW_ON_DURATION_MS = 600;
@@ -132,8 +151,13 @@ export default function TrendChart({ data, calibratingDayN, onPressDetail }: Tre
   }, []);
 
   const dayToLabel = useMemo(() => new Map(data.map((p) => [p.day, p.dateLabel])), [data]);
-  // Sparse x-axis labels: every ~7th day (executor discretion per 04-UI-SPEC.md section 5).
-  const xTickValues = useMemo(() => data.filter((p) => p.day % 7 === 0).map((p) => p.day), [data]);
+  // Denser x-axis labels (quick task 260907-qe6b, D-02): every X_TICK_EVERY_N_DAYS'th day --
+  // a 28-day window now carries seven labels instead of four. Lower/raise the constant above
+  // if the on-device label count crowds.
+  const xTickValues = useMemo(
+    () => data.filter((p) => p.day % X_TICK_EVERY_N_DAYS === 0).map((p) => p.day),
+    [data],
+  );
 
   const cursorP1 = useDerivedValue(() => vec(state.x.position.value, chartBoundsSV.value.top));
   const cursorP2 = useDerivedValue(() => vec(state.x.position.value, chartBoundsSV.value.bottom));
@@ -192,19 +216,43 @@ export default function TrendChart({ data, calibratingDayN, onPressDetail }: Tre
               chartBoundsSV.value = bounds;
             }}
             xAxis={{
-              lineWidth: 0,
+              lineWidth: 1,
+              lineColor: Colors.dark.steel,
               font: axisFont,
               labelColor: Colors.dark.mutedText,
               tickValues: xTickValues,
               tickCount: Math.max(xTickValues.length, 1),
               formatXLabel: (day: number) => dayToLabel.get(day) ?? '',
             }}
-            yAxis={[{ lineColor: Colors.dark.steel, lineWidth: 1 }]}>
+            yAxis={[
+              {
+                lineColor: Colors.dark.steel,
+                lineWidth: 1,
+                font: axisFont,
+                labelColor: Colors.dark.mutedText,
+                tickCount: Y_AXIS_TICK_COUNT,
+              },
+            ]}>
             {({ points, chartBounds }) => (
               <>
-                {/* Horizontal steel gridlines only -- no vertical gridlines (D-18). Area
-                    fill sits under both stroked lines in paint order (D-18 amendment). */}
+                {/* Horizontal AND vertical steel gridlines (quick task 260907-qe6b, D-02).
+                    Paint order: CTL area, then ATL area, then the two stroked lines, then
+                    dots, then the scrub hairline -- ATL stays the visually dominant series
+                    even with both areas filled (CTL_AREA_FILL_TOP_ALPHA strictly below
+                    AREA_FILL_TOP_ALPHA). Both areas sit inside the existing draw-on Group
+                    since Area.opacity is a plain number, not the animated-capable prop
+                    Line.end/Scatter.opacity are. */}
                 <Group opacity={drawProgress}>
+                  <Area points={points.ctl} y0={chartBounds.bottom} curveType={CURVE_TYPE}>
+                    <LinearGradient
+                      start={vec(0, chartBounds.top)}
+                      end={vec(0, chartBounds.bottom)}
+                      colors={[
+                        hexToRgba(Colors.dark.mutedText, CTL_AREA_FILL_TOP_ALPHA),
+                        hexToRgba(Colors.dark.mutedText, 0),
+                      ]}
+                    />
+                  </Area>
                   <Area points={points.atl} y0={chartBounds.bottom} curveType={CURVE_TYPE}>
                     <LinearGradient
                       start={vec(0, chartBounds.top)}
@@ -226,6 +274,25 @@ export default function TrendChart({ data, calibratingDayN, onPressDetail }: Tre
                   strokeWidth={2}
                   curveType={CURVE_TYPE}
                   end={drawProgress}
+                />
+                {/* Point dots (quick task 260907-qe6b, D-02) -- Scatter.opacity IS
+                    animated-capable in the installed typings, so drawProgress drives it
+                    directly with no extra Group wrapper needed. */}
+                <Scatter
+                  points={points.atl}
+                  color={Colors.dark.text}
+                  radius={POINT_DOT_RADIUS}
+                  shape="circle"
+                  style="fill"
+                  opacity={drawProgress}
+                />
+                <Scatter
+                  points={points.ctl}
+                  color={Colors.dark.mutedText}
+                  radius={POINT_DOT_RADIUS}
+                  shape="circle"
+                  style="fill"
+                  opacity={drawProgress}
                 />
                 <SkiaLine
                   p1={cursorP1}

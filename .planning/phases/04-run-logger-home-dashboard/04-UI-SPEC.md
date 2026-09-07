@@ -383,6 +383,47 @@ Discretion" items and any genuine gaps CONTEXT.md left open.
 > superseded by D-18 before this revision and is NOT restored by it — bone/ash remain
 > binding, and DESIGN-SYSTEM.md is deliberately left unedited.
 
+> **Revised 2026-09-07 (quick task 260907-qe6) — amends D-18/D-02:**
+>
+> **Changed on the home chart:** vertical gridlines are now permitted alongside horizontal
+> ones, superseding "horizontal only" — the chart now shows steel gridlines in both
+> directions. A gradient area fill now sits under BOTH series, superseding la6's "CTL keeps
+> a bare line with no fill beneath it" — CTL now has its own ash gradient area fill with a
+> top alpha strictly below ATL's bone fill's, so the acute ATL line/fill still reads as the
+> dominant series and the ATL/CTL crossover stays legible, and point dots now mark every
+> data point on both series. X-axis labels densify from every 7th day to every 4th day (seven
+> labels on a 28-day window instead of four), and the y-axis gains tick labels so the
+> horizontal gridlines finally carry readable values. A tap affordance row ("VIEW FULL
+> TREND ▸") now sits beneath the card, added by the sibling plan in this same quick task.
+>
+> **Changed elsewhere:** TSB IS drawn as a real third line — **on the new trends detail
+> screen only** — superseding D-18's blanket "TSB is NOT drawn as a third line." D-18's
+> prohibition still binds the home chart; TSB remains represented on the home chart only by
+> its stat tile and inside the scrub tooltip.
+>
+> **New surface:** a pushed `/trends` route at `apps/mobile/app/trends.tsx`, a sibling of
+> `modal.tsx` outside `(tabs)/`, carrying a 28D/90D/1Y range switcher, the three-series
+> (ATL/CTL/TSB) chart, a readiness-band history strip, and a six-cell stats block.
+> DESIGN-SYSTEM.md section 5's unbuilt five-tab layout with a TRENDS tab is **deliberately
+> not resurrected** by this route — `/trends` is a pushed route reached by tapping the home
+> chart's tap affordance row, not a fifth tab (D-04).
+>
+> **Accent usage:** the detail screen's two accent usages are the TSB line and the
+> readiness-band history strip's green segments, both readiness-semantic, and both permitted
+> because that screen never renders an `HssRing`. The home chart remains accent-free — no
+> volt anywhere on it, by any spelling or indirection.
+>
+> **Unchanged:** no accent anywhere on the home chart, ~2px line weight, mono 9px ash axis
+> labels, the D-20 tooltip copy format, the D-19 scrub mechanics and its ≤150ms opacity
+> fade, the ≤800ms animate-once draw-on, and D-22's never-a-fake-line calibrating
+> behavior — now generalized to the detail screen's short-history captions as well.
+>
+> **Why:** the user explicitly authorized diverging from the design doc for these visuals;
+> this revision exists so the spec and the shipped code do not contradict each other.
+>
+> Note, as la6 did: DESIGN-SYSTEM.md is deliberately left unedited, and its "volt primary
+> line" chart guidance remains superseded, not restored.
+
 ### 6. Today's session rows (D-23)
 
 - List item: title (Heading role reused at its existing 22px, OR consider a smaller in-list
