@@ -333,8 +333,11 @@ Discretion" items and any genuine gaps CONTEXT.md left open.
 - Card container: carbon surface, hairline border, radius `Radius.md` (8px), full screen
   width minus `Spacing.lg` (16px) horizontal margins, ~180–200px chart height.
 - Two lines: ATL = bone (`#F2F1EC`), CTL = ash (`#8A9098`). No volt anywhere on the chart
-  (D-18). Line weight ~2px, no fill/area beneath (telemetry line style, "no chart junk" per
-  DESIGN-SYSTEM.md §5).
+  (D-18). Line weight ~2px. A vertical gradient area fill beneath the ATL series only is
+  permitted, drawn in bone at a capped top alpha of 0.18 fading to fully transparent — the
+  fill is achromatic and therefore does not consume the screen's One-Volt budget (the Today
+  screen's volt element remains the HssRing). CTL keeps a bare line with no fill beneath it,
+  so the acute/chronic crossover stays legible.
 - Gridlines: steel, 1px, horizontal only (no vertical gridlines — keep it clean).
 - Axis labels: mono, 9px, ash, sparse (e.g. every 7th day for a 28-day window — exact density
   is executor discretion per CONTEXT.md).
@@ -347,13 +350,38 @@ Discretion" items and any genuine gaps CONTEXT.md left open.
   (carbon surface, hairline border, radius `Radius.md`/8, ~`Spacing.sm` padding) appears
   above the touch point (offset upward so the finger never covers it) containing the D-20
   copy: `"{MON DD} · HSS {N} · ATL {N} · CTL {N} · TSB {±N}"` all mono, bone/ash text (no
-  volt). Tooltip appears/disappears instantly with the gesture — no fade animation required.
+  volt). The hairline and tooltip card may fade in/out with a short opacity transition of at
+  most 150ms; their x-position (the hairline's position and the tooltip's horizontal
+  placement) must remain untweened and continue to track the finger with zero lag — only
+  opacity may ease.
 - Rest days (0 HSS) still show ATL/CTL/TSB in the tooltip (D-20 — EWMA always has values,
   even on a zero-input day).
 - **Calibrating state (D-22):** the chart renders with whatever days of real data exist (1,
   5, 12…) — never a fake/placeholder line. Caption "BUILDING TREND · DAY {N}/14" (mono, ash)
   sits above or below the chart card (executor discretion on exact position — recommend
   above, matching the ring's internal calibrating label for visual echo).
+- **Curve interpolation:** the two series render with a softened, non-straight-segment
+  interpolation; the exact curve identifier is whatever the installed victory-native
+  version's curve-type union offers, preferring a non-overshooting curve so ATL can never
+  dip visually below zero during the calibrating window.
+- **Mount draw-on animation:** the series draw on once on mount when data first becomes
+  non-empty, in at most 800ms (binding DESIGN-SYSTEM.md line 103's animation ceiling), and
+  never replay while the component stays mounted — matching the HssRing's animate-once
+  discipline on the same screen.
+
+> **Revised 2026-09-07 (quick task 260907-la6) — amends D-18:** Changed: permits a vertical
+> gradient area fill beneath the ATL series (bone, capped top alpha 0.18 fading to fully
+> transparent), softened non-straight-segment curve interpolation on both series, a ≤800ms
+> mount draw-on animation, and a ≤150ms opacity fade on the scrub hairline/tooltip.
+> Unchanged: No volt anywhere on the chart, no vertical gridlines, ~2px line weight,
+> mono/9px/ash sparse axis labels, the D-20 tooltip copy format, the D-19 scrub mechanics
+> (hairline snaps to nearest day, tooltip offset upward, x-position tracks the finger with
+> zero lag), and the D-22 calibrating behavior (never a fake/placeholder line). TSB is still
+> not drawn as a third line. Why: the trend chart is the Today screen's second hero after the
+> HSS ring, and the flat two-line telemetry sketch under-reads at hero scale. Note:
+> DESIGN-SYSTEM.md line 79's "volt primary line" guidance for load-trend charts was already
+> superseded by D-18 before this revision and is NOT restored by it — bone/ash remain
+> binding, and DESIGN-SYSTEM.md is deliberately left unedited.
 
 ### 6. Today's session rows (D-23)
 
