@@ -5,7 +5,8 @@
  * 260907-qe6 Task 2): max, mean, count, and a subtraction of two already-stored numbers. No
  * new training-science math, no EWMA -- `packages/engine` stays untouched. This module imports
  * nothing from `@apsis/db` or `react-native`, so it lands inside `apps/mobile/vitest.config.mts`'s
- * `lib/**` include, mirroring the `runEntryLogic.ts` / `devSeedPlan.ts` pure-vs-native split.
+ * `lib/**` include, mirroring `runEntryLogic.ts`'s pure-vs-native split (the same discipline
+ * the Settings demo-data planner module already established).
  *
  * `TREND_RANGES` is the single source of numbers the /trends range switcher (Task 3) and the
  * one-time `recentTrend(db, 365)` read both derive from -- 365 is this table's largest `days`

@@ -3,8 +3,8 @@
  *
  * RED/GREEN coverage for `trendStats.ts` (quick task 260907-qe6 Task 2): pure presentation-
  * layer aggregates (max/mean/count/subtraction) over already-persisted `load_daily` rows. Zero
- * `@apsis/db` / `react-native` imports (mirrors `devSeedPlan.test.ts`'s vitest-testability
- * discipline) -- these tests run under plain Node.
+ * `@apsis/db` / `react-native` imports (mirrors the Settings demo-data planner module's own
+ * vitest-testability discipline) -- these tests run under plain Node.
  */
 
 import { describe, expect, it } from 'vitest';

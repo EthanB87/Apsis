@@ -17,30 +17,53 @@
  * chart (TrendChart.tsx) keeps TSB out of its lines per D-18's original rule -- that contract
  * is untouched by this file.
  *
- * This is Task 1's tracer slice: a fixed last-90-rows chart only. Task 2 adds the stats block
- * and readiness-band strip; Task 3 adds the 28D/90D/1Y range switcher and honest sparse-history
- * captioning. Every guard below already follows the same "never pad, never fabricate" rule
- * (D-22) those later tasks generalize.
+ * Task 2 adds the stats block and readiness-band strip. Task 3 (quick task 260907-qe6) adds
+ * the 28D/90D/1Y range switcher -- a single `recentTrend(db, 365)` read stays the one source of
+ * truth, and every range is served by slicing that already-loaded array client-side via
+ * `sliceRange` (History's read-everything-fold-in-memory precedent) -- switching ranges never
+ * refetches. Every guard below follows the same "never pad, never fabricate" rule (D-22): a
+ * shorter-than-requested window renders only the days that exist and says so honestly via the
+ * "SHOWING N OF REQUESTED DAYS" caption, never a padded/extended domain.
  */
 
 import { useCallback, useMemo, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ScrollView } from 'react-native';
 import { Stack, useFocusEffect } from 'expo-router';
-import { CartesianChart, Line } from 'victory-native';
+import { CartesianChart, Line, Scatter } from 'victory-native';
 import { DashPathEffect, Line as SkiaLine, matchFont, vec } from '@shopify/react-native-skia';
 import { db, recentTrend } from '@apsis/db';
 
 import { bandColor } from '../constants/readinessBand';
 import Colors from '../constants/Colors';
-import { Kicker, Mono, Radius, Spacing, Typography, tabularNums } from '../constants/theme';
-import { computeTrendStats, formatSignedDelta, formatTrendDateLabel, type TrendStatRow } from '../lib/trendStats';
+import { HIT_TARGET_MIN, Kicker, Mono, Radius, Spacing, Typography, tabularNums } from '../constants/theme';
+import {
+  computeTrendStats,
+  formatSignedDelta,
+  formatTrendDateLabel,
+  sliceRange,
+  TREND_RANGES,
+  type TrendStatRow,
+} from '../lib/trendStats';
 
 const CHART_HEIGHT = 260;
 const AXIS_FONT_SIZE = 9;
-const TRACER_WINDOW_DAYS = 90;
 const CURVE_TYPE = 'monotoneX' as const;
+const SCATTER_DOT_RADIUS = 3;
+
+type TrendRangeKey = (typeof TREND_RANGES)[number]['key'];
+
+// One named x-axis tick-thinning constant per range (D-01: "one named constant per range, not
+// a magic number inline") so labels never overlap as the window widens from 28 to 365 points.
+const TICK_INTERVAL_DAYS_28D = 7;
+const TICK_INTERVAL_DAYS_90D = 14;
+const TICK_INTERVAL_DAYS_1Y = 60;
+const TICK_INTERVAL_BY_RANGE: Record<TrendRangeKey, number> = {
+  '28D': TICK_INTERVAL_DAYS_28D,
+  '90D': TICK_INTERVAL_DAYS_90D,
+  '1Y': TICK_INTERVAL_DAYS_1Y,
+};
 
 const BAND_LEGEND: ReadonlyArray<{ band: 'green' | 'amber' | 'red' | 'calibrating'; label: string }> = [
   { band: 'green', label: 'READY' },
@@ -64,6 +87,8 @@ interface TrendChartDatum {
 export default function TrendsScreen(): React.JSX.Element {
   const [loading, setLoading] = useState(true);
   const [allRows, setAllRows] = useState<TrendRow[]>([]);
+  const [rangeKey, setRangeKey] = useState<TrendRangeKey>('28D');
+  const selectedRange = TREND_RANGES.find((r) => r.key === rangeKey)!;
 
   const loadTrend = useCallback(async () => {
     try {
@@ -91,9 +116,10 @@ export default function TrendsScreen(): React.JSX.Element {
     }, [loadTrend])
   );
 
-  // Task 1 tracer: a fixed last-90-rows slice. Task 3 replaces this with a range switcher
-  // driven by TREND_RANGES + sliceRange, sourced from this same single 365-row read.
-  const windowRows = useMemo(() => allRows.slice(-TRACER_WINDOW_DAYS), [allRows]);
+  // Range switcher (D-01/Task 3): one 365-row read, sliced client-side per range -- switching
+  // never refetches. Chart, readiness strip and stats block all derive from this SAME sliced
+  // array (never three independent slices that could disagree).
+  const windowRows = useMemo(() => sliceRange(allRows, selectedRange.days), [allRows, selectedRange]);
 
   const chartData: TrendChartDatum[] = useMemo(
     () =>
@@ -113,6 +139,27 @@ export default function TrendsScreen(): React.JSX.Element {
       return undefined;
     }
   }, []);
+
+  // Axis label density scales with range: MON D for 28D/90D, MON-only for 1Y (D-01) -- thinned
+  // by TICK_INTERVAL_BY_RANGE so labels never overlap as the window widens.
+  const withDayLabels = rangeKey !== '1Y';
+  const dayToLabel = useMemo(
+    () => new Map(windowRows.map((row, index) => [index, formatTrendDateLabel(row.localDate, { withDay: withDayLabels })])),
+    [windowRows, withDayLabels]
+  );
+  const tickInterval = TICK_INTERVAL_BY_RANGE[rangeKey];
+  const xTickValues = useMemo(
+    () => chartData.filter((p) => p.day % tickInterval === 0).map((p) => p.day),
+    [chartData, tickInterval]
+  );
+
+  // Point dots only at 28D -- at 90/365 points they become noise, so wider ranges let the
+  // lines carry alone (D-01).
+  const showDots = rangeKey === '28D';
+
+  // Honest sparse history (D-01/D-22): never pad/extend the domain -- when fewer rows exist
+  // than requested, caption exactly how many real days are shown and since when.
+  const isSparse = !loading && windowRows.length > 0 && windowRows.length < selectedRange.days;
 
   // Stats block + readiness strip are both derived from the same windowRows the chart above
   // draws -- one derived value feeds all three, never independent slices that could disagree.
@@ -134,12 +181,40 @@ export default function TrendsScreen(): React.JSX.Element {
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <Text style={styles.title}>TRENDS</Text>
 
+        <View style={styles.rangeSwitcher}>
+          {TREND_RANGES.map((range) => {
+            const selected = range.key === rangeKey;
+            return (
+              <Pressable
+                key={range.key}
+                onPress={() => setRangeKey(range.key)}
+                accessibilityRole="button"
+                accessibilityLabel={`Show ${range.key} range`}
+                accessibilityState={{ selected }}
+                style={[styles.rangeSegment, selected && styles.rangeSegmentSelected]}>
+                <Text style={[styles.rangeSegmentLabel, selected && styles.rangeSegmentLabelSelected]}>
+                  {range.key}
+                </Text>
+              </Pressable>
+            );
+          })}
+        </View>
+
         {loading ? null : allRows.length === 0 ? (
           <Text style={styles.emptyCaption}>NO TREND DATA YET</Text>
         ) : windowRows.length < 2 ? (
           <Text style={styles.emptyCaption}>NOT ENOUGH HISTORY TO CHART YET</Text>
         ) : (
           <>
+            {isSparse ? (
+              <Text style={styles.sparseCaption}>
+                {`SHOWING ${windowRows.length} OF ${selectedRange.days} DAYS · SINCE ${formatTrendDateLabel(
+                  windowRows[0]!.localDate,
+                  { withDay: true }
+                )}`}
+              </Text>
+            ) : null}
+
             <View style={styles.card}>
               <CartesianChart
                 data={chartData}
@@ -150,6 +225,9 @@ export default function TrendsScreen(): React.JSX.Element {
                   lineWidth: 1,
                   font: axisFont,
                   labelColor: Colors.dark.mutedText,
+                  tickValues: xTickValues,
+                  tickCount: Math.max(xTickValues.length, 1),
+                  formatXLabel: (day: number) => dayToLabel.get(day) ?? '',
                 }}
                 yAxis={[{ lineColor: Colors.dark.steel, lineWidth: 1, font: axisFont, labelColor: Colors.dark.mutedText }]}>
                 {({ points, chartBounds, yScale }) => (
@@ -164,6 +242,13 @@ export default function TrendsScreen(): React.JSX.Element {
                     <Line points={points.atl} color={Colors.dark.text} strokeWidth={2} curveType={CURVE_TYPE} />
                     <Line points={points.ctl} color={Colors.dark.mutedText} strokeWidth={2} curveType={CURVE_TYPE} />
                     <Line points={points.tsb} color={Colors.dark.accent} strokeWidth={2} curveType={CURVE_TYPE} />
+                    {showDots ? (
+                      <>
+                        <Scatter points={points.atl} color={Colors.dark.text} radius={SCATTER_DOT_RADIUS} />
+                        <Scatter points={points.ctl} color={Colors.dark.mutedText} radius={SCATTER_DOT_RADIUS} />
+                        <Scatter points={points.tsb} color={Colors.dark.accent} radius={SCATTER_DOT_RADIUS} />
+                      </>
+                    ) : null}
                   </>
                 )}
               </CartesianChart>
@@ -270,6 +355,40 @@ const styles = StyleSheet.create({
     color: Colors.dark.mutedText,
     textAlign: 'center',
     marginTop: Spacing.xxl,
+  },
+  // Segmented range control (28D/90D/1Y): bone active fill, matching the run form's segmented-
+  // control convention -- this screen's accent budget is already spent on the TSB line and the
+  // readiness-band strip, so the switcher itself stays bone, not volt.
+  rangeSwitcher: {
+    flexDirection: 'row',
+    backgroundColor: Colors.dark.steel,
+    borderRadius: Radius.sm,
+    padding: 2,
+    marginBottom: Spacing.lg,
+  },
+  rangeSegment: {
+    flex: 1,
+    minHeight: HIT_TARGET_MIN,
+    borderRadius: Radius.sm,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'transparent',
+  },
+  rangeSegmentSelected: {
+    backgroundColor: Colors.dark.text,
+  },
+  rangeSegmentLabel: {
+    ...Mono,
+    color: Colors.dark.mutedText,
+  },
+  rangeSegmentLabelSelected: {
+    color: Colors.dark.onAccent,
+  },
+  sparseCaption: {
+    ...Mono,
+    color: Colors.dark.mutedText,
+    textAlign: 'center',
+    marginBottom: Spacing.sm,
   },
   card: {
     height: CHART_HEIGHT,

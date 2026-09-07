@@ -1,9 +1,9 @@
 /**
  * apps/mobile/lib/devSeedPlan.ts
  *
- * Pure ~90-day build->taper->peak synthetic session generator for the `__DEV__`-only Settings
- * seeder (quick task 260907-la6 Task 3). Zero I/O, zero `@apsis/db` / `react-native` imports,
- * zero `__DEV__` reference (this module runs under plain Node in vitest, mirroring
+ * Pure build->taper->peak synthetic session generator for the `__DEV__`-only Settings seeder
+ * (quick task 260907-la6 Task 3). Zero I/O, zero `@apsis/db` / `react-native` imports, zero
+ * `__DEV__` reference (this module runs under plain Node in vitest, mirroring
  * `runEntryLogic.ts`'s native-import-free testability discipline) -- the RN-native, DB-writing
  * half of the seeder lives in `devSeed.ts` instead.
  *
@@ -12,9 +12,14 @@
  * across runs. `today` is always caller-supplied -- this module never reads the wall clock
  * (`Date.now()` / bare `new Date()`), matching `@apsis/engine`'s purity convention one layer up.
  *
- * Shape: an easy first week, a rising build through the middle (weeks 2-9), a peak just before
- * the taper, then a lower-effort final week -- a 90/90 unbroken training streak is not
- * plausible, so a deterministic ~20% of days are rest days (no session emitted for that date).
+ * Shape: an easy first week, a rising build through the middle, a peak just before the taper,
+ * then a lower-effort final week -- a 90/90 unbroken training streak is not plausible, so a
+ * deterministic ~20% of days are rest days (no session emitted for that date). Quick task
+ * 260907-qe6 Task 3: windows longer than one `MACROCYCLE_DAYS` (90-day) block repeat this same
+ * build->taper shape as a sequence of near-equal-length blocks with a mild upward across-block
+ * progression, rather than one implausible multi-hundred-day linear ramp -- see
+ * `macrocycleBlocks`/`blockPhaseMultiplier` below. The original single-block shape is preserved
+ * bit-for-bit for any window of `MACROCYCLE_DAYS` or fewer.
  */
 
 import { addDaysLocal } from './localDate';
@@ -40,6 +45,49 @@ const TAPER_DAYS = 7;
 
 /** Easy first week -- the lowest-effort block, establishing the "build" trend's baseline. */
 const EASY_WEEK_DAYS = 7;
+
+/**
+ * One macrocycle (build->taper block) length in days -- the seeder's original ~90-day
+ * single-block shape (quick task 260907-qe6 Task 3). A window longer than one macrocycle is
+ * split into a sequence of repeated build->taper blocks of near-equal length instead of one
+ * implausible multi-hundred-day linear ramp. A window of MACROCYCLE_DAYS or fewer is always
+ * exactly one block spanning the whole window, so the pre-existing 90-day-or-shorter shape is
+ * preserved bit-for-bit.
+ */
+export const MACROCYCLE_DAYS = 90;
+
+/** Mild across-block progression (phase-multiplier units) so a multi-block window still trends
+ * upward year over year, layered on top of each block's own internal build->taper shape. */
+const BLOCK_PROGRESSION_STEP = 0.05;
+
+interface MacrocycleBlock {
+  /** Inclusive day index (0-indexed, oldest-first, within the full totalDays window). */
+  start: number;
+  /** Exclusive day index. */
+  end: number;
+  blockIndex: number;
+}
+
+/**
+ * Splits a `totalDays`-day window into a sequence of near-equal-length macrocycle blocks
+ * (each targeting `MACROCYCLE_DAYS`). Consecutive blocks tile exactly (each block's `end`
+ * equals the next block's `start`) since both boundaries are computed from the same rounding
+ * formula. A window of `MACROCYCLE_DAYS` or fewer always returns exactly one block spanning
+ * the whole window.
+ */
+function macrocycleBlocks(totalDays: number): MacrocycleBlock[] {
+  if (totalDays <= MACROCYCLE_DAYS) {
+    return [{ start: 0, end: totalDays, blockIndex: 0 }];
+  }
+  const blockCount = Math.max(1, Math.round(totalDays / MACROCYCLE_DAYS));
+  const blocks: MacrocycleBlock[] = [];
+  for (let i = 0; i < blockCount; i++) {
+    const start = Math.round((i * totalDays) / blockCount);
+    const end = Math.round(((i + 1) * totalDays) / blockCount);
+    blocks.push({ start, end, blockIndex: i });
+  }
+  return blocks;
+}
 
 /**
  * mulberry32 -- a small, fast, deterministic PRNG. Not cryptographic; this seeds cosmetic demo
@@ -68,17 +116,37 @@ function seedFromDateStr(dateStr: string): number {
 }
 
 /**
+ * Effort multiplier for the day at `localDayIndex` (0-indexed within its own block) inside a
+ * block of length `blockLen`: flat and low for the easy first week (first block only -- later
+ * blocks ramp straight from baseline, since the across-block progression already elevates
+ * them), rising linearly through the build span, peaking just before the final taper week,
+ * then flat and low again for the taper itself. Identical shape/formula to the original
+ * single-block `phaseMultiplier` when `isFirstBlock` is true and `blockLen` is the whole
+ * window (the <=MACROCYCLE_DAYS case).
+ */
+function blockPhaseMultiplier(localDayIndex: number, blockLen: number, isFirstBlock: boolean): number {
+  if (isFirstBlock && localDayIndex < EASY_WEEK_DAYS) return 0.6;
+  const taperStart = blockLen - TAPER_DAYS;
+  if (localDayIndex >= taperStart) return 0.55;
+  const rampStart = isFirstBlock ? EASY_WEEK_DAYS : 0;
+  const buildSpan = taperStart - rampStart - 1;
+  const progress = buildSpan > 0 ? (localDayIndex - rampStart) / buildSpan : 0;
+  return 0.6 + progress * 0.9;
+}
+
+/**
  * Effort multiplier for the day at `dayIndex` (0-indexed, oldest-first) within a `totalDays`
- * window: flat and low for the easy first week, rising linearly through the build block,
- * peaking just before the final taper week, then flat and low again for the taper itself.
+ * window. Delegates to `blockPhaseMultiplier` over whichever macrocycle block `dayIndex` falls
+ * into, adding that block's mild across-block progression offset. For `totalDays <=
+ * MACROCYCLE_DAYS` this is exactly the original single-block shape (bit-for-bit).
  */
 function phaseMultiplier(dayIndex: number, totalDays: number): number {
-  if (dayIndex < EASY_WEEK_DAYS) return 0.6;
-  const taperStart = totalDays - TAPER_DAYS;
-  if (dayIndex >= taperStart) return 0.55;
-  const buildSpan = taperStart - EASY_WEEK_DAYS - 1;
-  const progress = buildSpan > 0 ? (dayIndex - EASY_WEEK_DAYS) / buildSpan : 0;
-  return 0.6 + progress * 0.9;
+  const blocks = macrocycleBlocks(totalDays);
+  const block = blocks.find((b) => dayIndex >= b.start && dayIndex < b.end) ?? blocks[blocks.length - 1]!;
+  const localDayIndex = dayIndex - block.start;
+  const blockLen = block.end - block.start;
+  const base = blockPhaseMultiplier(localDayIndex, blockLen, block.blockIndex === 0);
+  return base + block.blockIndex * BLOCK_PROGRESSION_STEP;
 }
 
 /**

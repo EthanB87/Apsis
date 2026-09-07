@@ -104,3 +104,65 @@ describe('buildDevSeedSessions', () => {
     expect(buildDevSeedSessions('2026-01-01', DAYS)).toEqual(otherDay);
   });
 });
+
+// Quick task 260907-qe6 Task 3: DEV_SEED_DAYS widens the seeder to ~400 days so the /trends
+// screen's 1Y range is demonstrable. phaseMultiplier now repeats the 90-day build->taper shape
+// as a sequence of macrocycle blocks rather than one implausible 400-day linear ramp -- these
+// cases cover ONLY the long-window behavior; every existing 90-day case above is untouched.
+describe('buildDevSeedSessions -- long window (400 days)', () => {
+  const LONG_TODAY = '2026-09-07';
+  const LONG_DAYS = 400;
+  const longSessions = buildDevSeedSessions(LONG_TODAY, LONG_DAYS);
+  const longWindowStart = addDaysLocal(LONG_TODAY, -(LONG_DAYS - 1));
+
+  it('spans the 400-day window ending on the supplied date, oldest first, no gaps/duplicates', () => {
+    const dates = longSessions.map((s) => s.localDate);
+    expect(new Set(dates).size).toBe(dates.length);
+    for (let i = 1; i < dates.length; i++) {
+      expect(dates[i]! > dates[i - 1]!).toBe(true);
+    }
+    for (const date of dates) {
+      expect(date >= longWindowStart).toBe(true);
+      expect(date <= LONG_TODAY).toBe(true);
+    }
+  });
+
+  it('roughly 15-25% of the 400 days are rest days', () => {
+    const restDays = LONG_DAYS - longSessions.length;
+    const restFraction = restDays / LONG_DAYS;
+    expect(restFraction).toBeGreaterThanOrEqual(0.15);
+    expect(restFraction).toBeLessThanOrEqual(0.25);
+  });
+
+  it('is deterministic across two calls, and differs for a different date', () => {
+    expect(buildDevSeedSessions(LONG_TODAY, LONG_DAYS)).toEqual(longSessions);
+    const otherDay = buildDevSeedSessions('2026-01-01', LONG_DAYS);
+    expect(otherDay).not.toEqual(longSessions);
+  });
+
+  it('mixes more than one activity type across the long window', () => {
+    const types = new Set(longSessions.map((s) => s.activityType));
+    expect(types.size).toBeGreaterThan(1);
+  });
+
+  it('ends each ~90-day macrocycle block in a taper (final 7 days average strictly less than the preceding 14)', () => {
+    // Mirrors the implementation's own near-equal-length block split: round(400/90) = 4 blocks
+    // of 100 days each, tiling exactly (each block's end is the next block's start).
+    const blockCount = Math.round(LONG_DAYS / 90);
+    const durationByDate = new Map(longSessions.map((s) => [s.localDate, s.durationS]));
+    const dayDurations = Array.from({ length: LONG_DAYS }, (_, i) => {
+      const date = addDaysLocal(longWindowStart, i);
+      return durationByDate.get(date) ?? 0;
+    });
+    const mean = (arr: number[]) => arr.reduce((a, b) => a + b, 0) / arr.length;
+
+    for (let b = 0; b < blockCount; b++) {
+      const blockStart = Math.round((b * LONG_DAYS) / blockCount);
+      const blockEnd = Math.round(((b + 1) * LONG_DAYS) / blockCount);
+      const finalWeek = dayDurations.slice(blockEnd - 7, blockEnd);
+      const precedingTwoWeeks = dayDurations.slice(blockEnd - 21, blockEnd - 7);
+      expect(mean(finalWeek)).toBeLessThan(mean(precedingTwoWeeks));
+      void blockStart; // block boundary retained for readability, not otherwise asserted here
+    }
+  });
+});

@@ -487,10 +487,10 @@ export default function SettingsScreen(): React.JSX.Element {
                 setDevSeedBusy(true);
                 seedDevTrendData(db)
                   .then(() => {
-                    Alert.alert('Demo data seeded', '~90 days of synthetic sessions were added.');
+                    Alert.alert('Demo data seeded', '~400 days of synthetic sessions were added.');
                   })
                   .catch((err: unknown) => {
-                    console.error('[Apsis] Seed 90 days of demo data failed:', err);
+                    console.error('[Apsis] Seed 400 days of demo data failed:', err);
                     Alert.alert('Seed failed', 'Something went wrong seeding demo data.');
                   })
                   .finally(() => {
@@ -499,14 +499,14 @@ export default function SettingsScreen(): React.JSX.Element {
               }}
               disabled={devSeedBusy}
               accessibilityRole="button"
-              accessibilityLabel="Seed 90 days of demo data"
+              accessibilityLabel="Seed 400 days of demo data"
               accessibilityState={{ disabled: devSeedBusy }}
               style={({ pressed }) => [
                 styles.hkConnectRow,
                 pressed && !devSeedBusy && styles.hkConnectRowPressed,
               ]}>
-              <Text style={styles.hkRowLabel}>Seed 90 days of demo data</Text>
-              <Text style={styles.hkRowSub}>Fills Today with synthetic build-taper-peak sessions.</Text>
+              <Text style={styles.hkRowLabel}>Seed 400 days of demo data</Text>
+              <Text style={styles.hkRowSub}>Fills Today and Trends with synthetic build-taper macrocycles.</Text>
             </Pressable>
             <Pressable
               onPress={() => {

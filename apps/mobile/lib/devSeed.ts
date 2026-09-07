@@ -1,8 +1,10 @@
 /**
  * apps/mobile/lib/devSeed.ts
  *
- * `__DEV__`-only ~90-day demo-data seeder + clearer for the Settings "Developer" section (quick
- * task 260907-la6 Task 3). Metro replaces `__DEV__` with the literal `false` in a production
+ * `__DEV__`-only demo-data seeder + clearer for the Settings "Developer" section (quick task
+ * 260907-la6 Task 3; widened from ~90 to ~`DEV_SEED_DAYS` (400) days by quick task 260907-qe6
+ * Task 3 so the /trends screen's 1Y range is genuinely demonstrable on a dev build). Metro
+ * replaces `__DEV__` with the literal `false` in a production
  * bundle, so both exported bodies below dead-code-eliminate entirely -- there is no fabricated-
  * data code path in a shipped binary, and D-22 ("never a fake line in production") continues to
  * hold. Each exported function's FIRST body statement is `if (!__DEV__) return;` -- positional,
@@ -21,8 +23,8 @@
  * sessions with it (T-la6-02).
  *
  * This module NEVER imports `./healthkitWriteback` or `./healthkitSyncState` (T-la6-03) --
- * seeding 90 fabricated workouts into the developer's real Apple Health data would be a
- * destructive, hard-to-undo side effect on data this app does not own.
+ * seeding hundreds of fabricated workouts into the developer's real Apple Health data would be
+ * a destructive, hard-to-undo side effect on data this app does not own.
  */
 
 import { like } from 'drizzle-orm';
@@ -36,6 +38,10 @@ import { resolveRunSegment } from './runEntryLogic';
 const DEVSEED_ID_PREFIX = 'devseed-';
 const DEVSEED_ID_LIKE_PATTERN = `${DEVSEED_ID_PREFIX}%`;
 
+/** Quick task 260907-qe6 Task 3: widened from 90 to a full year plus change so the /trends
+ * screen's 1Y range is genuinely demonstrable on a dev build, not near-empty. */
+const DEV_SEED_DAYS = 400;
+
 /** Parses a `YYYY-MM-DD` local-date string into a local `Date` anchored at noon -- mirrors
  * `runEntry.ts`'s WR-08 back-dated-entry anchor so a seeded session's `createdAt`/`finishedAt`
  * lands on the correct calendar day regardless of the device's UTC offset. */
@@ -45,10 +51,10 @@ function localDateToNoon(localDate: string): Date {
 }
 
 /**
- * Seeds ~90 days of synthetic build->taper->peak endurance sessions (Settings "Seed 90 days of
- * demo data") so the Today screen's trend chart, stat tiles, and readiness band have real data
- * to render for 06-07's App Store screenshots. `__DEV__`-guarded (T-la6-01) -- this function's
- * entire body is absent from a release bundle.
+ * Seeds `DEV_SEED_DAYS` (~400) days of synthetic, repeated build->taper macrocycle endurance
+ * sessions (Settings "Seed 400 days of demo data") so the Today screen's trend chart, stat
+ * tiles, and readiness band -- and the /trends screen's 1Y range -- have real data to render.
+ * `__DEV__`-guarded (T-la6-01) -- this function's entire body is absent from a release bundle.
  */
 export async function seedDevTrendData(database: DB): Promise<void> {
   if (!__DEV__) return;
@@ -64,7 +70,8 @@ export async function seedDevTrendData(database: DB): Promise<void> {
     const thresholdHr = profile?.thresholdHr ?? null;
     const thresholdPaceSecPerKm = profile?.thresholdPaceSecPerKm ?? null;
 
-    const sessions = buildDevSeedSessions(todayLocalDate());
+    const today = todayLocalDate();
+    const sessions = buildDevSeedSessions(today, DEV_SEED_DAYS);
 
     for (let i = 0; i < sessions.length; i++) {
       const session = sessions[i]!;
