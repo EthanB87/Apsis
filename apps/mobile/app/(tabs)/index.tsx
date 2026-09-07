@@ -406,7 +406,11 @@ export default function TodayScreen(): React.JSX.Element {
         </View>
 
         <View style={styles.chartBlock}>
-          <TrendChart data={state.trendData} calibratingDayN={chartCalibratingDayN} />
+          <TrendChart
+            data={state.trendData}
+            calibratingDayN={chartCalibratingDayN}
+            onPressDetail={() => router.push('/trends')}
+          />
         </View>
 
         {state.todaySessions.length === 0 ? (

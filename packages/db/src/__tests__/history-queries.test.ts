@@ -10,7 +10,7 @@
 
 import { drizzle } from 'drizzle-orm/sqlite-proxy';
 import * as schema from '../schema';
-import { last28DaysTrend, sessionCountsByDate, dayGroupedSessions } from '../queries';
+import { last28DaysTrend, recentTrend, sessionCountsByDate, dayGroupedSessions } from '../queries';
 
 const mockDb = drizzle(async () => ({ rows: [] }), { schema });
 
@@ -45,6 +45,17 @@ describe('last28DaysTrend', () => {
     expect(lower).toContain('local_date');
     expect(lower).toContain('desc');
     expect(lower).toMatch(/limit \?|limit 28/);
+  });
+});
+
+describe('recentTrend', () => {
+  it('orders by local_date desc and carries a bound limit placeholder', () => {
+    const { sql } = recentTrend(mockDb, 365).toSQL();
+    const lower = sql.toLowerCase();
+    expect(lower).toContain('order by');
+    expect(lower).toContain('local_date');
+    expect(lower).toContain('desc');
+    expect(lower).toMatch(/limit \?|limit 365/);
   });
 });
 

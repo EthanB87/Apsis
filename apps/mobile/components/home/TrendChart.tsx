@@ -22,7 +22,7 @@
 
 import { useEffect, useMemo, useRef } from 'react';
 import type { ComponentProps } from 'react';
-import { StyleSheet, Text, TextInput, View } from 'react-native';
+import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import Animated, {
   useAnimatedProps,
   useAnimatedStyle,
@@ -35,7 +35,7 @@ import type { ChartBounds, CurveType } from 'victory-native';
 import { Group, Line as SkiaLine, LinearGradient, matchFont, vec } from '@shopify/react-native-skia';
 
 import Colors from '../../constants/Colors';
-import { Mono, Radius, Spacing } from '../../constants/theme';
+import { HIT_TARGET_MIN, Mono, Radius, Spacing } from '../../constants/theme';
 
 Animated.addWhitelistedNativeProps({ text: true });
 const AnimatedTextInput = Animated.createAnimatedComponent(TextInput);
@@ -99,6 +99,13 @@ export interface TrendChartProps {
   data: TrendChartPoint[];
   /** Day N of the 14-day calibration window; set only when fewer than 14 real days exist. */
   calibratingDayN?: number;
+  /**
+   * D-02/D-04: when supplied, renders a "VIEW FULL TREND" affordance row beneath the chart
+   * card and calls this on tap. This component never navigates itself -- it imports nothing
+   * from expo-router and stays purely presentational; the caller (app/(tabs)/index.tsx) owns
+   * the actual `router.push('/trends')` call, the ONLY entry point to that route.
+   */
+  onPressDetail?: () => void;
 }
 
 function formatSignedTsb(tsb: number): string {
@@ -107,7 +114,7 @@ function formatSignedTsb(tsb: number): string {
   return rounded > 0 ? `+${rounded}` : rounded < 0 ? `−${Math.abs(rounded)}` : '+0';
 }
 
-export default function TrendChart({ data, calibratingDayN }: TrendChartProps): React.JSX.Element {
+export default function TrendChart({ data, calibratingDayN, onPressDetail }: TrendChartProps): React.JSX.Element {
   const { state, isActive } = useChartPressState({ x: 0, y: { atl: 0, ctl: 0 } });
 
   const chartBoundsSV = useSharedValue<ChartBounds>({ left: 0, right: 0, top: 0, bottom: 0 });
@@ -245,6 +252,20 @@ export default function TrendChart({ data, calibratingDayN }: TrendChartProps): 
           />
         </Animated.View>
       </View>
+
+      {onPressDetail ? (
+        // D-02: a separate sibling row, deliberately NOT a wrapper around the card above --
+        // the card already owns a pan gesture via useChartPressState (the D-19 scrub), and
+        // wrapping it in a Pressable would put a tap recognizer in contention with that
+        // gesture. This row is a ghost control with no fill, just a hairline + label.
+        <Pressable
+          onPress={onPressDetail}
+          accessibilityRole="button"
+          accessibilityLabel="View full trend"
+          style={({ pressed }) => [styles.detailRow, pressed && styles.detailRowPressed]}>
+          <Text style={styles.detailRowLabel}>VIEW FULL TREND ▸</Text>
+        </Pressable>
+      ) : null}
     </View>
   );
 }
@@ -283,5 +304,20 @@ const styles = StyleSheet.create({
     fontSize: 11,
     color: Colors.dark.text,
     padding: 0,
+  },
+  detailRow: {
+    minHeight: HIT_TARGET_MIN,
+    borderTopWidth: 1,
+    borderTopColor: Colors.dark.border,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'transparent',
+  },
+  detailRowPressed: {
+    opacity: 0.7,
+  },
+  detailRowLabel: {
+    ...Mono,
+    color: Colors.dark.mutedText,
   },
 });
