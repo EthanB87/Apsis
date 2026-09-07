@@ -28,12 +28,15 @@ export default function Root({ children }: { children: ReactNode }) {
   );
 }
 
+// Apsis is dark-only (void #0B0C0E) — this is the one place a raw hex literal is
+// unavoidable, since +html.tsx renders server-side before constants/Colors.ts's
+// runtime module graph is available (quick task 260709-qmv).
 const responsiveBackground = `
 body {
-  background-color: #fff;
+  background-color: #0B0C0E;
 }
 @media (prefers-color-scheme: dark) {
   body {
-    background-color: #000;
+    background-color: #0B0C0E;
   }
 }`;

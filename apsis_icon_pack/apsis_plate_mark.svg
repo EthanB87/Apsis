@@ -1,0 +1,7 @@
+<svg width="240" height="200" viewBox="0 0 240 200" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Apsis">
+  <g transform="rotate(-30 120 100)">
+    <ellipse cx="120" cy="100" rx="66" ry="37" stroke="#F2F1EC" stroke-width="7"/>
+    <ellipse cx="120" cy="100" rx="52" ry="28" stroke="#F2F1EC" stroke-width="2.4" opacity="0.55"/>
+    <ellipse cx="120" cy="100" rx="11" ry="6.5" fill="#C6F23D" stroke="#F2F1EC" stroke-width="2.6"/>
+  </g>
+</svg>

@@ -1,20 +1,21 @@
-# Roadmap: Apsis (CONCURRENT)
+# Roadmap: Apsis
 
 ## Overview
 
-Apsis ships a single-builder iOS MVP that logs lifting and running in one app, computes a
-unified Hybrid Stress Score (HSS), and surfaces a green/amber/red readiness band — fully
-offline. The journey runs dependency-first: lay the monorepo + offline data layer, build
-and exhaustively unit-test the pure-TS HSS engine (the moat), wire the fast logging UI and
-home-screen readiness chart on top, layer in optional HealthKit import, then polish and
-submit to the App Store before the ~July 28, 2026 deadline.
+Apsis ships as a pure-TS training-load engine wrapped in an offline-first Expo app. The
+build order follows the dependency chain, not a generic template: foundation (done) →
+the HSS engine that is the entire product thesis → the two logging surfaces (lifting,
+running) plus the home dashboard that makes the engine's output visible → HealthKit as an
+isolated, cuttable adapter → App Store submission. Every phase after Foundation earns its
+place because the next one is hollow without it: the loggers are meaningless without an
+engine to score them, the dashboard is meaningless without loggers producing data, and
+HealthKit and submission are additive layers on top of a working core.
 
-> **Reconstructed 2026-06-30** from git history + `BUILD.md §6` after the original
-> `.planning/ROADMAP.md` was lost (`.planning/` is gitignored). Phase 01 plan breakdown is
-> recovered from committed history; Phases 02–05 are derived from `BUILD.md §4–§6` and the
-> research SUMMARY, and will be refined at plan time. The executed roadmap renumbered
-> `BUILD.md`'s phases 1-based and deferred the engine to Phase 02 (per the
-> `packages/engine/src/index.ts` skeleton comment).
+> **Note on requirement count:** the Traceability table in REQUIREMENTS.md previously
+> stated "37 total / 34 pending" — that was a stale placeholder. A full recount of the
+> checklist gives **42 total v1.0 requirements (3 complete via Phase 01, 39 pending)**.
+> This roadmap maps all 39 pending requirements; see Coverage below.
+
 
 ## Phases
 
@@ -23,131 +24,87 @@ submit to the App Store before the ~July 28, 2026 deadline.
 - Integer phases (1, 2, 3): Planned milestone work
 - Decimal phases (2.1, 2.2): Urgent insertions (marked with INSERTED)
 
-- [x] **Phase 1: Foundation — Monorepo + Expo App + DB Layer** - Offline-ready scaffold, six-table SQLite schema, migrations, exercise seed, boot sequence
-- [ ] **Phase 2: HSS Engine (the moat)** - Pure-TS HSS + readiness compute, fully unit-tested per BUILD.md §4
-- [ ] **Phase 3: Core Logger UI — Lifting + Run + Home Screen** - Fast offline logging, session HSS, readiness band + load trend chart
-- [ ] **Phase 4: HealthKit Integration** - Import runs/HR/bodyweight; push workouts back (lowest priority; first to cut)
-- [ ] **Phase 5: Polish + App Store Submission** - Onboarding, settings, icon/splash, privacy labels, TestFlight, submit
+Decimal phases appear between their surrounding integers in numeric order.
+
+- [x] **Phase 01: Foundation** - Monorepo, pure-TS package skeletons, drizzle schema + migrations, seeded exercise library, Expo boot sequence — COMPLETE
+- [x] **Phase 02: HSS Engine** - Pure-TS training-load engine (strength/endurance HSS, day HSS, ATL/CTL/TSB trend, readiness band), ≥20 vitest tests — the moat (completed 2026-07-08)
+- [x] **Phase 03: Onboarding & Lifting Logger** - Profile capture + a Strong/Hevy-speed lifting logger with live HSS feedback (completed 2026-07-09)
+- [x] **Phase 04: Run Logger & Home Dashboard** - Run/conditioning logger plus the home screen readiness band and 28-day trend (completed 2026-07-10)
+- [x] **Phase 05: HealthKit Integration** - Import runs/HR/bodyweight, write logged sessions back, dedupe against manual entries — lowest priority, first to cut (completed 2026-07-12)
+- [ ] **Phase 06: Polish & App Store Submission** - Icon, screenshots, privacy label/policy, Sentry health-data audit, EAS submission by ~July 25
+- [x] **Phase 07: Nutrition Tracking** - Manual food logging, barcode scanning, custom recipes, day-type adaptive macro targets (per NUTRITION.md; promoted from v2 into v1, ships IN the July 28 submission build — executes before Phase 6's build/submission waves). Label OCR descoped 2026-07-20 after failing on-device. (completed 2026-07-20)
 
 ## Phase Details
 
-### Phase 1: Foundation — Monorepo + Expo App + DB Layer
+### Phase 01: Foundation
 
-**Goal**: A buildable Expo SDK 56 dev-client app over a pnpm monorepo with a working offline SQLite data layer — schema, bundled migrations, and a seeded exercise library — running on first boot.
-**Depends on**: Nothing (first phase)
-**Requirements**: Local-first SQLite source of truth; seeded exercise library (~40 HYROX/tactical movements); clean migrations on fresh install (DATA-01); parameterized queries only (T-1-01)
-**Success Criteria** (what must be TRUE):
-
-  1. `pnpm` workspace resolves `@apsis/shared`, `@apsis/engine`, `@apsis/db` across package boundaries (node-linker=hoisted)
-  2. Expo SDK 56 dev-client app builds and boots (op-sqlite pinned 16.2.2, `.sql` migration bundling wired into Metro/babel)
-  3. `useMigrations()` runs the drizzle migration chain clean on a fresh install
-  4. Exercise seed is idempotent and inserts ≥40 movements on first boot
-  5. `vitest` runs green for engine + db packages
 
 **Plans**: 4 plans (complete)
 
 Plans:
 
-- [x] 01-01: Root workspace config + strict TS base + pure-TS packages (shared, engine, db skeleton) + vitest infra
-- [x] 01-02: Expo SDK 56 app scaffold + op-sqlite 16.2.2 pin + `.sql` migration bundling chain + EAS dev profile + Metro resolution gate
-- [x] 01-03: Idempotent exercise seed (≥40) + op-sqlite client singleton + drizzle migrations generated (DATA-01 gate) + `@apsis/db` exports
-- [x] 01-04: Boot sequence wired (`useMigrations` + `seedExercises` in `_layout.tsx`) + expo-dev-client
+- [x] 01-01: Root workspace config + strict TypeScript base; pure-TS packages (shared, engine skeleton, db skeleton); vitest 4 test infra
+- [x] 01-02: Expo SDK 56 mobile app scaffold; op-sqlite 16.2.2 pin + `.sql` migration bundling (Metro/babel); EAS dev profile + prebuild
+- [x] 01-03: Idempotent exercise seed (≥40 movements) with test; op-sqlite client singleton + `@apsis/db` public exports; drizzle migrations generated + committed (0000_mushy_satana.sql)
+- [x] 01-04: Boot sequence wired in `_layout.tsx` (useMigrations + seedExercises, BootStates.tsx); expo-dev-client added for EAS dev-client build
 
-### Phase 2: HSS Engine (the moat)
+**Status**: COMPLETE — committed and pushed (commits `6c02971`…`44f6017`).
 
-**Goal**: Implement `packages/engine` exactly to the BUILD.md §4.1 public API as pure, zero-dependency TypeScript (time passed in, never `Date.now()`), with the full formula set and a literature-default versioned config, exhaustively unit-tested.
-**Depends on**: Phase 1
-**Requirements**: Pure-TS engine computes HSS + readiness on-device, fully unit-tested; cold-start must not show red on a single moderate day
+---
+
+### Phase 02: HSS Engine
+
+**Goal**: The pure-TS engine computes deterministic, fully unit-tested training-load and readiness numbers — validating the entire product thesis before any UI is built on top of it.
+**Depends on**: Phase 01 (packages/shared types, monorepo, test infra)
+**Requirements**: ENG-01, ENG-02, ENG-03, ENG-04, ENG-05, ENG-06, ENG-07
 **Success Criteria** (what must be TRUE):
 
-  1. All BUILD.md §4.1 signatures implemented: `strengthStress`, `enduranceStress`, `sessionHSS`, `dailyHSS`, `computeLoadTrend`, `readinessBand`, plus `DEFAULT_CONFIG`
-  2. ≥20 vitest tests pass, including golden lift/run cases, a double-session day, and a decaying rest week
-  3. Calibration test asserts a 60-min threshold run HSS ≈ a hard 5×5 squat session HSS within a chosen ratio
-  4. Cold-start test asserts a single moderate session does NOT produce a red band (calibrating state)
-  5. Zero runtime deps in `packages/engine`; `tsc --noEmit` and `vitest` both green; `packages/engine/README.md` documents each formula + constant
+  1. Given a set of strength sets (load, reps, RPE), the engine returns a per-session strength HSS that excludes sets flagged as warmup.
+  2. Given endurance segments (distance/duration/pace, optional HR), the engine returns a per-session endurance HSS.
+  3. Given multiple sessions logged on the same day, the engine returns a per-day HSS that applies a double-session penalty when sessionCount > 1.
+  4. Given a rolling window of daily HSS values, the engine returns ATL/CTL/TSB over a 28-day window and derives a green/amber/red readiness band from TSB and CTL — and a single cold-start session (< 14 days of history or low CTL) never produces a red band.
+  5. `packages/engine` has zero runtime dependencies, never calls `Date.now()` internally (time is always passed in), and its ≥20 vitest unit tests pass via `pnpm --filter @apsis/engine test`.
 
-**Plans**: 5 plans
+**Plans**: 6/6 plans complete
+
 
 Plans:
 **Wave 1**
 
-- [ ] 02-01-PLAN.md — Shared engine types + DEFAULT_CONFIG/CONFIG_VERSION + epley1RM helper (Wave 1)
-- [ ] 02-02-PLAN.md — Add load_daily.config_version column + generate append-only migration (Wave 1)
+- [x] 02-01-PLAN.md — Foundation: shared engine types + EngineConfig, DEFAULT_CONFIG constants, clamp-and-warn helper, @apsis/shared wiring (Wave 1)
 
 **Wave 2** *(blocked on Wave 1 completion)*
 
-- [ ] 02-03-PLAN.md — strengthStress/enduranceStress/sessionHSS/dailyHSS + calibration tuning (Wave 2)
-- [ ] 02-04-PLAN.md — computeLoadTrend + readinessBand/computeReadiness + cold-start (Wave 2)
+- [x] 02-02-PLAN.md — Strength HSS: strengthStress/strengthStressDetailed + Epley estimateE1RM, warmup exclusion, leg multiplier (Wave 2)
+- [x] 02-03-PLAN.md — Endurance HSS: enduranceStress + IF helpers (ifFromPace/ifFromHR/resolveIF), 60-min/IF-1.0 ≈100 anchor (Wave 2)
+- [x] 02-05-PLAN.md — Trend + readiness: computeLoadTrend/Series (EWMA ATL/CTL/TSB) + readinessBand with cold-start 'calibrating' (Wave 2)
 
 **Wave 3** *(blocked on Wave 2 completion)*
 
-- [ ] 02-05-PLAN.md — Engine barrel + README + acceptance gate (Wave 3)
+- [x] 02-04-PLAN.md — Session + daily rollup: sessionHSS (version-stamped) + dailyHSS with double-session penalty (Wave 3)
 
-### Phase 3: Core Logger UI — Lifting + Run + Home Screen
+**Wave 4** *(blocked on Wave 3 completion)*
 
-**Goal**: The minimum lovable product — log a lift and a run fully offline at Strong/Hevy entry speed, see session HSS on save, and watch the home-screen readiness band + load trend update via the write→recompute→useLiveQuery chain.
-**Depends on**: Phase 2
-**Requirements**: Fast lifting log (exercises/sets/reps/load/RPE, ≤3 taps/set, previous-session recall, warmup flag, rest timer); run/conditioning log (distance+duration→pace, optional avgHR); per-session + per-day HSS; readiness band + 14–30 day trend chart; onboarding captures engine inputs (sex, bodyweight, thresholds)
-**Success Criteria** (what must be TRUE):
+- [x] 02-06-PLAN.md — Barrel + calibration golden (kStrength tuning) + README + ≥20-test/purity verification (Wave 4)
 
-  1. User logs a lifting session with inline previous-session recall and warmup flagging
-  2. User logs a run/conditioning session (distance+duration→auto-pace, optional HR)
-  3. Session finish screen shows the computed HSS immediately on save
-  4. Home screen shows the readiness band (calibrating state while CTL<10) + a 14–30 day load chart, updating live after a save
-  5. Onboarding captures sex, bodyweight, thresholdHr, thresholdPace into `user_profile`
+**UI hint**: no (pure TS, no screens)
 
-**Plans**: TBD (estimate 3–4)
+---
 
-Plans:
+### Phase 03: Onboarding & Lifting Logger
 
-- [ ] 03-01: TBD at plan time
-
-### Phase 4: HealthKit Integration
-
-**Goal**: Import runs/HR/bodyweight from HealthKit into `endurance_segment` via the same `recomputeLoadDaily()` path as manual entry, deduplicate against manual rows, and write logged workouts back — on a physical device.
-**Depends on**: Phase 3
-**Requirements**: HealthKit import for runs/HR/weight + push workouts back (lowest priority; first to defer if timeline slips)
-**Success Criteria** (what must be TRUE):
-
-  1. An Apple Watch run appears in-app with a computed HSS without manual entry
-  2. `intensityFactor` resolves from HR vs profile thresholds
-  3. Imported sessions deduplicate against manual entries by timestamp range
-  4. Custom `NSHealthShareUsageDescription` / `NSHealthUpdateUsageDescription` strings set in `app.json` (no generic defaults)
-
-**Plans**: TBD (estimate 2)
-
-Plans:
-
-- [ ] 04-01: TBD at plan time
-
-### Phase 5: Polish + App Store Submission
-
-**Goal**: Ship — onboarding/settings/empty states, icon/splash, units toggle, Sentry with HealthKit data scrubbed, privacy nutrition label, screenshots, TestFlight, and submit before ~July 28, 2026.
-**Depends on**: Phase 4 (HealthKit cut tolerated — can submit offline-only)
-**Requirements**: App Store submittable v1.0; Definition of Done per BUILD.md §9
-**Success Criteria** (what must be TRUE):
-
-  1. App Store Connect app record created; privacy policy live at an HTTPS URL
-  2. Privacy nutrition label completed (Health & Fitness data types declared)
-  3. Sentry configured with HealthKit-derived values scrubbed from all events/breadcrumbs
-  4. 1024×1024 icon (no alpha), screenshots at required resolutions, description + keywords ready
-  5. TestFlight build verified on device; binary submitted for review on/before ~July 28, 2026
-
-**Plans**: TBD (estimate 2)
-
-Plans:
-
-- [ ] 05-01: TBD at plan time
 
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
+Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation — Monorepo + Expo + DB | 4/4 | Complete | 2026-06-30 |
-| 2. HSS Engine | 0/5 | Not started | - |
-| 3. Core Logger UI | 0/TBD | Not started | - |
-| 4. HealthKit Integration | 0/TBD | Not started | - |
-| 5. Polish + App Store Submission | 0/TBD | Not started | - |
+| 01. Foundation | 4/4 | Complete | 2026-07-02 |
+| 02. HSS Engine | 6/6 | Complete    | 2026-07-08 |
+| 03. Onboarding & Lifting Logger | 11/11 | Complete    | 2026-07-10 |
+| 04. Run Logger & Home Dashboard | 10/10 | Complete    | 2026-07-10 |
+| 05. HealthKit Integration | 9/9 | Complete    | 2026-07-12 |
+| 06. Polish & App Store Submission | 6/8 | In Progress|  |
+

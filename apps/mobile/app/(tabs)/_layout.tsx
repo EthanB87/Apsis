@@ -1,64 +1,127 @@
+import { Image } from 'react-native';
 import { SymbolView } from 'expo-symbols';
-import { Link, Tabs } from 'expo-router';
-import { Platform, Pressable } from 'react-native';
+import { Tabs } from 'expo-router';
 
 import Colors from '@/constants/Colors';
+import { HAIRLINE_WIDTH, Typography } from '@/constants/theme';
 import { useColorScheme } from '@/components/useColorScheme';
 import { useClientOnlyValue } from '@/components/useClientOnlyValue';
+import { useForegroundHealthKitSync } from '@/hooks/useForegroundHealthKitSync';
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
+  // D-02: silent HK foreground delta-sync, mounted once at the tab shell — deliberately NOT
+  // inside a logging screen so sync never touches the logging path (local-first). No UI.
+  useForegroundHealthKitSync();
 
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme].tint,
+        tabBarActiveTintColor: Colors[colorScheme].tabIconSelected,
+        tabBarInactiveTintColor: Colors[colorScheme].tabIconDefault,
+        tabBarStyle: {
+          backgroundColor: Colors[colorScheme].background,
+          borderTopColor: Colors[colorScheme].border,
+          borderTopWidth: 1,
+          elevation: 0,
+          shadowOpacity: 0,
+        },
+        tabBarLabelStyle: {
+          fontFamily: 'JetBrainsMono_500Medium',
+          fontSize: 9,
+          letterSpacing: 1.8,
+          textTransform: 'uppercase',
+        },
         // Disable the static render of the header on web
         // to prevent a hydration error in React Navigation v6.
         headerShown: useClientOnlyValue(false, true),
+        // DESIGN-SYSTEM.md void contract (checkpoint fix, Plan 03-10): the stock native
+        // header rendered white with black text. Void background, bone Archivo-heavy
+        // uppercase title, hairline bottom border instead of a shadow.
+        headerStyle: {
+          backgroundColor: Colors[colorScheme].background,
+          borderBottomColor: Colors[colorScheme].border,
+          borderBottomWidth: HAIRLINE_WIDTH,
+        },
+        headerShadowVisible: false,
+        headerTintColor: Colors[colorScheme].text,
+        headerTitleStyle: {
+          ...Typography.heading,
+          fontSize: 17,
+          color: Colors[colorScheme].text,
+        },
       }}>
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Tab One',
+          title: 'TODAY',
+          // D-07: TODAY renders its own in-screen timestamp/greeting header — showing the
+          // native tab header too would double it (matches the Settings/Log pattern).
+          headerShown: false,
           tabBarIcon: ({ color }) => (
-            <SymbolView
-              name={{
-                ios: 'chevron.left.forwardslash.chevron.right',
-                android: 'code',
-                web: 'code',
-              }}
-              tintColor={color}
-              size={28}
+            <Image
+              source={require('../../assets/images/apsis-plate-mark.png')}
+              style={{ width: 28, height: 28, tintColor: color }}
+              resizeMode="contain"
             />
-          ),
-          headerRight: () => (
-            <Link href="/modal" asChild>
-              <Pressable style={{ marginRight: 15 }}>
-                {({ pressed }) => (
-                  <SymbolView
-                    name={{ ios: 'info.circle', android: 'info', web: 'info' }}
-                    size={25}
-                    tintColor={Colors[colorScheme].text}
-                    style={{ opacity: pressed ? 0.5 : 1 }}
-                  />
-                )}
-              </Pressable>
-            </Link>
           ),
         }}
       />
       <Tabs.Screen
-        name="two"
+        name="log"
         options={{
-          title: 'Tab Two',
+          title: 'Log',
           tabBarIcon: ({ color }) => (
             <SymbolView
-              name={{
-                ios: 'chevron.left.forwardslash.chevron.right',
-                android: 'code',
-                web: 'code',
-              }}
+              name={{ ios: 'plus.circle.fill', android: 'add_circle', web: 'add_circle' }}
+              tintColor={color}
+              size={28}
+            />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="history"
+        options={{
+          title: 'History',
+          // Custom ScreenHeader (Kicker "LEDGER" + Title "History") replaces the native
+          // header, same doubled-header avoidance as TODAY/Settings.
+          headerShown: false,
+          tabBarIcon: ({ color }) => (
+            <SymbolView
+              name={{ ios: 'calendar', android: 'calendar_month', web: 'calendar_month' }}
+              tintColor={color}
+              size={28}
+            />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="nutrition"
+        options={{
+          title: 'Nutrition',
+          // Custom in-screen ScreenHeader (Kicker "NUTRITION" + Title "Today"), same doubled-
+          // header avoidance as TODAY/History/Settings.
+          headerShown: false,
+          tabBarIcon: ({ color }) => (
+            <SymbolView
+              name={{ ios: 'fork.knife', android: 'restaurant', web: 'restaurant' }}
+              tintColor={color}
+              size={28}
+            />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="settings"
+        options={{
+          title: 'Settings',
+          // Settings renders its own Design System v1 ScreenHeader inside a SafeAreaView —
+          // showing the tab header too would double the header (and double the top inset).
+          headerShown: false,
+          tabBarIcon: ({ color }) => (
+            <SymbolView
+              name={{ ios: 'gearshape.fill', android: 'settings', web: 'settings' }}
               tintColor={color}
               size={28}
             />

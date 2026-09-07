@@ -9,11 +9,15 @@
     "userInterfaceStyle": "automatic",
     "ios": {
       "supportsTablet": false,
-      "bundleIdentifier": "com.apsis.app"
+      "bundleIdentifier": "com.apsis.app",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false,
+        "NSCameraUsageDescription": "Apsis uses the camera only to scan food barcodes and photograph nutrition labels so you can log foods faster."
+      }
     },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
+        "backgroundColor": "#0B0C0E",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
         "backgroundImage": "./assets/images/android-icon-background.png",
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
@@ -33,12 +37,51 @@
         {
           "image": "./assets/images/splash-icon.png",
           "resizeMode": "contain",
-          "backgroundColor": "#ffffff"
+          "backgroundColor": "#0B0C0E"
+        }
+      ],
+      "expo-notifications",
+      "@react-native-community/datetimepicker",
+      [
+        "@kingstinct/react-native-healthkit",
+        {
+          "NSHealthShareUsageDescription": "Apsis reads your runs, heart rate, and bodyweight from Health so they count toward your training load automatically.",
+          "NSHealthUpdateUsageDescription": "Apsis writes your logged lifting and running sessions to Health so they show up alongside your other workouts.",
+          "background": false
+        }
+      ],
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Apsis uses the camera only to scan food barcodes and photograph nutrition labels so you can log foods faster.",
+          "microphonePermission": false,
+          "recordAudioAndroid": false
+        }
+      ],
+      [
+        "@sentry/react-native",
+        {
+          "organization": "apsis-training",
+          "project": "react-native",
+          "url": "https://sentry.io/"
+        }
+      ],
+      "expo-sharing",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Apsis uses your photo library only to let you pick a background photo for a share card image."
         }
       ]
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "b0eef736-9c4d-4dbd-b7b5-882c6c6b8eff"
+      }
     }
   }
 }

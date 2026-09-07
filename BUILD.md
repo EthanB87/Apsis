@@ -1,7 +1,7 @@
 # CONCURRENT — Hybrid Athlete Tracker · Build Spec for Claude Code
 
 > **Read this whole file before writing any code.** This is the authoritative build
-> brief. The companion document `hybrid_app_brief.docx` has the full product/market
+> brief. The companion document `docs/hybrid_app_brief.docx` has the full product/market
 > reasoning; this file is the executable plan. When the two disagree, **this file wins**
 > for build decisions.
 

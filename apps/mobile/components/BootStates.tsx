@@ -1,17 +1,25 @@
 /**
  * apps/mobile/components/BootStates.tsx
  *
- * Boot-sequence screens rendered by _layout.tsx before the database is ready.
+ * Boot-sequence screens rendered by _layout.tsx before the app can hand off to
+ * expo-router's file-system routing (migrations, then the D-14 crash-resume check).
  *
  * Security (V7 / T-1-02 — Error Handling):
  *   ErrorScreen renders a hardcoded generic string ONLY.
  *   It accepts NO message prop and interpolates NO error object, error.message,
  *   or file paths. Raw error details are console.error'd in _layout.tsx for
  *   developer diagnostics but must never reach the user's screen.
+ *
+ * ResumePrompt (D-14) follows the same discipline (T-03-08): it renders only a
+ * formatted local clock time derived from the open workout's createdAt — never a raw
+ * workout id, error object, or other profile/session detail.
  */
 
 import React from 'react';
-import { View, Text, ActivityIndicator, StyleSheet } from 'react-native';
+import { View, Text, ActivityIndicator, Pressable, StyleSheet } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import Colors from '../constants/Colors';
+import { HIT_TARGET_MIN, Radius, Spacing, Typography } from '../constants/theme';
 
 // ---------------------------------------------------------------------------
 // LoadingScreen
@@ -24,7 +32,7 @@ import { View, Text, ActivityIndicator, StyleSheet } from 'react-native';
 export function LoadingScreen(): React.JSX.Element {
   return (
     <View style={styles.container} testID="boot-loading">
-      <ActivityIndicator size="large" color="#555" />
+      <ActivityIndicator size="large" color={Colors.dark.accent} />
       <Text style={styles.loadingText}>Starting database...</Text>
     </View>
   );
@@ -52,6 +60,79 @@ export function ErrorScreen(): React.JSX.Element {
 }
 
 // ---------------------------------------------------------------------------
+// ResumePrompt (D-14 crash/kill recovery)
+// ---------------------------------------------------------------------------
+
+export interface ResumePromptProps {
+  /** When the open workout was created — formatted as a local 12-hour clock time. */
+  startedAt: Date;
+  onResume: () => void;
+  onFinishNow: () => void;
+  onDiscard: () => void;
+}
+
+/**
+ * Rendered by the root layout before the tab shell whenever an unfinished, non-deleted
+ * `workout` row exists on boot (D-14). Copy per 03-UI-SPEC.md's Copywriting Contract.
+ */
+export function ResumePrompt({
+  startedAt,
+  onResume,
+  onFinishNow,
+  onDiscard,
+}: ResumePromptProps): React.JSX.Element {
+  const time = formatLocal12Hour(startedAt);
+
+  return (
+    <SafeAreaView style={resumeStyles.safeArea} testID="boot-resume-prompt">
+      <View style={resumeStyles.container}>
+        <Text style={resumeStyles.question}>{`Resume workout from ${time}?`}</Text>
+        <View style={resumeStyles.buttonColumn}>
+          <Pressable
+            onPress={onResume}
+            accessibilityRole="button"
+            accessibilityLabel="Resume"
+            style={({ pressed }) => [
+              resumeStyles.button,
+              resumeStyles.primaryButton,
+              pressed && resumeStyles.buttonPressed,
+            ]}>
+            <Text style={resumeStyles.primaryButtonLabel}>Resume</Text>
+          </Pressable>
+          <Pressable
+            onPress={onFinishNow}
+            accessibilityRole="button"
+            accessibilityLabel="Finish Now"
+            style={({ pressed }) => [
+              resumeStyles.button,
+              resumeStyles.secondaryButton,
+              pressed && resumeStyles.buttonPressed,
+            ]}>
+            <Text style={resumeStyles.secondaryButtonLabel}>Finish Now</Text>
+          </Pressable>
+          <Pressable
+            onPress={onDiscard}
+            accessibilityRole="button"
+            accessibilityLabel="Discard"
+            style={({ pressed }) => [
+              resumeStyles.button,
+              resumeStyles.destructiveButton,
+              pressed && resumeStyles.buttonPressed,
+            ]}>
+            <Text style={resumeStyles.destructiveButtonLabel}>Discard</Text>
+          </Pressable>
+        </View>
+      </View>
+    </SafeAreaView>
+  );
+}
+
+/** Formats a Date as a local 12-hour clock time, e.g. "2:32 PM". */
+function formatLocal12Hour(date: Date): string {
+  return date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+}
+
+// ---------------------------------------------------------------------------
 // Styles
 // ---------------------------------------------------------------------------
 
@@ -60,19 +141,75 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#ffffff',
+    backgroundColor: Colors.dark.background,
     paddingHorizontal: 32,
   },
   loadingText: {
+    ...Typography.body,
     marginTop: 16,
-    fontSize: 16,
-    color: '#666666',
+    color: Colors.dark.mutedText,
     textAlign: 'center',
   },
   errorText: {
-    fontSize: 16,
-    color: '#c0392b',
+    ...Typography.body,
+    color: Colors.dark.destructive,
     textAlign: 'center',
     lineHeight: 24,
+  },
+});
+
+const resumeStyles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: Colors.dark.background,
+  },
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: Spacing.xl,
+  },
+  question: {
+    ...Typography.heading,
+    color: Colors.dark.text,
+    textAlign: 'center',
+    marginBottom: Spacing.xxxl,
+  },
+  buttonColumn: {
+    width: '100%',
+    gap: Spacing.lg,
+  },
+  button: {
+    minHeight: HIT_TARGET_MIN,
+    borderRadius: Radius.lg,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: Spacing.xl,
+  },
+  buttonPressed: {
+    opacity: 0.85,
+  },
+  primaryButton: {
+    backgroundColor: Colors.dark.accent,
+  },
+  primaryButtonLabel: {
+    ...Typography.body,
+    color: Colors.dark.onAccent,
+  },
+  secondaryButton: {
+    borderWidth: 1,
+    borderColor: Colors.dark.border,
+    backgroundColor: 'transparent',
+  },
+  secondaryButtonLabel: {
+    ...Typography.body,
+    color: Colors.dark.text,
+  },
+  destructiveButton: {
+    backgroundColor: 'transparent',
+  },
+  destructiveButtonLabel: {
+    ...Typography.body,
+    color: Colors.dark.destructive,
   },
 });

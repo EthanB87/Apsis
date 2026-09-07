@@ -8,12 +8,16 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@apsis/engine": "workspace:*",
+    "@apsis/shared": "workspace:*",
     "drizzle-orm": "0.45.2"
   },
   "peerDependencies": {
     "@op-engineering/op-sqlite": "16.2.2"
   },
   "devDependencies": {
+    "@types/better-sqlite3": "^7.6.13",
+    "better-sqlite3": "^12.11.1",
     "drizzle-kit": "0.31.10",
     "typescript": "6.0.3",
     "vite": "^6.4.3",

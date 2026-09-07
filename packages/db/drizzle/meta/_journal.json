@@ -8,6 +8,34 @@
       "when": 1782779637257,
       "tag": "0000_mushy_satana",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1783626932319,
+      "tag": "0001_long_firebrand",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1783715430398,
+      "tag": "0002_careful_sue_storm",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1783810260556,
+      "tag": "0003_normal_hairball",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1783973688787,
+      "tag": "0004_youthful_valkyrie",
+      "breakpoints": true
     }
   ]
 }

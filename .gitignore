@@ -5,6 +5,9 @@
 # Dependencies
 node_modules/
 
+# Dependencies
+node_modules/
+
 # TypeScript build artifacts (composite project emit)
 dist/
 *.tsbuildinfo
@@ -26,6 +29,12 @@ GoogleService-Info.plist
 # Expo local state
 .expo/
 expo-env.d.ts
+
+# GSD research cache (regenerated locally; not source)
+.planning/research/.cache/
+
+# Stray planning dir under the app package (local scratch)
+apps/mobile/.planning/
 
 # OS
 .DS_Store

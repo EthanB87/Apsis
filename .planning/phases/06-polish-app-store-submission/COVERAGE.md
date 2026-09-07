@@ -1,0 +1,1 @@
+No external API integration: this replan adds no new external API; the only off-device surfaces (Sentry SDK, OFF/USDA food lookups) already shipped in executed work (06-02, Phase 07), and EAS build/submit + App Store Connect are CLI/console release tooling, not product-integrated APIs.
