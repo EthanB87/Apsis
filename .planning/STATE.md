@@ -4,10 +4,10 @@ milestone: v1.0
 current_phase: 06
 current_phase_name: polish-app-store-submission
 status: executing
-last_updated: "2026-09-07T19:13:27.573Z"
+last_updated: "2026-09-07T20:19:37.872Z"
 last_activity: 2026-09-07
-last_activity_desc: Completed quick task 260907-kwb (design system PDF committed to docs/); 06-06 remains paused at Task 3 awaiting Apple's review outcome
-state_head: fe2627431b7e372341d278c9313a19696902868e
+last_activity_desc: Completed quick task 260907-la6 (amended D-18 trend chart contract, redesigned TrendChart, added __DEV__ 90-day demo seeder); 06-06 remains paused at Task 3 awaiting Apple's review outcome
+state_head: 45fe5c43e49eef4e370b0110458199d96a84a1da
 progress:
   total_phases: 7
   completed_phases: 6
@@ -32,7 +32,7 @@ training-load number (HSS) and a readiness band — fully offline.
 Phase: 06 (polish-app-store-submission) — EXECUTING
 Plan: 06-06 of 8 (06-04 now COMPLETE; Wave 1 fully done)
 Status: PAUSED — 06-06 Task 3 blocking human-verify checkpoint (beta gate: build 9 in Beta App Review, "Waiting for Review")
-Last activity: 2026-09-07 - Completed quick task 260907-kwb: commit the design system PDF (06-06 remains paused at Task 3 awaiting Apple's review outcome)
+Last activity: 2026-09-07 - Completed quick task 260907-la6: amend D-18 trend chart contract, redesign TrendChart, add __DEV__ 90-day demo seeder (06-06 remains paused at Task 3 awaiting Apple's review outcome)
 
 Progress: [█████████░] 93% (4/6 phases complete, 28/28 executed plans)
 
@@ -265,9 +265,12 @@ Recent decisions affecting current work:
 - [Phase ?]: [Phase 06 P08]: Privacy policy 'Share cards and photos' section placed after Food lookups and before Apple Health; fixed pre-existing anchor-tag line-wrap splitting 'Open Food Facts' and a stray '100% offline' substring in the listing footer (both Rule 1 fixes required for this plan's own verify gates)
 - [Phase ?]: [Phase 06 P08]: 06-08 complete 2026-08-03 (human re-approved both corrected documents, no edits) -- unblocks paused 06-04 Task 3 publish gate, but docs-site/ has NOT yet been deployed to apsistraining.com [SUPERSEDED 2026-08-03: docs-site now deployed & live (200) via Vercel/landing repo — see Blockers/Concerns 06-04 Task 3]
 - [Phase 06]: [Phase 06 P01]: 06-01 complete -- root app.json/eas.json (wrong bundle id com.apsistraining.apsis) deleted, apps/mobile/ is the single config source; icon.png re-exported opaque RGB (colorType 2) with persisted apps/mobile/scripts/check-icon-alpha.mjs regression guard; Task 3 human checkpoint approved 2026-08-03 (Apple Developer membership active, ASC app record for com.apsis.app created) -- ascAppId discrepancy found: 6792933794 already committed in apps/mobile/eas.json since 2026-07-20 (f19f2540d), contradicting the 2026-08-03 reply that it hasn't been provided; unresolved, must be reconciled by a human before 06-07
+- [Phase 06]: [Quick 260907-la6]: victory-native Area's declared opacity prop is a plain number (not AnimatedProp) unlike Line's end prop -- routed the area fill's draw-on opacity ramp through a wrapping Skia Group instead of a type-unsafe cast
+- [Phase 06]: [Quick 260907-la6]: devSeedPlan's rest-day fraction is an exact seeded-shuffle-selected count (not an independent per-day probability) so the 15-25% band holds for any seed
 
 ### Quick Tasks Completed
 
-| # | Description | Date | Commit | Directory |
-|---|-------------|------|--------|-----------|
-| 260907-kwb | commit the design system PDF | 2026-09-07 | fe26274 | [260907-kwb-commit-the-design-system-pdf](./quick/260907-kwb-commit-the-design-system-pdf/) |
+| # | Description | Date | Commit | Status | Directory |
+|---|-------------|------|--------|--------|-----------|
+| 260907-kwb | commit the design system PDF | 2026-09-07 | fe26274 |  | [260907-kwb-commit-the-design-system-pdf](./quick/260907-kwb-commit-the-design-system-pdf/) |
+| 260907-la6 | amend D-18 and redesign the TrendChart + __DEV__ demo seeder | 2026-09-07 | 45fe5c4 | Needs Review | [260907-la6-amend-d-18-and-redesign-the-trendchart-a](./quick/260907-la6-amend-d-18-and-redesign-the-trendchart-a/) |
