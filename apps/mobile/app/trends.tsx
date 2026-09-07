@@ -32,22 +32,24 @@ import { CartesianChart, Line } from 'victory-native';
 import { DashPathEffect, Line as SkiaLine, matchFont, vec } from '@shopify/react-native-skia';
 import { db, recentTrend } from '@apsis/db';
 
+import { bandColor } from '../constants/readinessBand';
 import Colors from '../constants/Colors';
-import { Mono, Radius, Spacing } from '../constants/theme';
+import { Kicker, Mono, Radius, Spacing, Typography, tabularNums } from '../constants/theme';
+import { computeTrendStats, formatSignedDelta, formatTrendDateLabel, type TrendStatRow } from '../lib/trendStats';
 
 const CHART_HEIGHT = 260;
 const AXIS_FONT_SIZE = 9;
 const TRACER_WINDOW_DAYS = 90;
 const CURVE_TYPE = 'monotoneX' as const;
 
-interface TrendRow {
-  localDate: string;
-  dayHss: number;
-  atl: number;
-  ctl: number;
-  tsb: number;
-  readinessBand: 'green' | 'amber' | 'red' | 'calibrating';
-}
+const BAND_LEGEND: ReadonlyArray<{ band: 'green' | 'amber' | 'red' | 'calibrating'; label: string }> = [
+  { band: 'green', label: 'READY' },
+  { band: 'amber', label: 'CAUTION' },
+  { band: 'red', label: 'OVERREACHING' },
+  { band: 'calibrating', label: 'CALIBRATING' },
+];
+
+type TrendRow = TrendStatRow;
 
 interface TrendChartDatum {
   day: number;
@@ -112,6 +114,10 @@ export default function TrendsScreen(): React.JSX.Element {
     }
   }, []);
 
+  // Stats block + readiness strip are both derived from the same windowRows the chart above
+  // draws -- one derived value feeds all three, never independent slices that could disagree.
+  const stats = useMemo(() => computeTrendStats(windowRows), [windowRows]);
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <Stack.Screen
@@ -168,10 +174,66 @@ export default function TrendsScreen(): React.JSX.Element {
               <LegendSwatch color={Colors.dark.mutedText} label="CTL" />
               <LegendSwatch color={Colors.dark.accent} label="TSB" />
             </View>
+
+            {/* Readiness-band history strip (D-01): one segment per row, left-to-right
+                oldest-to-newest -- reads in the same direction as the chart above it. Volt
+                appears here only for green segments, the same semantic exception
+                04-UI-SPEC.md's One-Volt Discipline already grants ReadinessLight. */}
+            <Text style={styles.sectionLabel}>READINESS HISTORY</Text>
+            <View style={styles.bandStrip}>
+              {windowRows.map((row) => (
+                <View key={row.localDate} style={[styles.bandSegment, { backgroundColor: bandColor(row.readinessBand) }]} />
+              ))}
+            </View>
+            <View style={styles.bandLegendRow}>
+              {BAND_LEGEND.map((entry) => (
+                <LegendSwatch key={entry.band} color={bandColor(entry.band)} label={entry.label} />
+              ))}
+            </View>
+
+            {/* Stats block (D-01): six cells, bone numbers -- the screen's accent budget is
+                already spent on the TSB line and the band strip above. */}
+            {stats == null ? (
+              <Text style={styles.emptyCaption}>NO TREND DATA YET</Text>
+            ) : (
+              <View style={styles.statsGrid}>
+                <StatCell label="ATL" value={Math.round(stats.atl).toString()} delta={formatSignedDelta(stats.atlDelta7)} />
+                <StatCell label="CTL" value={Math.round(stats.ctl).toString()} delta={formatSignedDelta(stats.ctlDelta7)} />
+                <StatCell label="TSB" value={formatSignedDelta(stats.tsb)} delta={formatSignedDelta(stats.tsbDelta7)} />
+                <StatCell
+                  label="PEAK LOAD"
+                  value={Math.round(stats.peakHss).toString()}
+                  sub={formatTrendDateLabel(stats.peakDate, { withDay: true })}
+                />
+                <StatCell label="REST DAYS" value={`${stats.restDays} / ${stats.days}`} />
+                <StatCell label="AVG HSS" value={Math.round(stats.avgHss).toString()} />
+              </View>
+            )}
           </>
         )}
       </ScrollView>
     </SafeAreaView>
+  );
+}
+
+function StatCell({
+  label,
+  value,
+  delta,
+  sub,
+}: {
+  label: string;
+  value: string;
+  delta?: string;
+  sub?: string;
+}): React.JSX.Element {
+  return (
+    <View style={styles.statCell}>
+      <Text style={styles.statLabel}>{label}</Text>
+      <Text style={[styles.statValue, tabularNums]}>{value}</Text>
+      {delta != null ? <Text style={styles.statDelta}>{delta}</Text> : null}
+      {sub != null ? <Text style={styles.statSub}>{sub}</Text> : null}
+    </View>
   );
 }
 
@@ -235,6 +297,60 @@ const styles = StyleSheet.create({
     borderRadius: 4,
   },
   legendLabel: {
+    ...Mono,
+    color: Colors.dark.mutedText,
+  },
+  sectionLabel: {
+    ...Kicker,
+    color: Colors.dark.mutedText,
+    marginTop: Spacing.xxl,
+    marginBottom: Spacing.sm,
+  },
+  bandStrip: {
+    flexDirection: 'row',
+    gap: 2,
+  },
+  bandSegment: {
+    flex: 1,
+    height: 6,
+    borderRadius: Radius.pill,
+  },
+  bandLegendRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+    gap: Spacing.md,
+    marginTop: Spacing.sm,
+  },
+  statsGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    marginTop: Spacing.md,
+    gap: Spacing.sm,
+  },
+  statCell: {
+    flexBasis: '48%',
+    flexGrow: 1,
+    backgroundColor: Colors.dark.surface,
+    borderWidth: 1,
+    borderColor: Colors.dark.border,
+    borderRadius: Radius.md,
+    padding: Spacing.md,
+    gap: 2,
+  },
+  statLabel: {
+    ...Kicker,
+    color: Colors.dark.mutedText,
+  },
+  statValue: {
+    ...Typography.heading,
+    color: Colors.dark.text,
+  },
+  statDelta: {
+    ...Mono,
+    color: Colors.dark.mutedText,
+  },
+  statSub: {
     ...Mono,
     color: Colors.dark.mutedText,
   },

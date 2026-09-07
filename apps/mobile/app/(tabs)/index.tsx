@@ -39,6 +39,7 @@ import { Mono, Radius, Spacing, Typography, tabularNums } from '../../constants/
 import { useHealthKitImportSignal } from '../../hooks/useForegroundHealthKitSync';
 import { fetchProfileSummary } from '../../lib/commitSet';
 import { todayLocalDate } from '../../lib/localDate';
+import { formatTrendDateLabel } from '../../lib/trendStats';
 
 const CALIBRATING_WINDOW_DAYS = 14;
 const MONTH_ABBR = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
@@ -77,9 +78,10 @@ function importNoticeForBatch(importedCount: number | null, syncedAt: Date | nul
   return `IMPORTED ${importedCount} SESSION${importedCount === 1 ? '' : 'S'} FROM APPLE HEALTH`;
 }
 
+// Delegates to trendStats.ts's formatTrendDateLabel (quick task 260907-qe6 Task 2) so the home
+// chart's dateLabel strings and the /trends screen's axis labels come from one formatter.
 function formatShortDate(localDate: string): string {
-  const [, month, day] = localDate.split('-').map((part) => Number.parseInt(part, 10));
-  return `${MONTH_ABBR[(month ?? 1) - 1]} ${day}`;
+  return formatTrendDateLabel(localDate, { withDay: true });
 }
 
 function formatGreetingTimestamp(d: Date): string {
