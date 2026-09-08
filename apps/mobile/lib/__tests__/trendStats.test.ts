@@ -10,6 +10,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   computeTrendStats,
+  formatScrubTooltip,
   formatSignedDelta,
   formatTrendDateLabel,
   sliceRange,
@@ -106,5 +107,39 @@ describe('formatTrendDateLabel', () => {
   it('renders "MON D" with withDay, and just "MON" without it', () => {
     expect(formatTrendDateLabel('2026-07-08', { withDay: true })).toBe('JUL 8');
     expect(formatTrendDateLabel('2026-07-08')).toBe('JUL');
+  });
+});
+
+describe('formatScrubTooltip', () => {
+  it('renders the full D-20 line for a typical day', () => {
+    const r = row('2026-07-08', 65, 42, 38, 4);
+    expect(formatScrubTooltip(r)).toBe('JUL 8 · HSS 65 · ATL 42 · CTL 38 · TSB +4');
+  });
+
+  it('still renders ATL/CTL/TSB on a rest day (dayHss: 0) -- EWMA always has values', () => {
+    const r = row('2026-07-09', 0, 43, 39, -1);
+    expect(formatScrubTooltip(r)).toBe('JUL 9 · HSS 0 · ATL 43 · CTL 39 · TSB −1');
+  });
+
+  it('renders negative TSB with the U+2212 minus sign, never an ASCII hyphen', () => {
+    const r = row('2026-07-10', 50, 44, 40, -6);
+    const line = formatScrubTooltip(r);
+    expect(line).toContain('TSB −6');
+    expect(line).not.toMatch(/-\d/);
+  });
+
+  it("renders zero TSB using formatSignedDelta(0)'s signed-zero form", () => {
+    const r = row('2026-07-11', 20, 45, 41, 0);
+    expect(formatScrubTooltip(r)).toBe(`JUL 11 · HSS 20 · ATL 45 · CTL 41 · TSB ${formatSignedDelta(0)}`);
+  });
+
+  it('rounds fractional dayHss/atl/ctl to integers', () => {
+    const r = row('2026-07-12', 42.6, 30.4, 28.5, 2);
+    expect(formatScrubTooltip(r)).toBe('JUL 12 · HSS 43 · ATL 30 · CTL 29 · TSB +2');
+  });
+
+  it('starts with formatTrendDateLabel(localDate, { withDay: true }) -- the shared date formatter, not a second copy', () => {
+    const r = row('2026-07-13', 10, 5, 5, 1);
+    expect(formatScrubTooltip(r).startsWith(formatTrendDateLabel(r.localDate, { withDay: true }))).toBe(true);
   });
 });
