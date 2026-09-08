@@ -26,12 +26,22 @@
  * "SHOWING N OF REQUESTED DAYS" caption, never a padded/extended domain.
  */
 
-import { useCallback, useMemo, useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import type { ComponentProps } from 'react';
+import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ScrollView } from 'react-native';
 import { Stack, useFocusEffect } from 'expo-router';
-import { CartesianChart, Line, Scatter } from 'victory-native';
+import Animated, {
+  clamp,
+  useAnimatedProps,
+  useAnimatedStyle,
+  useDerivedValue,
+  useSharedValue,
+  withTiming,
+} from 'react-native-reanimated';
+import { CartesianChart, Line, Scatter, useChartPressState } from 'victory-native';
+import type { ChartBounds } from 'victory-native';
 import { DashPathEffect, Line as SkiaLine, matchFont, vec } from '@shopify/react-native-skia';
 import { db, recentTrend } from '@apsis/db';
 
@@ -40,6 +50,7 @@ import Colors from '../constants/Colors';
 import { HIT_TARGET_MIN, Kicker, Mono, Radius, Spacing, Typography, tabularNums } from '../constants/theme';
 import {
   computeTrendStats,
+  formatScrubTooltip,
   formatSignedDelta,
   formatTrendDateLabel,
   sliceRange,
@@ -47,10 +58,22 @@ import {
   type TrendStatRow,
 } from '../lib/trendStats';
 
+// D-19/D-20 scrub tooltip: an AnimatedTextInput whose `text` prop is driven imperatively off
+// the UI thread, exactly like TrendChart.tsx's home-chart tooltip -- the native `text` prop
+// must be whitelisted once at module scope for Reanimated to write to it directly.
+Animated.addWhitelistedNativeProps({ text: true });
+const AnimatedTextInput = Animated.createAnimatedComponent(TextInput);
+
 const CHART_HEIGHT = 260;
 const AXIS_FONT_SIZE = 9;
 const CURVE_TYPE = 'monotoneX' as const;
 const SCATTER_DOT_RADIUS = 3;
+
+// D-19 scrub hairline/tooltip constants. CURSOR_FADE_MS matches TrendChart.tsx's own constant
+// value exactly so the two screens' fade timing can never drift apart.
+const CURSOR_FADE_MS = 150;
+const TOOLTIP_TOP_OFFSET = 8;
+const TOOLTIP_EDGE_INSET = 4;
 
 type TrendRangeKey = (typeof TREND_RANGES)[number]['key'];
 
@@ -89,6 +112,26 @@ export default function TrendsScreen(): React.JSX.Element {
   const [allRows, setAllRows] = useState<TrendRow[]>([]);
   const [rangeKey, setRangeKey] = useState<TrendRangeKey>('28D');
   const selectedRange = TREND_RANGES.find((r) => r.key === rangeKey)!;
+
+  // D-19/D-20 scrub hairline + tooltip -- ported from TrendChart.tsx's proven mechanism (read-
+  // only reference, not edited). All three y keys are mandatory: chartPressState is typed
+  // Record<YK, number> over this chart's yKeys union (atl/ctl/tsb), so a two-key init is a
+  // compile error.
+  const { state, isActive } = useChartPressState({ x: 0, y: { atl: 0, ctl: 0, tsb: 0 } });
+  const chartBoundsSV = useSharedValue<ChartBounds>({ left: 0, right: 0, top: 0, bottom: 0 });
+  const cursorOpacity = useSharedValue(0);
+  const tooltipWidthSV = useSharedValue(0);
+  const cardWidthSV = useSharedValue(0);
+
+  const cursorP1 = useDerivedValue(() => vec(state.x.position.value, chartBoundsSV.value.top));
+  const cursorP2 = useDerivedValue(() => vec(state.x.position.value, chartBoundsSV.value.bottom));
+
+  // Only opacity eases (D-19's 150ms ceiling); the hairline/tooltip x-position is read straight
+  // from state.x.position.value every frame with no timing or spring, so the cursor tracks the
+  // finger with zero lag.
+  useEffect(() => {
+    cursorOpacity.value = withTiming(isActive ? 1 : 0, { duration: CURSOR_FADE_MS });
+  }, [isActive, cursorOpacity]);
 
   const loadTrend = useCallback(async () => {
     try {
@@ -165,6 +208,35 @@ export default function TrendsScreen(): React.JSX.Element {
   // draws -- one derived value feeds all three, never independent slices that could disagree.
   const stats = useMemo(() => computeTrendStats(windowRows), [windowRows]);
 
+  // D-20 tooltip copy: precomputed per day on the JS thread via the single tested
+  // formatScrubTooltip (never re-implemented here), then read into a derived value by
+  // matchedIndex so the worklet never calls a plain JS formatter itself. windowRows (not
+  // chartData) is the source because it carries dayHss/localDate, and its indices are 1:1 with
+  // chartData's `day` values by construction. The `?? ''` is load-bearing -- matchedIndex is -1
+  // before the first press and can point past the end for one frame after a range switch
+  // shortens windowRows.
+  const tooltipLines = useMemo(() => windowRows.map((row) => formatScrubTooltip(row)), [windowRows]);
+  const tooltipText = useDerivedValue(() => tooltipLines[state.matchedIndex.value] ?? '', [tooltipLines]);
+  const tooltipAnimatedProps = useAnimatedProps(() => ({ text: tooltipText.value }));
+
+  // Clamped placement -- the one intentional divergence from the home chart. The card sets
+  // overflow:'hidden' and this tooltip line is wide, so centring on the finger then clamping
+  // inside the card's measured width keeps it fully visible at both edges. The Math.max guard
+  // is required: before first layout both widths are 0 and an inverted min/max would make
+  // clamp meaningless. Still untweened -- only opacity eases, so D-19's zero-lag rule holds.
+  const tooltipAnimatedStyle = useAnimatedStyle(() => ({
+    opacity: cursorOpacity.value,
+    transform: [
+      {
+        translateX: clamp(
+          state.x.position.value - tooltipWidthSV.value / 2,
+          TOOLTIP_EDGE_INSET,
+          Math.max(cardWidthSV.value - tooltipWidthSV.value - TOOLTIP_EDGE_INSET, TOOLTIP_EDGE_INSET)
+        ),
+      },
+    ],
+  }));
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <Stack.Screen
@@ -215,11 +287,27 @@ export default function TrendsScreen(): React.JSX.Element {
               </Text>
             ) : null}
 
-            <View style={styles.card}>
+            {/* No chartPressConfig here -- matches app/(tabs)/index.tsx's home chart exactly,
+                which already runs this identical default press-pan inside a ScrollView and the
+                user has confirmed on device that it feels right. chartPressConfig.pan
+                .activeOffsetX / failOffsetY (ChartPressPanConfig, victory-native 41.26.0) is
+                the documented escape hatch if on-device testing ever shows the page's vertical
+                scroll fighting this horizontal scrub -- so the next person doesn't have to
+                rediscover it. The card is never wrapped in a touchable: that would contend with
+                this scrub pan gesture. */}
+            <View
+              style={styles.card}
+              onLayout={(e) => {
+                cardWidthSV.value = e.nativeEvent.layout.width;
+              }}>
               <CartesianChart
                 data={chartData}
                 xKey="day"
                 yKeys={['atl', 'ctl', 'tsb']}
+                chartPressState={state}
+                onChartBoundsChange={(bounds) => {
+                  chartBoundsSV.value = bounds;
+                }}
                 xAxis={{
                   lineColor: Colors.dark.steel,
                   lineWidth: 1,
@@ -249,9 +337,34 @@ export default function TrendsScreen(): React.JSX.Element {
                         <Scatter points={points.tsb} color={Colors.dark.accent} radius={SCATTER_DOT_RADIUS} />
                       </>
                     ) : null}
+                    <SkiaLine
+                      p1={cursorP1}
+                      p2={cursorP2}
+                      color={Colors.dark.mutedText}
+                      strokeWidth={1}
+                      opacity={cursorOpacity}
+                    />
                   </>
                 )}
               </CartesianChart>
+
+              <Animated.View
+                style={[styles.tooltip, tooltipAnimatedStyle]}
+                pointerEvents="none"
+                onLayout={(e) => {
+                  tooltipWidthSV.value = e.nativeEvent.layout.width;
+                }}>
+                <AnimatedTextInput
+                  editable={false}
+                  pointerEvents="none"
+                  caretHidden
+                  underlineColorAndroid="transparent"
+                  defaultValue=""
+                  multiline={false}
+                  animatedProps={tooltipAnimatedProps as Partial<ComponentProps<typeof TextInput>>}
+                  style={styles.tooltipText}
+                />
+              </Animated.View>
             </View>
 
             <View style={styles.legendRow}>
@@ -398,6 +511,23 @@ const styles = StyleSheet.create({
     borderRadius: Radius.md,
     padding: Spacing.sm,
     overflow: 'hidden',
+  },
+  tooltip: {
+    position: 'absolute',
+    top: TOOLTIP_TOP_OFFSET,
+    left: 0,
+    backgroundColor: Colors.dark.surface,
+    borderWidth: 1,
+    borderColor: Colors.dark.border,
+    borderRadius: Radius.md,
+    paddingHorizontal: Spacing.sm,
+    paddingVertical: 4,
+  },
+  tooltipText: {
+    ...Mono,
+    fontSize: 11,
+    color: Colors.dark.text,
+    padding: 0,
   },
   legendRow: {
     flexDirection: 'row',
