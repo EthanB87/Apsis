@@ -134,3 +134,19 @@ export function formatTrendDateLabel(localDate: string, opts?: { withDay?: boole
   const monthLabel = MONTH_ABBR[(month ?? 1) - 1];
   return opts?.withDay ? `${monthLabel} ${day}` : `${monthLabel}`;
 }
+
+/**
+ * Single source of the D-19/D-20 scrub tooltip line (04-UI-SPEC.md section 5) -- COMPOSES the
+ * existing `formatTrendDateLabel` and `formatSignedDelta` rather than re-implementing date or
+ * sign formatting, so the home chart (TrendChart.tsx's `tooltipText`, the format of record
+ * until the two can be unified after quick task 260907-qe6b lands) and this detail screen's
+ * tooltip can never drift apart on copy.
+ */
+export function formatScrubTooltip(row: TrendStatRow): string {
+  const dateLabel = formatTrendDateLabel(row.localDate, { withDay: true });
+  const hss = Math.round(row.dayHss);
+  const atl = Math.round(row.atl);
+  const ctl = Math.round(row.ctl);
+  const tsb = formatSignedDelta(row.tsb);
+  return `${dateLabel} · HSS ${hss} · ATL ${atl} · CTL ${ctl} · TSB ${tsb}`;
+}
