@@ -27,6 +27,7 @@ import { useEffect, useMemo, useRef } from 'react';
 import type { ComponentProps } from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import Animated, {
+  clamp,
   useAnimatedProps,
   useAnimatedStyle,
   useDerivedValue,
@@ -46,6 +47,10 @@ const AnimatedTextInput = Animated.createAnimatedComponent(TextInput);
 const CHART_HEIGHT = 190;
 const AXIS_FONT_SIZE = 9;
 const TOOLTIP_TOP_OFFSET = 8;
+
+// Breathing room between the tooltip and the card's inner edges when it clamps. Matches the
+// value `app/trends.tsx` uses so the two tooltips behave identically at the edges.
+const TOOLTIP_EDGE_INSET = 4;
 
 // Softened, non-overshooting curve (04-UI-SPEC.md section 5 amendment) -- monotoneX cannot
 // dip a near-zero ATL below the axis during the calibrating window. Same value for both
@@ -194,9 +199,27 @@ export default function TrendChart({ data, calibratingDayN, onPressDetail }: Tre
     cursorOpacity.value = withTiming(isActive ? 1 : 0, { duration: CURSOR_FADE_MS });
   }, [isActive, cursorOpacity]);
 
+  // Tooltip placement: the card is overflow:'hidden' and the D-20 line is wide, so anchoring
+  // the tooltip's LEFT edge at the cursor clipped it against the card's right edge whenever the
+  // finger passed the midpoint. Centre on the finger, then clamp inside the card's measured
+  // width -- the same treatment `app/trends.tsx` uses, so both tooltips behave identically.
+  // The Math.max guard matters: before first layout both widths are 0, and an inverted
+  // min/max would make clamp meaningless. Still untweened -- only opacity eases, so D-19's
+  // zero-lag rule holds.
+  const tooltipWidthSV = useSharedValue(0);
+  const cardWidthSV = useSharedValue(0);
+
   const tooltipStyle = useAnimatedStyle(() => ({
     opacity: cursorOpacity.value,
-    transform: [{ translateX: state.x.position.value }],
+    transform: [
+      {
+        translateX: clamp(
+          state.x.position.value - tooltipWidthSV.value / 2,
+          TOOLTIP_EDGE_INSET,
+          Math.max(cardWidthSV.value - tooltipWidthSV.value - TOOLTIP_EDGE_INSET, TOOLTIP_EDGE_INSET)
+        ),
+      },
+    ],
   }));
 
   return (
@@ -205,7 +228,11 @@ export default function TrendChart({ data, calibratingDayN, onPressDetail }: Tre
         <Text style={styles.calibratingCaption}>{calibratingCaption(calibratingDayN)}</Text>
       ) : null}
 
-      <View style={styles.card}>
+      <View
+        style={styles.card}
+        onLayout={(e) => {
+          cardWidthSV.value = e.nativeEvent.layout.width;
+        }}>
         {data.length === 0 ? null : (
           <CartesianChart
             data={data}
@@ -306,7 +333,12 @@ export default function TrendChart({ data, calibratingDayN, onPressDetail }: Tre
           </CartesianChart>
         )}
 
-        <Animated.View style={[styles.tooltip, tooltipStyle]} pointerEvents="none">
+        <Animated.View
+          style={[styles.tooltip, tooltipStyle]}
+          pointerEvents="none"
+          onLayout={(e) => {
+            tooltipWidthSV.value = e.nativeEvent.layout.width;
+          }}>
           <AnimatedTextInput
             editable={false}
             pointerEvents="none"
