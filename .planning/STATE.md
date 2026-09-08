@@ -32,7 +32,7 @@ training-load number (HSS) and a readiness band — fully offline.
 Phase: 06 (polish-app-store-submission) — EXECUTING
 Plan: 06-06 of 8 (06-04 now COMPLETE; Wave 1 fully done)
 Status: PAUSED — 06-06 Task 3 blocking human-verify checkpoint (beta gate: build 9 in Beta App Review, "Waiting for Review")
-Last activity: 2026-09-07 - Completed quick tasks 260907-qe6/qe6b/rnr: /trends detail route, enriched home chart, scrub drag, tooltip clip fix (06-06 remains paused at Task 3)
+Last activity: 2026-09-07 - Pushed v1.0 chart work to origin/master; production build BLOCKED on two release issues (root eas config regression fixed; wrong Expo account still to resolve)
 
 Progress: [█████████░] 93% (4/6 phases complete, 28/28 executed plans)
 
@@ -267,6 +267,9 @@ Recent decisions affecting current work:
 - [Phase 06]: [Phase 06 P01]: 06-01 complete -- root app.json/eas.json (wrong bundle id com.apsistraining.apsis) deleted, apps/mobile/ is the single config source; icon.png re-exported opaque RGB (colorType 2) with persisted apps/mobile/scripts/check-icon-alpha.mjs regression guard; Task 3 human checkpoint approved 2026-08-03 (Apple Developer membership active, ASC app record for com.apsis.app created) -- ascAppId discrepancy found: 6792933794 already committed in apps/mobile/eas.json since 2026-07-20 (f19f2540d), contradicting the 2026-08-03 reply that it hasn't been provided; unresolved, must be reconciled by a human before 06-07
 - [Phase 06]: [Quick 260907-la6]: victory-native Area's declared opacity prop is a plain number (not AnimatedProp) unlike Line's end prop -- routed the area fill's draw-on opacity ramp through a wrapping Skia Group instead of a type-unsafe cast
 - [Phase 06]: [Quick 260907-la6]: devSeedPlan's rest-day fraction is an exact seeded-shuffle-selected count (not an independent per-day probability) so the 15-25% band holds for any seed
+
+- [Phase 06]: [Release blocker 2026-09-07]: `eas build` run from the REPO ROOT instead of apps/mobile silently ran init, generating a root app.json + eas.json with a WRONG bundle id (com.apsissteam.apsis vs com.apsis.app), a new projectId (66e55e94-618f-46f6-8e57-c0000e341f23 vs the real b0eef736-9c4d-4dbd-b7b5-882c6c6b8eff) and owner apsiss-team, then failed to bundle (root package.json has no `main`, so Expo fell back to legacy expo/AppEntry.js which resolves ../../App). REGRESSION of the 06-01 fix, which deleted an equivalent pair carrying com.apsistraining.apsis. The generated eas.json was STAGED in git and would have committed a wrong-bundle-id config. Both files removed; /app.json and /eas.json added to .gitignore (leading slash anchors to root so apps/mobile configs stay tracked). ALWAYS build with: cd apps/mobile && eas build --profile production --platform ios
+- [Phase 06]: [Release blocker 2026-09-07]: the logged-in Expo account `apsis` (ethan@brockmanfamily.ca) is NOT authorized to read EAS project b0eef736-9c4d-4dbd-b7b5-882c6c6b8eff -- the project apps/mobile/app.json targets and build 9 belongs to. `eas project:info` returns Entity not authorized. Must log in as the owning account before any production build. Also explains why no Expo/ASC mail appears in the connected ethan@focusonnature.ca mailbox -- Expo notifications go to brockmanfamily.ca. Spurious EAS project apsiss-team/66e55e94 should be deleted at expo.dev.
 
 ### Quick Tasks Completed
 

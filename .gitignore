@@ -28,6 +28,17 @@ GoogleService-Info.plist
 
 # Expo local state
 .expo/
+
+# Root-level Expo config must never exist -- apps/mobile/ is the single config source.
+# `eas build` run from the repo root instead of apps/mobile silently runs init, generating
+# these with a WRONG bundle identifier, projectId and owner, then fails to bundle because
+# the root package.json has no `main` (Expo falls back to the legacy expo/AppEntry.js).
+# This has now happened twice: 06-01 deleted a pair carrying com.apsistraining.apsis, and
+# 2026-09-07 regenerated one carrying com.apsissteam.apsis. The leading slash is load-bearing
+# -- it anchors to the repo root so apps/mobile/app.json and apps/mobile/eas.json stay tracked.
+# Always build with: cd apps/mobile && eas build --profile production --platform ios
+/app.json
+/eas.json
 expo-env.d.ts
 
 # GSD research cache (regenerated locally; not source)
