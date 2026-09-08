@@ -4,10 +4,10 @@ milestone: v1.0
 current_phase: 06
 current_phase_name: polish-app-store-submission
 status: executing
-last_updated: "2026-09-07T20:19:37.872Z"
+last_updated: "2026-09-08T00:17:18.046Z"
 last_activity: 2026-09-07
-last_activity_desc: Completed quick task 260907-la6 (amended D-18 trend chart contract, redesigned TrendChart, added __DEV__ 90-day demo seeder); 06-06 remains paused at Task 3 awaiting Apple's review outcome
-state_head: 45fe5c43e49eef4e370b0110458199d96a84a1da
+last_activity_desc: /trends detail route + enriched home chart + scrub + tooltip clip fix (260907-qe6/qe6b/rnr); 06-06 still paused at Task 3 awaiting Apple
+state_head: bc25e0157edc64d64aa5e9d532ee9ab09ee2ffb3
 progress:
   total_phases: 7
   completed_phases: 6
@@ -32,7 +32,7 @@ training-load number (HSS) and a readiness band — fully offline.
 Phase: 06 (polish-app-store-submission) — EXECUTING
 Plan: 06-06 of 8 (06-04 now COMPLETE; Wave 1 fully done)
 Status: PAUSED — 06-06 Task 3 blocking human-verify checkpoint (beta gate: build 9 in Beta App Review, "Waiting for Review")
-Last activity: 2026-09-07 - Completed quick task 260907-la6: amend D-18 trend chart contract, redesign TrendChart, add __DEV__ 90-day demo seeder (06-06 remains paused at Task 3 awaiting Apple's review outcome)
+Last activity: 2026-09-07 - Completed quick tasks 260907-qe6/qe6b/rnr: /trends detail route, enriched home chart, scrub drag, tooltip clip fix (06-06 remains paused at Task 3)
 
 Progress: [█████████░] 93% (4/6 phases complete, 28/28 executed plans)
 
@@ -274,3 +274,7 @@ Recent decisions affecting current work:
 |---|-------------|------|--------|--------|-----------|
 | 260907-kwb | commit the design system PDF | 2026-09-07 | fe26274 |  | [260907-kwb-commit-the-design-system-pdf](./quick/260907-kwb-commit-the-design-system-pdf/) |
 | 260907-la6 | amend D-18 and redesign the TrendChart + __DEV__ demo seeder | 2026-09-07 | 45fe5c4 | Needs Review | [260907-la6-amend-d-18-and-redesign-the-trendchart-a](./quick/260907-la6-amend-d-18-and-redesign-the-trendchart-a/) |
+| 260907-qe6 | /trends detail route: stats, readiness strip, 28D/90D/1Y switcher, 400-day dev seeder | 2026-09-07 | f237026 | Needs Review | [260907-qe6-enrich-the-home-trendchart-and-add-a-tap](./quick/260907-qe6-enrich-the-home-trendchart-and-add-a-tap/) |
+| 260907-qe6b | enrich home TrendChart + amend 04-UI-SPEC D-18/D-02 | 2026-09-07 | f3346d3 | Needs Review | [260907-qe6b-enrich-the-home-trendchart-and-add-a-tap](./quick/260907-qe6-enrich-the-home-trendchart-and-add-a-tap/) |
+| 260907-rnr | add D-19 scrub drag to the /trends detail chart | 2026-09-07 | 2eaa06f | Needs Review | [260907-rnr-add-d-19-scrub-drag-interaction-to-the-t](./quick/260907-rnr-add-d-19-scrub-drag-interaction-to-the-t/) |
+| 260907-fast | fix home chart tooltip clipping (centre + clamp) | 2026-09-07 | bc25e01 | Needs Review | — |
