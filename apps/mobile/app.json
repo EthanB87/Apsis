@@ -23,7 +23,11 @@
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
       "predictiveBackGestureEnabled": false,
-      "package": "com.apsis.app"
+      "package": "com.apsis.app",
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO"
+      ]
     },
     "web": {
       "bundler": "metro",
@@ -80,8 +84,9 @@
     "extra": {
       "router": {},
       "eas": {
-        "projectId": "b0eef736-9c4d-4dbd-b7b5-882c6c6b8eff"
+        "projectId": "82297c64-339f-4d96-9345-d19f46974203"
       }
-    }
+    },
+    "owner": "apsis"
   }
 }
