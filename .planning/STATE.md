@@ -1,7 +1,6 @@
 ---
 gsd_state_version: 1.0
 milestone: v1.0
-milestone_name: milestone
 current_phase: 06
 current_phase_name: Polish & App Store Submission
 status: planning
@@ -45,24 +44,24 @@ Progress: [█████████░] 93% (4/6 phases complete, 28/28 execu
 
 **By Phase:**
 
-| Phase | Plans | Total | Avg/Plan |
-|-------|-------|-------|----------|
-| 01. Foundation | 4/4 | - | - |
-| 02–06 | 0/TBD | - | - |
-| 02 | 6 | - | - |
-| 03 | 11 | - | - |
-| 04 | 10 | - | - |
-| 05 | 9 | - | - |
-| 07 | 11 | - | - |
-| 08 | 4 | - | - |
-| 09 | 9 | - | - |
+| Phase          | Plans | Total | Avg/Plan |
+| -------------- | ----- | ----- | -------- |
+| 01. Foundation | 4/4   | -     | -        |
+| 02–06          | 0/TBD | -     | -        |
+| 02             | 6     | -     | -        |
+| 03             | 11    | -     | -        |
+| 04             | 10    | -     | -        |
+| 05             | 9     | -     | -        |
+| 07             | 11    | -     | -        |
+| 08             | 4     | -     | -        |
+| 09             | 9     | -     | -        |
 
 **Recent Trend:**
 
 - Last 5 plans: 01-01, 01-02, 01-03, 01-04 (durations not recorded)
 - Trend: N/A — insufficient instrumented data
 
-*Updated after each plan completion*
+_Updated after each plan completion_
 | Phase 02 P01 | 5min | 3 tasks | 6 files |
 | Phase 02 P02 | 8min | 2 tasks | 2 files |
 | Phase 02 P03 | 6min | 2 tasks | 2 files |
@@ -115,14 +114,14 @@ Progress: [█████████░] 93% (4/6 phases complete, 28/28 execu
 | Phase 07 P11 | 6min | 2 tasks | 2 files |
 **Per-Plan Metrics:**
 
-| Plan | Duration | Tasks | Files |
-|------|----------|-------|-------|
-| Phase 08 P01 | 8min | 2 tasks | 3 files |
-| Phase 08 P02 | 8min | 2 tasks | 6 files |
-| Phase 08 P03 | 10min | 3 tasks | 5 files |
-| Phase 08 P04 | 55min | 3 tasks | 3 files |
-| Phase 06 P08 | ~10min | 3 tasks | 2 files |
-| Phase 06 P01 | ~4min | 3 tasks | 4 files |
+| Plan         | Duration | Tasks   | Files   |
+| ------------ | -------- | ------- | ------- |
+| Phase 08 P01 | 8min     | 2 tasks | 3 files |
+| Phase 08 P02 | 8min     | 2 tasks | 6 files |
+| Phase 08 P03 | 10min    | 3 tasks | 5 files |
+| Phase 08 P04 | 55min    | 3 tasks | 3 files |
+| Phase 06 P08 | ~10min   | 3 tasks | 2 files |
+| Phase 06 P01 | ~4min    | 3 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -157,7 +156,7 @@ Recent decisions affecting current work:
 - [Phase 02]: @apsis/engine public barrel wired in index.ts (config/strength/endurance/session/daily/trend/version); placeholder.test.ts removed
 - [Phase ?]: kCarry = 10 tuned via D-20 golden test (4x40m heavy farmer's carry ~= 21.3 total CS, inside the 8..60 hard-accessory band)
 - [Phase ?]: REP_MAX_TABLE floor row at 30 reps (pct 0.45) -- reps above 30 clamp instead of extrapolating (D-18/Pitfall 3)
-- [Phase ?]: packages/shared/tsconfig.json now excludes src/**/__tests__ from the project build, mirroring packages/engine's existing pattern (pre-existing gap exposed by @apsis/shared's first test file)
+- [Phase ?]: packages/shared/tsconfig.json now excludes src/\*\*/**tests** from the project build, mirroring packages/engine's existing pattern (pre-existing gap exposed by @apsis/shared's first test file)
 - [Phase 03]: [Phase 03 P02]: battle-rope/plank get entryMode 'timed' despite battle-rope's endurance seed type -- PLAN.md scoped the Pitfall-5 endurance-null bucket to only run/ski-erg/rowing-erg/assault-bike
 - [Phase 03]: [Phase 03 P02]: query builders typed against drizzle-orm's BaseSQLiteDatabase base class so the same builder functions work against both the real op-sqlite db and a sqlite-proxy mock in tests
 - [Phase 03]: Used pnpm (not npm) to install @gorhom/bottom-sheet -- monorepo is pnpm-workspace-driven
@@ -174,7 +173,7 @@ Recent decisions affecting current work:
 - [Phase ?]: [Phase 03 P07]: LIFT-05's six on-device behaviors deferred to phase UAT per user checkpoint response 'Defer to phase UAT' -- NOT marked passed; requirement left unmarked in REQUIREMENTS.md
 - [Phase ?]: [Phase 03 P08]: finishWorkout is called from finish.tsx's Done action (not just session.tsx's Finish button) so the D-14 crash-resume 'Finish Now' path also sets finishedAt
 - [Phase ?]: [Phase 03 P08]: Per-set/per-exercise warning and stress attribution (breakdown sheet, set-row badges) computed by re-running strengthStressDetailed/carryStressDetailed locally on committed sets rather than piping attribution through sessionStore -- the engine's warnings[]/perSetStress carry no set id
-- [Phase ?]: [Phase 03 P09]: Settings profile editor stages ProfileReview row-taps into a local draft committed via one batched UPDATE (Save Changes), rather than per-field navigation routes -- matches ProfileReview's existing values/onEditField/onSubmit contract within the plan's declared _layout.tsx+index.tsx-only artifact scope
+- [Phase ?]: [Phase 03 P09]: Settings profile editor stages ProfileReview row-taps into a local draft committed via one batched UPDATE (Save Changes), rather than per-field navigation routes -- matches ProfileReview's existing values/onEditField/onSubmit contract within the plan's declared \_layout.tsx+index.tsx-only artifact scope
 - [Phase ?]: [Phase 03 P09]: useProfile.ts is a new update-in-place hook (parameterized UPDATE against user_profile only, never workout.hss/load_daily) rather than an edit to useSaveProfile.ts, which stays insert-only for onboarding
 - [Phase 03]: Ordered largest-first Spacing token rename (xxxl->xxxxl,xxl->xxxl,xl->xxl,lg->xl,md->lg) with a pre/post count-invariant guard across 20 consumer files — Mechanical rename must preserve every rendered value; count-invariant catches missed/double renames tsc cannot catch
 - [Phase 03]: Segmented-control active fill switches volt->bone whenever the same screen/modal already has a volt-filled primary CTA — Enforces DESIGN-SYSTEM.md's one-volt-per-screen hard rule on WizardStep Continue, ProfileReview Save changes, and modal Set button screens
@@ -191,7 +190,7 @@ Recent decisions affecting current work:
 - [Phase ?]: [Phase 04 P04]: Mini ring (84px) HYBRID STRESS sub-label placed below the ring, not inside, per 04-UI-SPEC.md's executor-discretion note for the 84px size only
 - [Phase ?]: [Phase 04 P04]: StatTiles tap-to-explain uses a Reanimated opacity cross-fade (~200ms) rather than RN LayoutAnimation, matching the project's existing Reanimated-only animation convention
 - [Phase 04 P05]: runEntryLogic.ts extracted from runEntry.ts (zero @apsis/db/native imports) so Task 1's tdd=true requirement could be honored under vitest -- @apsis/db's barrel eagerly opens the native op-sqlite JSI connection at module load, making the file itself unimportable under plain Node
-- [Phase 04 P05]: Added a minimal apps/mobile vitest harness (lib/** only) -- first test coverage apps/mobile has ever had; screens/components remain untested (documented STATE.md gap)
+- [Phase 04 P05]: Added a minimal apps/mobile vitest harness (lib/\*\* only) -- first test coverage apps/mobile has ever had; screens/components remain untested (documented STATE.md gap)
 - [Phase 04 P05]: dateToLocalDateStr(d) extracted from localDate.ts's todayLocalDate() so the run form's date-sheet serialization reuses the single local-date formatter (Pitfall 4)
 - [Phase ?]: Session HSS mini-ring always passes a hardcoded non-calibrating band ('green') since a single-session ring never carries readiness-band semantics — Phase 04 P06
 - [Phase ?]: Endurance segment rows feed sessionHSSDetailed directly via durationS + intensityFactor already persisted by saveRun -- no IF re-resolution duplicated on the finish screen — Phase 04 P06
@@ -201,7 +200,7 @@ Recent decisions affecting current work:
 - [Phase 04]: History DAY TOTAL uses persisted load_daily.dayHss (never a local re-sum); +Y DOUBLE-DAY LOAD delta computed via dailyHSS(scores)-sum(scores), same discipline as TodayBreakdownSheet
 - [Phase 04]: History paginates client-side over a single full-table load_daily/session read per focus rather than paginated SQL, matching recomputeLoadDaily's existing read-everything-fold-in-memory discipline for this local-first dataset size
 - [Phase 04]: session/detail.tsx uses plain useEffect (not useFocusEffect) -- one-time pushed screen with no store writes, matching finish.tsx's precedent, not the Pitfall-5 store-oscillation risk
-- [Phase 04]: Added app/(tabs)/history/_layout.tsx (Rule 2 deviation, outside plan's declared files) to match the log/settings tab-group Stack convention exactly
+- [Phase 04]: Added app/(tabs)/history/\_layout.tsx (Rule 2 deviation, outside plan's declared files) to match the log/settings tab-group Stack convention exactly
 - [Phase 04]: formatSignedTsb kept as standalone helper with 'worklet' directive added (not inlined) per plan's preferred fix form for CR-01
 - [Phase 04]: recomputeLoadDaily's stale-row cleanup DELETE stays sequential (non-transactional), issued immediately before the upsert loop -- op-sqlite's drizzle transaction() callback is synchronous (returns T not Promise<T>), incompatible with the function's async upsert loop, so the plan's explicit fallback applies (CR-02)
 - [Phase 04]: formatPaceMinSec rounds total seconds once then splits into minutes/seconds (fixes 'X:60' carry bug, WR-08)
@@ -214,7 +213,7 @@ Recent decisions affecting current work:
 - [Phase ?]: [Phase 05 P05]: Duration-tolerance manual-duplicate dedupe check filters candidatesForDedupe to healthkitUuid==null candidates; the tombstone check runs against the full unfiltered list -- prevents two legitimate same-day HK sessions of similar duration from false-positive-skipping each other while still honoring D-06/07 manual-wins and Pitfall 8/9 soft-deleted tombstones
 - [Phase ?]: [Phase 05 P05]: workout.duration.quantity/totalDistance.quantity used directly as durationS/distanceM -- confirmed against the library's native Swift source that both are unconditionally seconds/meters, no unit conversion needed on the read side
 - [Phase ?]: [Phase 05 P05]: useHealthKitImportSignal is a new non-persisted zustand store (profileVersion.ts pattern) exposing lastImportedCount/lastSyncedAt as the coordinated symbol 05-09's TODAY notice will read
-- [Phase ?]: [Phase 05 P06]: runEntry.ts's HK write-back startedAt is back-computed as finishedAt - durationS*1000, since endurance sessions carry no separate begin timestamp (D-13)
+- [Phase ?]: [Phase 05 P06]: runEntry.ts's HK write-back startedAt is back-computed as finishedAt - durationS\*1000, since endurance sessions carry no separate begin timestamp (D-13)
 - [Phase ?]: [Phase 05 P06]: finishWorkout.ts's HK write-back duration is computed from workout.createdAt to the caller-supplied finishedAt, matching the schema's only two session-boundary timestamps
 - [Phase ?]: [Phase 05 P06]: healthkitWriteback.ts is the one codebase location where a caught error is deliberately swallowed, not re-thrown (D-12/D-25 fire-and-forget contract)
 - [Phase 05]: candidatesForDedupe's healthkitUuid!=null field used to filter to imported sessions in run.tsx's D-09 dedupe hint, instead of modifying queries.ts to also select source -- queries.ts was outside this plan's declared files
@@ -338,7 +337,7 @@ None yet.
   Apple Developer Program membership confirmed active, and the App Store Connect app record
   for `com.apsis.app` ("Apsis") has been created. Wave 2 (06-06 production build) is unblocked.
   ~~UNRESOLVED DISCREPANCY (ascAppId)~~ — RESOLVED 2026-08-03: `eas submit --platform ios
-  --profile production --latest` succeeded against ascAppId `6792933794` (submission
+--profile production --latest` succeeded against ascAppId `6792933794` (submission
   fa94543d-b10b-4ae2-a5e2-f1f44e50f8a5; Apple accepted build 9 into that app record), which
   empirically confirms 6792933794 is the correct/current Apple ID for the com.apsis.app ASC
   record. The earlier "not yet supplied" checkpoint reply was a memory gap — the ID had been
@@ -367,47 +366,23 @@ None yet.
 
 - ~~06-08 Task 3 (blocking checkpoint): human must re-read docs-site/privacy/index.html and apps/mobile/store/app-store-listing.md and confirm the new share-card/photo disclosures are accurate before the paused 06-04 Task 3 publish and 06-07 ASC entry proceed.~~ — RESOLVED 2026-08-03: user replied "copy approved" for both documents, no edits requested (see 06-08-SUMMARY.md). 06-04 Task 3 publish gate is unblocked; docs-site/ deploy is now DONE — live on apsistraining.com via Vercel/landing repo (see Blockers/Concerns entry above).
 
-- ⏸️ [Phase 06 P06 / Wave 2] 06-06 Task 1 (automated pre-build verification gate) is COMPLETE and green
-  (2026-08-04): icon-alpha check passed, no root-level app.json/eas.json, single bundle id com.apsis.app
-  confirmed, Phase 7/8 native deps (expo-camera, expo-image-picker, expo-file-system, expo-sharing,
-  @sentry/react-native) all present in apps/mobile/package.json, expo-text-extractor confirmed ABSENT
-  from both package.json and pnpm-lock.yaml, `pnpm install --frozen-lockfile` succeeded with no lockfile
-  changes needed (already in sync — no commit required), and `pnpm -r test` fully green (259 tests: 21
-  shared + 95 engine + 63 db + 80 mobile). PAUSED at Task 2, a blocking human-action checkpoint: the
-  human must confirm Sentry env/slug preconditions (EXPO_PUBLIC_SENTRY_DSN, SENTRY_AUTH_TOKEN EAS secret,
-  real Sentry org/project slugs in app.json per 06-USER-SETUP.md) and then run
-  `eas build --platform ios --profile production` FROM apps/mobile, submit the build to an External
-  TestFlight group for Beta App Review. Task 3 (D-12 beta gate + on-device Sentry health/nutrition scrub
-  confirmation) follows once Task 2's build is live in TestFlight. Neither task can be automated on this
-  Windows host — both require the user's authenticated EAS/Apple session.
-  **Task 2 progress (2026-08-03):** production EAS build SUCCEEDED — buildNumber 9, version 1.0.0,
-  bundle com.apsis.app, build id 6684894b-e0f7-4d4c-8ac8-042b81fefb61 (production env vars incl.
-  SENTRY_AUTH_TOKEN/EXPO_PUBLIC_SENTRY_DSN loaded; Sentry source-map upload to be spot-checked in the
-  cloud build log). `eas submit` then SUCCEEDED — build 9 uploaded to App Store Connect (ascAppId
-  6792933794, submission fa94543d-b10b-4ae2-a5e2-f1f44e50f8a5), now processing on Apple's side.
-  **Task 2 COMPLETE (2026-08-03):** build 9 processed in ASC, export compliance handled, external
-  tester group created (CSV import), build 9 added to the group, and Beta App Review submitted —
-  status "Waiting for Review" (no-SLA queue). All Task 2 acceptance criteria met; no credentials
-  committed. NOW PAUSED at Task 3 (blocking human-verify): once beta review approves → testers get
-  invites / enable public link → run the D-12 beta gate (lifting/running/HealthKit/nutrition/share
-  card on-device) + confirm a live Sentry event scrubs health AND nutrition values (REL-03/NUTR-22).
-  Resume signal: "beta clear" (or a blocker list) → then write 06-06-SUMMARY.md and close the plan.
+- [Phase 06]: [Release 2026-09-07]: the July EAS project b0eef736 became permanently unreachable (no account could read it; the apsis account was deleted and recreated during the search, so its userId changed 59564b40 -> fc3fc64d). RESOLVED by re-pointing to a NEW EAS project @apsis/apsis (82297c64-339f-4d96-9345-d19f46974203, owner apsis) created from apps/mobile. bundleIdentifier com.apsis.app and submit.ascAppId 6792933794 are UNCHANGED, so build 10 still targets the same App Store record as build 9. Consequences: (a) remote build versioning starts fresh -- must initialize the iOS baseline to 9 via `eas build:version:set` so autoIncrement yields 10, or ASC rejects the upload as a duplicate; (b) the new project has NO iOS credentials -- EAS will generate a fresh distribution cert + provisioning profile on first build, requiring interactive Apple Developer sign-in.
 
 ### Quick Tasks Completed
 
-| # | Description | Date | Commit | Directory |
-|---|-------------|------|--------|-----------|
-| 260709-qmv | Restyle app UI to Apsis dark design system (void/volt) + wire app icon | 2026-07-09 | 430cf23 | [260709-qmv-restyle-app-ui-to-apsis-dark-design-syst](./quick/260709-qmv-restyle-app-ui-to-apsis-dark-design-syst/) |
-| 260709-r4z | Fix onboarding blocker: keyboard-safe WizardStep + units asked before bodyweight | 2026-07-09 | 3fbc13c | [260709-r4z-fix-onboarding-bodyweight-blocker-keyboa](./quick/260709-r4z-fix-onboarding-bodyweight-blocker-keyboa/) |
+| #          | Description                                                                                                                                          | Date       | Commit  | Directory                                                                                                           |
+| ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- | ---------- | ------- | ------------------------------------------------------------------------------------------------------------------- |
+| 260709-qmv | Restyle app UI to Apsis dark design system (void/volt) + wire app icon                                                                               | 2026-07-09 | 430cf23 | [260709-qmv-restyle-app-ui-to-apsis-dark-design-syst](./quick/260709-qmv-restyle-app-ui-to-apsis-dark-design-syst/) |
+| 260709-r4z | Fix onboarding blocker: keyboard-safe WizardStep + units asked before bodyweight                                                                     | 2026-07-09 | 3fbc13c | [260709-r4z-fix-onboarding-bodyweight-blocker-keyboa](./quick/260709-r4z-fix-onboarding-bodyweight-blocker-keyboa/) |
 | 260709-rq4 | Align UI to Apsis Design System v1 component specs (pressed/disabled states, radii, sentence case, logger typography, mono tab labels, ScreenHeader) | 2026-07-09 | ce4fef7 | [260709-rq4-align-ui-to-apsis-design-system-v1-compo](./quick/260709-rq4-align-ui-to-apsis-design-system-v1-compo/) |
 
 ## Deferred Items
 
 Items acknowledged and carried forward from previous milestone close:
 
-| Category | Item | Status | Deferred At |
-|----------|------|--------|-------------|
-| *(none — first milestone, nothing closed yet)* | | | |
+| Category                                       | Item | Status | Deferred At |
+| ---------------------------------------------- | ---- | ------ | ----------- |
+| _(none — first milestone, nothing closed yet)_ |      |        |             |
 
 ## Session Continuity
 

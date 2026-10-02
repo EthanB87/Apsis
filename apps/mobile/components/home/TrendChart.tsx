@@ -1,11 +1,20 @@
 /**
  * apps/mobile/components/home/TrendChart.tsx
  *
- * The 28-day ATL/CTL trend chart with a D-19/D-20 scrub tooltip (04-UI-SPEC.md section 5):
- * `victory-native`'s `CartesianChart` + `useChartPressState` render two lines -- ATL (bone)
- * and CTL (ash) -- over already-persisted `load_daily` points passed in via `data`. This
- * component NEVER re-derives EWMA math (Don't Hand-Roll, 04-RESEARCH.md) -- every point's
- * atl/ctl/tsb/hss is exactly what `computeLoadTrendSeries`/`dailyHSS` already computed.
+ * The 28-day ATL/CTL trend chart with a D-19/D-20 scrub tooltip (04-UI-SPEC.md section 5,
+ * as amended 2026-09-07 by quick task 260907-la6 -- that revision is the governing contract
+ * for this file): `victory-native`'s `CartesianChart` + `useChartPressState` render two
+ * softened-curve lines -- ATL (bone) and CTL (ash) -- over already-persisted `load_daily`
+ * points passed in via `data`. This component NEVER re-derives EWMA math (Don't Hand-Roll,
+ * 04-RESEARCH.md) -- every point's atl/ctl/tsb/hss is exactly what
+ * `computeLoadTrendSeries`/`dailyHSS` already computed.
+ *
+ * D-18 amendment: a vertical bone gradient area fill sits under the ATL series, and both
+ * series draw on once per mount. D-02 amendment (quick task 260907-qe6b): a second ash
+ * gradient area fill now also sits under the CTL series (alpha strictly below ATL's so ATL
+ * stays visually dominant), horizontal AND vertical steel gridlines, and point dots on both
+ * series. No volt anywhere on the chart -- both fills are achromatic and the Today screen's
+ * one volt element remains HssRing.
  *
  * TSB is not drawn as a line (D-18) -- it only appears inside the scrub tooltip and the
  * TSB stat tile. Calibrating (D-22): `calibratingDayN` renders whatever real days of data
@@ -14,21 +23,23 @@
  * the two copies can never drift apart.
  */
 
-import { useMemo } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import type { ComponentProps } from 'react';
-import { StyleSheet, Text, TextInput, View } from 'react-native';
+import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import Animated, {
+  clamp,
   useAnimatedProps,
   useAnimatedStyle,
   useDerivedValue,
   useSharedValue,
+  withTiming,
 } from 'react-native-reanimated';
-import { CartesianChart, Line, useChartPressState } from 'victory-native';
-import type { ChartBounds } from 'victory-native';
-import { Line as SkiaLine, matchFont, vec } from '@shopify/react-native-skia';
+import { Area, CartesianChart, Line, Scatter, useChartPressState } from 'victory-native';
+import type { ChartBounds, CurveType } from 'victory-native';
+import { Group, Line as SkiaLine, LinearGradient, matchFont, vec } from '@shopify/react-native-skia';
 
 import Colors from '../../constants/Colors';
-import { Mono, Radius, Spacing } from '../../constants/theme';
+import { HIT_TARGET_MIN, Mono, Radius, Spacing } from '../../constants/theme';
 
 Animated.addWhitelistedNativeProps({ text: true });
 const AnimatedTextInput = Animated.createAnimatedComponent(TextInput);
@@ -36,6 +47,52 @@ const AnimatedTextInput = Animated.createAnimatedComponent(TextInput);
 const CHART_HEIGHT = 190;
 const AXIS_FONT_SIZE = 9;
 const TOOLTIP_TOP_OFFSET = 8;
+
+// Breathing room between the tooltip and the card's inner edges when it clamps. Matches the
+// value `app/trends.tsx` uses so the two tooltips behave identically at the edges.
+const TOOLTIP_EDGE_INSET = 4;
+
+// Softened, non-overshooting curve (04-UI-SPEC.md section 5 amendment) -- monotoneX cannot
+// dip a near-zero ATL below the axis during the calibrating window. Same value for both
+// series so ATL/CTL never use different interpolations.
+const CURVE_TYPE: CurveType = 'monotoneX';
+
+// Single tuning knob (per 04-UI-SPEC.md section 5 amendment) -- lower this if the bone
+// gradient wash under ATL competes with the HssRing for attention on-device.
+const AREA_FILL_TOP_ALPHA = 0.18;
+
+// CTL's own gradient top-alpha (quick task 260907-qe6b, D-02) -- kept strictly below
+// AREA_FILL_TOP_ALPHA so the acute ATL line/fill still reads as the dominant one and the
+// ATL/CTL crossover stays legible even with both areas filled.
+const CTL_AREA_FILL_TOP_ALPHA = 0.1;
+
+// x-tick spacing tuning knob (quick task 260907-qe6b, D-02) -- lower this (denser labels)
+// or raise it (sparser) if the on-device label count crowds a 28-day window.
+const X_TICK_EVERY_N_DAYS = 4;
+
+// Point-dot radius shared by both series' Scatter layers (quick task 260907-qe6b, D-02).
+const POINT_DOT_RADIUS = 2.5;
+
+// y-axis tick label count (quick task 260907-qe6b, D-02) -- small on purpose so the
+// horizontal gridlines carry readable values without crowding the chart height.
+const Y_AXIS_TICK_COUNT = 4;
+
+// Mount draw-on duration -- under DESIGN-SYSTEM.md line 103's ~800ms animation ceiling.
+const DRAW_ON_DURATION_MS = 600;
+
+// Scrub hairline/tooltip opacity fade -- under the D-19 amendment's 150ms ceiling. Only
+// opacity eases; x-position always tracks the finger directly with zero lag.
+const CURSOR_FADE_MS = 150;
+
+/** Bone at a given alpha, expressed as an rgba() string Skia's Color type accepts --
+ * avoids hand-rolling a second color constant next to Colors.dark.text. */
+function hexToRgba(hex: string, alpha: number): string {
+  const clean = hex.replace('#', '');
+  const r = parseInt(clean.slice(0, 2), 16);
+  const g = parseInt(clean.slice(2, 4), 16);
+  const b = parseInt(clean.slice(4, 6), 16);
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
 
 /** Shared "BUILDING TREND · DAY N/14" caption -- the exact same string HssRing's calibrating
  * variant renders (D-22: one shared constant, not two copies that could drift). */
@@ -66,6 +123,13 @@ export interface TrendChartProps {
   data: TrendChartPoint[];
   /** Day N of the 14-day calibration window; set only when fewer than 14 real days exist. */
   calibratingDayN?: number;
+  /**
+   * D-02/D-04: when supplied, renders a "VIEW FULL TREND" affordance row beneath the chart
+   * card and calls this on tap. This component never navigates itself -- it imports nothing
+   * from expo-router and stays purely presentational; the caller (app/(tabs)/index.tsx) owns
+   * the actual `router.push('/trends')` call, the ONLY entry point to that route.
+   */
+  onPressDetail?: () => void;
 }
 
 function formatSignedTsb(tsb: number): string {
@@ -74,7 +138,7 @@ function formatSignedTsb(tsb: number): string {
   return rounded > 0 ? `+${rounded}` : rounded < 0 ? `−${Math.abs(rounded)}` : '+0';
 }
 
-export default function TrendChart({ data, calibratingDayN }: TrendChartProps): React.JSX.Element {
+export default function TrendChart({ data, calibratingDayN, onPressDetail }: TrendChartProps): React.JSX.Element {
   const { state, isActive } = useChartPressState({ x: 0, y: { atl: 0, ctl: 0 } });
 
   const chartBoundsSV = useSharedValue<ChartBounds>({ left: 0, right: 0, top: 0, bottom: 0 });
@@ -92,8 +156,13 @@ export default function TrendChart({ data, calibratingDayN }: TrendChartProps): 
   }, []);
 
   const dayToLabel = useMemo(() => new Map(data.map((p) => [p.day, p.dateLabel])), [data]);
-  // Sparse x-axis labels: every ~7th day (executor discretion per 04-UI-SPEC.md section 5).
-  const xTickValues = useMemo(() => data.filter((p) => p.day % 7 === 0).map((p) => p.day), [data]);
+  // Denser x-axis labels (quick task 260907-qe6b, D-02): every X_TICK_EVERY_N_DAYS'th day --
+  // a 28-day window now carries seven labels instead of four. Lower/raise the constant above
+  // if the on-device label count crowds.
+  const xTickValues = useMemo(
+    () => data.filter((p) => p.day % X_TICK_EVERY_N_DAYS === 0).map((p) => p.day),
+    [data],
+  );
 
   const cursorP1 = useDerivedValue(() => vec(state.x.position.value, chartBoundsSV.value.top));
   const cursorP2 = useDerivedValue(() => vec(state.x.position.value, chartBoundsSV.value.bottom));
@@ -109,8 +178,48 @@ export default function TrendChart({ data, calibratingDayN }: TrendChartProps): 
 
   const tooltipAnimatedProps = useAnimatedProps(() => ({ text: tooltipText.value }));
 
+  // Mount draw-on (D-18 amendment): fires once, the first time real data appears, and never
+  // replays while this component stays mounted -- matching HssRing's animate-once discipline
+  // on the same screen. Drives a Skia stroke trim (`end`) on both lines and, via the wrapping
+  // Group below, an opacity ramp on the ATL area fill.
+  const drawProgress = useSharedValue(0);
+  const hasDrawnOnceRef = useRef(false);
+  useEffect(() => {
+    if (data.length > 0 && !hasDrawnOnceRef.current) {
+      hasDrawnOnceRef.current = true;
+      drawProgress.value = withTiming(1, { duration: DRAW_ON_DURATION_MS });
+    }
+  }, [data.length, drawProgress]);
+
+  // Eased scrub hairline/tooltip (D-19 amendment): opacity fades in/out over CURSOR_FADE_MS;
+  // x-position is read directly from state.x.position.value every frame with no timing/spring,
+  // so the cursor tracks the finger with zero lag.
+  const cursorOpacity = useSharedValue(0);
+  useEffect(() => {
+    cursorOpacity.value = withTiming(isActive ? 1 : 0, { duration: CURSOR_FADE_MS });
+  }, [isActive, cursorOpacity]);
+
+  // Tooltip placement: the card is overflow:'hidden' and the D-20 line is wide, so anchoring
+  // the tooltip's LEFT edge at the cursor clipped it against the card's right edge whenever the
+  // finger passed the midpoint. Centre on the finger, then clamp inside the card's measured
+  // width -- the same treatment `app/trends.tsx` uses, so both tooltips behave identically.
+  // The Math.max guard matters: before first layout both widths are 0, and an inverted
+  // min/max would make clamp meaningless. Still untweened -- only opacity eases, so D-19's
+  // zero-lag rule holds.
+  const tooltipWidthSV = useSharedValue(0);
+  const cardWidthSV = useSharedValue(0);
+
   const tooltipStyle = useAnimatedStyle(() => ({
-    transform: [{ translateX: state.x.position.value }],
+    opacity: cursorOpacity.value,
+    transform: [
+      {
+        translateX: clamp(
+          state.x.position.value - tooltipWidthSV.value / 2,
+          TOOLTIP_EDGE_INSET,
+          Math.max(cardWidthSV.value - tooltipWidthSV.value - TOOLTIP_EDGE_INSET, TOOLTIP_EDGE_INSET)
+        ),
+      },
+    ],
   }));
 
   return (
@@ -119,7 +228,11 @@ export default function TrendChart({ data, calibratingDayN }: TrendChartProps): 
         <Text style={styles.calibratingCaption}>{calibratingCaption(calibratingDayN)}</Text>
       ) : null}
 
-      <View style={styles.card}>
+      <View
+        style={styles.card}
+        onLayout={(e) => {
+          cardWidthSV.value = e.nativeEvent.layout.width;
+        }}>
         {data.length === 0 ? null : (
           <CartesianChart
             data={data}
@@ -130,42 +243,128 @@ export default function TrendChart({ data, calibratingDayN }: TrendChartProps): 
               chartBoundsSV.value = bounds;
             }}
             xAxis={{
-              lineWidth: 0,
+              lineWidth: 1,
+              lineColor: Colors.dark.steel,
               font: axisFont,
               labelColor: Colors.dark.mutedText,
               tickValues: xTickValues,
               tickCount: Math.max(xTickValues.length, 1),
               formatXLabel: (day: number) => dayToLabel.get(day) ?? '',
             }}
-            yAxis={[{ lineColor: Colors.dark.steel, lineWidth: 1 }]}>
-            {({ points }) => (
+            yAxis={[
+              {
+                lineColor: Colors.dark.steel,
+                lineWidth: 1,
+                font: axisFont,
+                labelColor: Colors.dark.mutedText,
+                tickCount: Y_AXIS_TICK_COUNT,
+              },
+            ]}>
+            {({ points, chartBounds }) => (
               <>
-                {/* Horizontal steel gridlines only -- no vertical gridlines (D-18). */}
-                <Line points={points.atl} color={Colors.dark.text} strokeWidth={2} curveType="linear" />
-                <Line points={points.ctl} color={Colors.dark.mutedText} strokeWidth={2} curveType="linear" />
-                {isActive ? (
-                  <SkiaLine p1={cursorP1} p2={cursorP2} color={Colors.dark.mutedText} strokeWidth={1} />
-                ) : null}
+                {/* Horizontal AND vertical steel gridlines (quick task 260907-qe6b, D-02).
+                    Paint order: CTL area, then ATL area, then the two stroked lines, then
+                    dots, then the scrub hairline -- ATL stays the visually dominant series
+                    even with both areas filled (CTL_AREA_FILL_TOP_ALPHA strictly below
+                    AREA_FILL_TOP_ALPHA). Both areas sit inside the existing draw-on Group
+                    since Area.opacity is a plain number, not the animated-capable prop
+                    Line.end/Scatter.opacity are. */}
+                <Group opacity={drawProgress}>
+                  <Area points={points.ctl} y0={chartBounds.bottom} curveType={CURVE_TYPE}>
+                    <LinearGradient
+                      start={vec(0, chartBounds.top)}
+                      end={vec(0, chartBounds.bottom)}
+                      colors={[
+                        hexToRgba(Colors.dark.mutedText, CTL_AREA_FILL_TOP_ALPHA),
+                        hexToRgba(Colors.dark.mutedText, 0),
+                      ]}
+                    />
+                  </Area>
+                  <Area points={points.atl} y0={chartBounds.bottom} curveType={CURVE_TYPE}>
+                    <LinearGradient
+                      start={vec(0, chartBounds.top)}
+                      end={vec(0, chartBounds.bottom)}
+                      colors={[hexToRgba(Colors.dark.text, AREA_FILL_TOP_ALPHA), hexToRgba(Colors.dark.text, 0)]}
+                    />
+                  </Area>
+                </Group>
+                <Line
+                  points={points.atl}
+                  color={Colors.dark.text}
+                  strokeWidth={2}
+                  curveType={CURVE_TYPE}
+                  end={drawProgress}
+                />
+                <Line
+                  points={points.ctl}
+                  color={Colors.dark.mutedText}
+                  strokeWidth={2}
+                  curveType={CURVE_TYPE}
+                  end={drawProgress}
+                />
+                {/* Point dots (quick task 260907-qe6b, D-02) -- Scatter.opacity IS
+                    animated-capable in the installed typings, so drawProgress drives it
+                    directly with no extra Group wrapper needed. */}
+                <Scatter
+                  points={points.atl}
+                  color={Colors.dark.text}
+                  radius={POINT_DOT_RADIUS}
+                  shape="circle"
+                  style="fill"
+                  opacity={drawProgress}
+                />
+                <Scatter
+                  points={points.ctl}
+                  color={Colors.dark.mutedText}
+                  radius={POINT_DOT_RADIUS}
+                  shape="circle"
+                  style="fill"
+                  opacity={drawProgress}
+                />
+                <SkiaLine
+                  p1={cursorP1}
+                  p2={cursorP2}
+                  color={Colors.dark.mutedText}
+                  strokeWidth={1}
+                  opacity={cursorOpacity}
+                />
               </>
             )}
           </CartesianChart>
         )}
 
-        {isActive ? (
-          <Animated.View style={[styles.tooltip, tooltipStyle]} pointerEvents="none">
-            <AnimatedTextInput
-              editable={false}
-              pointerEvents="none"
-              caretHidden
-              underlineColorAndroid="transparent"
-              defaultValue=""
-              multiline={false}
-              animatedProps={tooltipAnimatedProps as Partial<ComponentProps<typeof TextInput>>}
-              style={styles.tooltipText}
-            />
-          </Animated.View>
-        ) : null}
+        <Animated.View
+          style={[styles.tooltip, tooltipStyle]}
+          pointerEvents="none"
+          onLayout={(e) => {
+            tooltipWidthSV.value = e.nativeEvent.layout.width;
+          }}>
+          <AnimatedTextInput
+            editable={false}
+            pointerEvents="none"
+            caretHidden
+            underlineColorAndroid="transparent"
+            defaultValue=""
+            multiline={false}
+            animatedProps={tooltipAnimatedProps as Partial<ComponentProps<typeof TextInput>>}
+            style={styles.tooltipText}
+          />
+        </Animated.View>
       </View>
+
+      {onPressDetail ? (
+        // D-02: a separate sibling row, deliberately NOT a wrapper around the card above --
+        // the card already owns a pan gesture via useChartPressState (the D-19 scrub), and
+        // wrapping it in a Pressable would put a tap recognizer in contention with that
+        // gesture. This row is a ghost control with no fill, just a hairline + label.
+        <Pressable
+          onPress={onPressDetail}
+          accessibilityRole="button"
+          accessibilityLabel="View full trend"
+          style={({ pressed }) => [styles.detailRow, pressed && styles.detailRowPressed]}>
+          <Text style={styles.detailRowLabel}>VIEW FULL TREND ▸</Text>
+        </Pressable>
+      ) : null}
     </View>
   );
 }
@@ -204,5 +403,20 @@ const styles = StyleSheet.create({
     fontSize: 11,
     color: Colors.dark.text,
     padding: 0,
+  },
+  detailRow: {
+    minHeight: HIT_TARGET_MIN,
+    borderTopWidth: 1,
+    borderTopColor: Colors.dark.border,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'transparent',
+  },
+  detailRowPressed: {
+    opacity: 0.7,
+  },
+  detailRowLabel: {
+    ...Mono,
+    color: Colors.dark.mutedText,
   },
 });

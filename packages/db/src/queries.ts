@@ -129,13 +129,25 @@ export function softDeleteWorkout(db: QueryableDB, workoutId: string, deletedAt:
 // ---------------------------------------------------------------------------
 
 /**
- * The 28 most recent `load_daily` rows, most recent first (caller reverses to chronological
+ * The `days` most recent `load_daily` rows, most recent first (caller reverses to chronological
  * order for chart rendering). `load_daily` rows carry no soft-delete flag of their own — they
  * are the recompute output derived from finished, non-deleted workouts only (see
- * `computeLoadDailyUpsertRows`), so no additional filter is needed here.
+ * `computeLoadDailyUpsertRows`), so no additional filter is needed here. `days` is always bound
+ * through drizzle's parameterized `.limit()` (T-qe6-01) — never interpolated into a `sql`
+ * template — and in practice only ever comes from the `TREND_RANGES` const table, never from
+ * free-form user input.
+ */
+export function recentTrend(db: QueryableDB, days: number) {
+  return db.select().from(loadDaily).orderBy(desc(loadDaily.localDate)).limit(days);
+}
+
+/**
+ * The 28 most recent `load_daily` rows — thin wrapper around `recentTrend` so there is one
+ * query shape for this table. Kept as its own export (not inlined at call sites) since the
+ * Home screen and its existing test both already depend on this exact name.
  */
 export function last28DaysTrend(db: QueryableDB) {
-  return db.select().from(loadDaily).orderBy(desc(loadDaily.localDate)).limit(28);
+  return recentTrend(db, 28);
 }
 
 /**

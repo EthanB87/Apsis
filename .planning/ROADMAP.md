@@ -37,15 +37,6 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 ### Phase 01: Foundation
 
-**Goal**: A working monorepo with pure-TS package skeletons, a persisted local database with committed migrations, and an Expo app that boots, migrates, and seeds data offline.
-**Depends on**: Nothing (first phase)
-**Requirements**: DATA-01, DATA-02, DATA-03
-**Success Criteria** (what must be TRUE):
-
-  1. [x] The app runs entirely offline; local SQLite (op-sqlite) is the source of truth for all reads/writes.
-  2. [x] On first boot, the exercise library is seeded with ≥40 HYROX/tactical movements, and re-running the seed is idempotent (no duplicates).
-  3. [x] Schema changes ship as committed drizzle migration files applied automatically on app startup via `useMigrations`.
-
 **Plans**: 4 plans (complete)
 
 Plans:
@@ -66,11 +57,11 @@ Plans:
 **Requirements**: ENG-01, ENG-02, ENG-03, ENG-04, ENG-05, ENG-06, ENG-07
 **Success Criteria** (what must be TRUE):
 
-  1. Given a set of strength sets (load, reps, RPE), the engine returns a per-session strength HSS that excludes sets flagged as warmup.
-  2. Given endurance segments (distance/duration/pace, optional HR), the engine returns a per-session endurance HSS.
-  3. Given multiple sessions logged on the same day, the engine returns a per-day HSS that applies a double-session penalty when sessionCount > 1.
-  4. Given a rolling window of daily HSS values, the engine returns ATL/CTL/TSB over a 28-day window and derives a green/amber/red readiness band from TSB and CTL — and a single cold-start session (< 14 days of history or low CTL) never produces a red band.
-  5. `packages/engine` has zero runtime dependencies, never calls `Date.now()` internally (time is always passed in), and its ≥20 vitest unit tests pass via `pnpm --filter @apsis/engine test`.
+1. Given a set of strength sets (load, reps, RPE), the engine returns a per-session strength HSS that excludes sets flagged as warmup.
+2. Given endurance segments (distance/duration/pace, optional HR), the engine returns a per-session endurance HSS.
+3. Given multiple sessions logged on the same day, the engine returns a per-day HSS that applies a double-session penalty when sessionCount > 1.
+4. Given a rolling window of daily HSS values, the engine returns ATL/CTL/TSB over a 28-day window and derives a green/amber/red readiness band from TSB and CTL — and a single cold-start session (< 14 days of history or low CTL) never produces a red band.
+5. `packages/engine` has zero runtime dependencies, never calls `Date.now()` internally (time is always passed in), and its ≥20 vitest unit tests pass via `pnpm --filter @apsis/engine test`.
 
 **Plans**: 6/6 plans complete
 
@@ -79,17 +70,17 @@ Plans:
 
 - [x] 02-01-PLAN.md — Foundation: shared engine types + EngineConfig, DEFAULT_CONFIG constants, clamp-and-warn helper, @apsis/shared wiring (Wave 1)
 
-**Wave 2** *(blocked on Wave 1 completion)*
+**Wave 2** _(blocked on Wave 1 completion)_
 
 - [x] 02-02-PLAN.md — Strength HSS: strengthStress/strengthStressDetailed + Epley estimateE1RM, warmup exclusion, leg multiplier (Wave 2)
 - [x] 02-03-PLAN.md — Endurance HSS: enduranceStress + IF helpers (ifFromPace/ifFromHR/resolveIF), 60-min/IF-1.0 ≈100 anchor (Wave 2)
 - [x] 02-05-PLAN.md — Trend + readiness: computeLoadTrend/Series (EWMA ATL/CTL/TSB) + readinessBand with cold-start 'calibrating' (Wave 2)
 
-**Wave 3** *(blocked on Wave 2 completion)*
+**Wave 3** _(blocked on Wave 2 completion)_
 
 - [x] 02-04-PLAN.md — Session + daily rollup: sessionHSS (version-stamped) + dailyHSS with double-session penalty (Wave 3)
 
-**Wave 4** *(blocked on Wave 3 completion)*
+**Wave 4** _(blocked on Wave 3 completion)_
 
 - [x] 02-06-PLAN.md — Barrel + calibration golden (kStrength tuning) + README + ≥20-test/purity verification (Wave 4)
 
@@ -104,11 +95,11 @@ Plans:
 **Requirements**: ONB-01, ONB-02, ONB-03, ONB-04, LIFT-01, LIFT-02, LIFT-03, LIFT-04, LIFT-05, LIFT-06, LIFT-07, LIFT-08
 **Success Criteria** (what must be TRUE):
 
-  1. User completes onboarding (sex, bodyweight, threshold HR, threshold pace) before any readiness number is ever shown, and can later view and edit those inputs from settings.
-  2. User can toggle the display unit system (km ↔ mi) anywhere it applies, while all data remains stored in metric internally.
-  3. User can find any seeded exercise in under 2 taps and log a set (load, reps, RPE, warmup flag) in ≤ 3 taps, with RPE entered via a persistent quick-row (6–10) that is never behind a modal and pre-selects the last-used value.
-  4. Each new set for an exercise pre-populates with that exercise's previous-session weight + reps, and the user can add or remove sets inline.
-  5. Completing a set starts a configurable auto-rest timer in a persistent banner; the session HSS updates live as each set is logged; the user can save or discard the session (discard requires confirmation) and sees the session HSS on the finish screen.
+1. User completes onboarding (sex, bodyweight, threshold HR, threshold pace) before any readiness number is ever shown, and can later view and edit those inputs from settings.
+2. User can toggle the display unit system (km ↔ mi) anywhere it applies, while all data remains stored in metric internally.
+3. User can find any seeded exercise in under 2 taps and log a set (load, reps, RPE, warmup flag) in ≤ 3 taps, with RPE entered via a persistent quick-row (6–10) that is never behind a modal and pre-selects the last-used value.
+4. Each new set for an exercise pre-populates with that exercise's previous-session weight + reps, and the user can add or remove sets inline.
+5. Completing a set starts a configurable auto-rest timer in a persistent banner; the session HSS updates live as each set is logged; the user can save or discard the session (discard requires confirmation) and sees the session HSS on the finish screen.
 
 **Plans**: 11/11 plans complete
 
@@ -119,22 +110,22 @@ Plans:
 - [x] 03-02-PLAN.md — DB schema migration (bwFactor/entryMode/finishedAt/deletedAt/addedLoadKg/durationS/restTimerDefault) + seed metadata + previous-session/soft-delete query builders [BLOCKING migration]
 - [x] 03-03-PLAN.md — App deps install + legitimacy checkpoint, dark-only design system, Home/Log/Settings tab shell + Home placeholder
 
-**Wave 2** *(blocked on Wave 1)*
+**Wave 2** _(blocked on Wave 1)_
 
 - [x] 03-04-PLAN.md — Onboarding gate (Stack.Protected) + wizard scaffold + sex/bodyweight/units steps + soft validation + resume detection
 
-**Wave 3** *(blocked on Wave 2)*
+**Wave 3** _(blocked on Wave 2)_
 
 - [x] 03-05-PLAN.md — Threshold HR/pace capture (direct + estimate paths) + reusable review screen + profile save (ONB-01)
 - [x] 03-06-PLAN.md — Lifting logger core: session store, effective-load + commit pipeline, exercise picker, SetRow, live HSS session screen, add/remove sets
 
-**Wave 4** *(blocked on Wave 3)*
+**Wave 4** _(blocked on Wave 3)_
 
 - [x] 03-07-PLAN.md — Auto-rest timer banner + background notifications + haptics (LIFT-05) [on-device checkpoint]
 - [x] 03-08-PLAN.md — Finish summary + confirmed soft-delete discard + HSS breakdown sheet + warning badges (LIFT-07)
 - [x] 03-09-PLAN.md — Settings tab: profile editor (ONB-02) + units toggle (ONB-04) + default rest timer
 
-**Gap closure + design-contract conformance** *(UAT Test 9 set-row wrap + DESIGN-SYSTEM.md adoption; 03-11 executes FIRST — gap-closure Wave 1 — because 03-10 builds on the new spacing tokens)*
+**Gap closure + design-contract conformance** _(UAT Test 9 set-row wrap + DESIGN-SYSTEM.md adoption; 03-11 executes FIRST — gap-closure Wave 1 — because 03-10 builds on the new spacing tokens)_
 
 - [x] 03-11-PLAN.md — DESIGN-SYSTEM.md conformance (Wave 1): contract spacing scale (md=12) + largest-first token remap sweep, typography deltas (heading 22 / title 30, mono tracking, fontWeight cleanup), tab-bar + text-field-focus + segment conformance on existing Phase-3 surfaces only (ONB-01/ONB-02/LIFT-02)
 - [x] 03-10-PLAN.md — Rebuild SetRow as a single-line row per DESIGN-SYSTEM.md (Wave 2): compact −/+ steppers kept for load/reps + RPE stepper replacing the 44px pills, hitSlop 44pt hit targets, mono column-header row, ExerciseCard alignment + full-width ghost add-set [on-device checkpoint] (LIFT-02/LIFT-03)
@@ -150,11 +141,11 @@ Plans:
 **Requirements**: RUN-01, RUN-02, RUN-03, RUN-04, RUN-05, RUN-06, HOME-01, HOME-02, HOME-03, HOME-04, HOME-05, HOME-06
 **Success Criteria** (what must be TRUE):
 
-  1. User picks an activity type (Run / Erg / Conditioning), enters distance + duration with pace auto-calculating live, optionally enters average HR and a free-text note/tag, and the session date defaults to today but is editable.
-  2. User sees the session HSS on the run finish screen immediately after saving.
-  3. Home screen shows today's readiness band and today's total HSS prominently, above the fold.
-  4. Home screen shows a 28-day ATL/CTL/TSB trend chart, and shows a "Building trend…" calibrating state instead of a readiness band until 14+ days of data exist.
-  5. User can view workout history grouped by day showing day HSS + session count, with the double-session penalty explicitly labeled when sessionCount > 1 for that day.
+1. User picks an activity type (Run / Erg / Conditioning), enters distance + duration with pace auto-calculating live, optionally enters average HR and a free-text note/tag, and the session date defaults to today but is editable.
+2. User sees the session HSS on the run finish screen immediately after saving.
+3. Home screen shows today's readiness band and today's total HSS prominently, above the fold.
+4. Home screen shows a 28-day ATL/CTL/TSB trend chart, and shows a "Building trend…" calibrating state instead of a readiness band until 14+ days of data exist.
+5. User can view workout history grouped by day showing day HSS + session count, with the double-session penalty explicitly labeled when sessionCount > 1 for that day.
 
 **Plans**: 10/10 plans complete
 
@@ -164,19 +155,19 @@ Plans:
 - [x] 04-01-PLAN.md — Data/pure foundation: workout.note schema + [BLOCKING] migration, load_daily recompute-row builder + history query builders, parseDurationDigits (RUN-02/RUN-05/HOME-03..06)
 - [x] 04-02-PLAN.md — Native deps install (victory-native/Skia/svg/datetimepicker) + Skia SUS legitimacy checkpoint + prebuild (RUN-04/HOME-03)
 
-**Wave 2** *(blocked on Wave 1)*
+**Wave 2** _(blocked on Wave 1)_
 
 - [x] 04-03-PLAN.md — recomputeLoadDaily pipeline + shared localDate helper + retrofit lifting finish/discard (Pitfall 1) (HOME-01/HOME-02)
 - [x] 04-04-PLAN.md — Home visual components: HssRing (capped fill + calibrating), PlateOrbit, ReadinessLight, StatTiles (HOME-01/HOME-02)
 
-**Wave 3** *(blocked on Wave 2)*
+**Wave 3** _(blocked on Wave 2)_
 
 - [x] 04-05-PLAN.md — Run entry form + saveRun handler + Log-tab CTA (RUN-01..RUN-05)
 - [x] 04-06-PLAN.md — Finish-screen retrofit: endurance branch + 84px mini-ring + TODAY routing (RUN-06)
 - [x] 04-07-PLAN.md — TODAY dashboard + TrendChart scrub tooltip + today-breakdown sheet (HOME-01..HOME-04)
 - [x] 04-08-PLAN.md — History tab + DayRow + session detail + 4-tab restructure (HOME-05/HOME-06)
 
-**Wave 4 — gap closure** *(from 04-VERIFICATION.md, gaps_found)*
+**Wave 4 — gap closure** _(from 04-VERIFICATION.md, gaps_found)_
 
 - [x] 04-09-PLAN.md — Blocking criticals: TrendChart worklet-safe scrub tooltip (CR-01) + recomputeLoadDaily stale-row DELETE cleanup (CR-02) (HOME-01/HOME-02/HOME-03)
 - [x] 04-10-PLAN.md — Warnings: formatPaceMinSec carry (WR-08) + iOS date picker dismiss (WR-05) + History empty-load_daily fallback (WR-07) (RUN-02/RUN-04/HOME-05)
@@ -192,10 +183,10 @@ Plans:
 **Requirements**: HK-01, HK-02, HK-03, HK-04
 **Success Criteria** (what must be TRUE):
 
-  1. User grants HealthKit permission on request and the app imports their existing runs (distance, duration, HR) from Health.
-  2. App imports the user's most-recent bodyweight from HealthKit into their profile.
-  3. Imported HealthKit runs never create duplicate entries alongside manually logged runs covering the same time range.
-  4. After a user saves a lifting or running session in Apsis, that session appears in the Health app.
+1. User grants HealthKit permission on request and the app imports their existing runs (distance, duration, HR) from Health.
+2. App imports the user's most-recent bodyweight from HealthKit into their profile.
+3. Imported HealthKit runs never create duplicate entries alongside manually logged runs covering the same time range.
+4. After a user saves a lifting or running session in Apsis, that session appears in the Health app.
 
 **Plans**: 9/9 plans complete
 
@@ -205,17 +196,17 @@ Plans:
 - [x] 05-01-PLAN.md — Native install: @kingstinct/react-native-healthkit@^14.0.2 + react-native-nitro-modules + config plugin/entitlements + SUS legitimacy checkpoint + fresh EAS dev build (HK-01)
 - [x] 05-02-PLAN.md — Schema: workout.source/healthkitUuid + user_profile bodyweightSetAt/healthkit sync columns + candidatesForDedupe builder + [BLOCKING] 0003 migration (HK-02/03/04)
 
-**Wave 2** *(blocked on Wave 1)*
+**Wave 2** _(blocked on Wave 1)_
 
 - [x] 05-03-PLAN.md — HK logic foundations: pure healthkitMapping (map/dedupe/recency/metadata/sanitize) + vitest tests + healthkitAuth (minimal identifier sets) + healthkitSyncState accessor (HK-01/02/03/04)
 - [x] 05-04-PLAN.md — APPLE HEALTH provenance chip on History rows + session detail (D-08) (HK-03)
 
-**Wave 3** *(blocked on Wave 2)*
+**Wave 3** _(blocked on Wave 2)_
 
 - [x] 05-05-PLAN.md — Import engine: 90-day backfill + foreground anchor-sync + dedupe/echo-exclusion + bodyweight import + useForegroundHealthKitSync hook (HK-01/02/03)
 - [x] 05-06-PLAN.md — Write-back + delete-sync: healthkitWriteback + saveRun/finishWorkout tails + discardWorkout delete-sync (HK-04)
 
-**Wave 4** *(blocked on Wave 3)*
+**Wave 4** _(blocked on Wave 3)_
 
 - [x] 05-07-PLAN.md — Terminal onboarding HealthKit step + profile-version-bump race fix (D-20/22/23) (HK-01)
 - [x] 05-08-PLAN.md — Settings "Apple Health" section: connect row / sync toggle / last-sync line (D-03/19/21/24) (HK-01/02)
@@ -234,31 +225,31 @@ Plans:
 
 - [x] 07-11-PLAN.md
 
-**Wave 1** *(foundation — parallel, no cross-file conflicts)*
+**Wave 1** _(foundation — parallel, no cross-file conflicts)_
 
 - [x] 07-01-PLAN.md — Schema + [BLOCKING] migration + granular NUTR-01..22 requirements: 5 new tables + 3 user_profile fields, drizzle-kit generate + round-trip test (NUTR-01/07/15)
 - [x] 07-02-PLAN.md — Engine adaptive-target functions (TDD golden-file): dailyMacroTarget/classifyDayType/trainingKcalFromHss + EngineConfig constants (NUTR-16/17/18)
 
-**Wave 2** *(DB service + profile gate — depends on Wave 1)*
+**Wave 2** _(DB service + profile gate — depends on Wave 1)_
 
 - [x] 07-03-PLAN.md — DB query + target orchestration: nutritionQueries (search/recents/favorites/day-totals/day-type) + pure computeNutritionTargetRow (NUTR-02/04/07/17)
 - [x] 07-04-PLAN.md — Nutrition profile gate: pure NutritionProfile assembler + completeness hook + staged-draft setup screen for existing users (NUTR-15/20)
 
-**Wave 3** *(manual logging vertical — the sellable increment, depends on Wave 2)*
+**Wave 3** _(manual logging vertical — the sellable increment, depends on Wave 2)_
 
 - [x] 07-05-PLAN.md — 5th Nutrition tab + targets-vs-totals screen + recomputeNutritionTarget wiring (finish + lazy rest-day fallback) (NUTR-19/16/17/22)
 - [x] 07-06-PLAN.md — Manual food logging: local search/recents/favorites + custom food + quick-add + shared FoodConfirmSheet (NUTR-03/04/05/06/07)
 
-**Wave 4** *(native prerequisite — depends on Wave 3)*
+**Wave 4** _(native prerequisite — depends on Wave 3)_
 
 - [x] 07-07-PLAN.md — Camera + OCR native install (legitimacy checkpoint) + camera permission + permission wrapper + EAS dev-build gate (NUTR-08/11)
 
-**Wave 5** *(barcode + OCR — depends on Wave 4)*
+**Wave 5** _(barcode + OCR — depends on Wave 4)_
 
 - [x] 07-08-PLAN.md — OFF/USDA fetch clients + local-first remote-fallback search + barcode scan chain (cache→OFF→confirm→log, graceful miss) + OFF attribution (NUTR-08/09/10/03/21/22)
 - [x] 07-09-PLAN.md — Label OCR: pure bounds-checked parser + capture→Apple Vision OCR→confirm→custom food (NUTR-11/12/09)
 
-**Wave 6** *(recipes — last build-order item, cut-first candidate)*
+**Wave 6** _(recipes — last build-order item, cut-first candidate)_
 
 - [x] 07-10-PLAN.md — Custom recipes: per-serving macro aggregation builders + recipes list/edit screens + log-one-serving (NUTR-13/14)
 
@@ -280,15 +271,15 @@ Plans:
 
 - [x] 08-01-PLAN.md — Native dep gate: expo-image-picker/expo-file-system/expo-sharing install (SUS legitimacy checkpoint) + app.json photo permission + 06-06 build gate (D-06/D-08/D-15)
 
-**Wave 2** *(blocked on 08-01)*
+**Wave 2** _(blocked on 08-01)_
 
 - [x] 08-02-PLAN.md — TRACER: end-to-end void-card share (finish button → compose → Skia snapshot → file → iOS share sheet) + on-device pipeline spike (D-01/D-02/D-05/D-07/D-11/D-12/D-13/D-14)
 
-**Wave 3** *(blocked on 08-02)*
+**Wave 3** _(blocked on 08-02)_
 
 - [x] 08-03-PLAN.md — Full card composition: fixed stat trio + branded footer + recomposed sizing + History detail entry point (D-03/D-04/D-09/D-11)
 
-**Wave 4** *(blocked on 08-03)*
+**Wave 4** _(blocked on 08-03)_
 
 - [x] 08-04-PLAN.md — Photo-first flow: library pick + native square crop + bottom scrim + permission fallbacks + full on-device UAT (D-06/D-07/D-08/D-10/D-15/D-16)
 
@@ -302,20 +293,20 @@ Plans:
 **Plans:** 9/9 plans complete
 
 Plans:
-**Wave 1** *(foundation + independent fixes — parallel, no cross-file conflicts)*
+**Wave 1** _(foundation + independent fixes — parallel, no cross-file conflicts)_
 
 - [x] 09-01-PLAN.md — TRACER + [BLOCKING] migration 0005: units-split spine (3 user_profile buckets + food.lastUsedUnit) wired end-to-end for the run path, silent backfill, round-trip test (D-01/D-04/D-09)
 - [x] 09-02-PLAN.md — Food-unit pure conversion foundation (TDD): oz/lb helpers in units.ts + foodUnits.ts conditional tsp/tbsp/serving gating (D-05/D-06/D-07)
 - [x] 09-03-PLAN.md — Lifting logger store fixes: startRestTimer cancel-before-reschedule (D-21) + removeExercise DB-first cleanup (D-20) + ExerciseCard overflow affordance
 - [x] 09-04-PLAN.md — DecimalPadDoneBar shared component + session-screen keyboard-safety + SetRow Done bar (D-11/D-13/D-14)
 
-**Wave 2** *(depends on Wave 1)*
+**Wave 2** _(depends on Wave 1)_
 
 - [x] 09-05-PLAN.md — Units-split UI: onboarding Mixed path + draft/save re-key + Settings three unit rows (D-01/D-02/D-03/D-04)
 - [x] 09-06-PLAN.md — Consumer re-key sweep: 9 display surfaces resolve lifts/bodyweight/runs buckets, no legacy `units` display read (D-01)
 - [x] 09-07-PLAN.md — Food quantity units UI: chip rows + keyboard-safe FoodConfirmSheet + Done bar + last-used default (D-05..D-13)
 
-**Wave 3** *(depends on Wave 2)*
+**Wave 3** _(depends on Wave 2)_
 
 - [x] 09-08-PLAN.md — Onboarding explainer: three swipeable cards (HSS/readiness/trend) as wizard step 1 + Settings revisit (D-15..D-19)
 - [x] 09-09-PLAN.md — Done-bar rollout finish: run form + onboarding bodyweight decimal-pad inputs (D-11/D-13)
@@ -329,28 +320,28 @@ Plans:
 **Requirements**: REL-01, REL-02, REL-03, REL-04
 **Success Criteria** (what must be TRUE):
 
-  1. App Store Connect listing has a 1024×1024 icon (no alpha channel), screenshots at required device sizes, and complete store metadata (description, keywords).
-  2. App Store Connect's privacy nutrition label accurately declares Health & Fitness data collection, and a privacy policy is live at an HTTPS URL.
-  3. Any crash/analytics reporting (Sentry) is audited and confirmed to scrub all HealthKit-derived values (HR, HSS, workout details) before any event or breadcrumb is sent.
-  4. The binary is built via EAS and submitted to App Store review by ~July 25, 2026, leaving a 1–3 day buffer before July 28.
+1. App Store Connect listing has a 1024×1024 icon (no alpha channel), screenshots at required device sizes, and complete store metadata (description, keywords).
+2. App Store Connect's privacy nutrition label accurately declares Health & Fitness data collection, and a privacy policy is live at an HTTPS URL.
+3. Any crash/analytics reporting (Sentry) is audited and confirmed to scrub all HealthKit-derived values (HR, HSS, workout details) before any event or breadcrumb is sent.
+4. The binary is built via EAS and submitted to App Store review by ~July 25, 2026, leaving a 1–3 day buffer before July 28.
 
 **Plans**: 6/8 plans executed
 
 Plans:
-**Wave 1** *(parallel — no cross-file conflicts)*
+**Wave 1** _(parallel — no cross-file conflicts)_
 
-- [x] 06-01-PLAN.md — Pre-flight: delete stray root app.json/eas.json (Pitfall 2) + fix icon alpha channel (Pitfall 1) + confirm Apple Developer enrollment & create ASC app record (REL-01/REL-04) *(paused on human checkpoint; ascAppId 6792933794 already in eas.json)*
+- [x] 06-01-PLAN.md — Pre-flight: delete stray root app.json/eas.json (Pitfall 2) + fix icon alpha channel (Pitfall 1) + confirm Apple Developer enrollment & create ASC app record (REL-01/REL-04) _(paused on human checkpoint; ascAppId 6792933794 already in eas.json)_
 - [x] 06-02-PLAN.md — REL-03 crash reporting: pure Sentry allowlist sanitizer + @sentry/react-native install + config plugin/metro wrap + Sentry.init/wrap in root layout (REL-03)
 - [x] 06-03-PLAN.md — Folded catalog: expand STARTER_EXERCISES 43→~150 (D-13) + ab-wheel/hanging-leg-raise bwFactor fix (D-14), migration-free (REL-01)
-- [x] 06-04-PLAN.md — REL-02 static pages: privacy policy + support page (Pitfall 5), reviewed & deployed HTTPS on apsistraining.com (REL-02) *(paused pre-publish; publish AFTER 06-08 lands the photo/share-card copy correction)*
+- [x] 06-04-PLAN.md — REL-02 static pages: privacy policy + support page (Pitfall 5), reviewed & deployed HTTPS on apsistraining.com (REL-02) _(paused pre-publish; publish AFTER 06-08 lands the photo/share-card copy correction)_
 - [x] 06-05-PLAN.md — Store copy + build config: App Store listing strings + review notes (D-07/D-08/D-16) + eas.json autoIncrement (D-17) (REL-01/REL-04)
 - [x] 06-08-PLAN.md — Corrective copy: add Phase 8 share-card/photo-library disclosure to privacy policy + listing copy (verify Phase 7 nutrition copy intact) + human re-approval, before 06-04 publish / 06-07 ASC entry (REL-01/REL-02)
 
-**Wave 2** *(blocked on 06-01/02/03/05)*
+**Wave 2** _(blocked on 06-01/02/03/05)_
 
 - [ ] 06-06-PLAN.md — REWRITTEN: single EAS production build carrying ALL Phase 1-8 native modules (Sentry + camera + image-picker/file-system/sharing; expo-text-extractor removed) + frozen-lockfile gate + external TestFlight beta + D-12 gate + on-device Sentry scrub confirmation for health AND nutrition (REL-04)
 
-**Wave 3** *(blocked on 06-04/06/08)*
+**Wave 3** _(blocked on 06-04/06/08)_
 
 - [ ] 06-07-PLAN.md — REWRITTEN: ASC submission — verify ascAppId + screenshots + 06-08 re-approved metadata + privacy nutrition label reflecting nutrition egress + photo posture (D-06) + one-way-door decision gate + submit ASAP, manual release (REL-01/REL-02/REL-04)
 
@@ -361,11 +352,11 @@ Plans:
 **Execution Order:**
 Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 
-| Phase | Plans Complete | Status | Completed |
-|-------|----------------|--------|-----------|
-| 01. Foundation | 4/4 | Complete | 2026-07-02 |
-| 02. HSS Engine | 6/6 | Complete    | 2026-07-08 |
-| 03. Onboarding & Lifting Logger | 11/11 | Complete    | 2026-07-10 |
-| 04. Run Logger & Home Dashboard | 10/10 | Complete    | 2026-07-10 |
-| 05. HealthKit Integration | 9/9 | Complete    | 2026-07-12 |
-| 06. Polish & App Store Submission | 6/8 | In Progress|  |
+| Phase                             | Plans Complete | Status      | Completed  |
+| --------------------------------- | -------------- | ----------- | ---------- |
+| 01. Foundation                    | 4/4            | Complete    | 2026-07-02 |
+| 02. HSS Engine                    | 6/6            | Complete    | 2026-07-08 |
+| 03. Onboarding & Lifting Logger   | 11/11          | Complete    | 2026-07-10 |
+| 04. Run Logger & Home Dashboard   | 10/10          | Complete    | 2026-07-10 |
+| 05. HealthKit Integration         | 9/9            | Complete    | 2026-07-12 |
+| 06. Polish & App Store Submission | 6/8            | In Progress |            |

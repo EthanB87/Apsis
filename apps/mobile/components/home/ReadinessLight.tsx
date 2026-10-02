@@ -13,7 +13,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import Animated, { Easing, useAnimatedStyle, useSharedValue, withRepeat, withTiming } from 'react-native-reanimated';
 import type { ReadinessBand } from '@apsis/shared';
 
-import Colors from '../../constants/Colors';
+import { BAND_COLOR } from '../../constants/readinessBand';
 import { Mono, Spacing } from '../../constants/theme';
 
 const PULSE_DURATION_MS = 1200;
@@ -24,12 +24,6 @@ const BAND_COPY: Record<'green' | 'amber' | 'red', string> = {
   green: 'PRIMED · GREEN LIGHT',
   amber: 'CAUTION · HOLD STEADY',
   red: 'OVERREACHING · RED ZONE',
-};
-
-const BAND_COLOR: Record<'green' | 'amber' | 'red', string> = {
-  green: Colors.dark.accent,
-  amber: Colors.dark.warning,
-  red: Colors.dark.destructive,
 };
 
 export interface ReadinessLightProps {

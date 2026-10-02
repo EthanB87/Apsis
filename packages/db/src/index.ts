@@ -30,6 +30,7 @@ export {
   recentExerciseIds,
   openWorkout,
   softDeleteWorkout,
+  recentTrend,
   last28DaysTrend,
   sessionCountsByDate,
   dayGroupedSessions,
